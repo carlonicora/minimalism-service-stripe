@@ -140,7 +140,7 @@ class Stripe implements StripeServiceInterface
                 $status = $e->getHttpStatus();
                 $title = $e->getError()->message;
             } else {
-                $status = $e->getCode();
+                $status = 500;
                 $title = 'Internal error';
             }
             $result->addError(new Error($e, httpStatusCode: $status, detail: $error, title: $title));
