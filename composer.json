@@ -1,7 +1,7 @@
 {
   "name": "carlonicora/minimalism-service-stripe",
   "description": "Stripe payments service for minimalism",
-  "version": "0.0.1-beta2",
+  "version": "0.0.1-beta3",
   "homepage": "https://carlonicora.com",
   "time": "2021-10-29",
   "license": "MIT",

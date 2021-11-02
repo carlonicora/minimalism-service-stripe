@@ -89,11 +89,8 @@ class Stripe implements StripeServiceInterface
                 'metadata' => ['userId' => $userId],
             ]);
 
-            // TODO should we belive that $account contains onlye one value and it is correct?
-            $accountId = current($account->values());
-
             $link = $this->client->accountLinks->create([
-                'account' => $accountId,
+                'account' => $account->id,
                 'refresh_url' => $this->path->getUrl() . self::REFRESH_URL,
                 'return_url' =>  $this->path->getUrl() . self::RETURN_URL,
                 'type' => self::ACCOUNT_ONBOARDING
@@ -109,7 +106,7 @@ class Stripe implements StripeServiceInterface
             $accountWriter = $this->getAccountsDataWriter();
             $accountWriter->create(
                 userId: $userId,
-                stripeAccountId: $accountId,
+                stripeAccountId: $account->id,
                 email: $email,
                 connectionStatus: AccountConnectionStatus::Pending
             );

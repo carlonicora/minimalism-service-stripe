@@ -57,6 +57,6 @@ class Accounts extends AbstractModel
             email: $currentUser->getEmail()
         );
 
-        return 201;
+        return current($this->document->errors)?->status ?? 201;
     }
 }
