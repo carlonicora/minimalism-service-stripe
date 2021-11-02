@@ -89,6 +89,9 @@ class Stripe implements StripeServiceInterface
                 'metadata' => ['userId' => $userId],
             ]);
 
+            // TODO what should we do if account was connected, but link failed to be created?
+            // TODO what should we do if the current account is connected already?
+
             $link = $this->client->accountLinks->create([
                 'account' => $account->id,
                 'refresh_url' => $this->path->getUrl() . self::REFRESH_URL,
@@ -129,11 +132,18 @@ class Stripe implements StripeServiceInterface
         } catch (ApiErrorException $e) {
             $error = 'Stripe has failed to proccess your request. Please, try again later.';
         } catch (Exception $e) {
-            $error = 'Internal error';
+            $error = $e->getMessage();
         }
 
         if (isset($e) && !empty($error)) {
-            $result->addError(new Error($e, httpStatusCode: $e->getHttpStatus(), detail: $error, title: $e->getError()->message));
+            if ($e instanceof ApiErrorException) {
+                $status = $e->getHttpStatus();
+                $title = $e->getError()->message;
+            } else {
+                $status = $e->getCode();
+                $title = 'Internal error';
+            }
+            $result->addError(new Error($e, httpStatusCode: $status, detail: $error, title: $title));
 
             $this->logger->error(
                 message: $error,

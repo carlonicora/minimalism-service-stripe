@@ -10,7 +10,7 @@ use Exception;
 trait StripeLoaders
 {
     /** @var array  */
-    protected array $dataLoaders;
+    protected array $dataLoaders = [];
 
     /**
      * @param string $dataLoaderName
