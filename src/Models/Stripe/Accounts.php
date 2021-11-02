@@ -3,7 +3,7 @@
 namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe;
 
 use CarloNicora\Minimalism\Abstracts\AbstractModel;
-use CarloNicora\Minimalism\Interfaces\CurrentUserInterface;
+use CarloNicora\Minimalism\Interfaces\UserServiceInterface;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use Exception;
 use RuntimeException;
@@ -36,17 +36,19 @@ class Accounts extends AbstractModel
      *     @OA\Response(response=429, ref="#/components/responses/429")
      * )
      *
-     * @param CurrentUserInterface $currentUser
+     * @param UserServiceInterface $currentUser
      * @param Stripe $stripe
      * @return int
      * @throws Exception
      */
     public function post(
-        CurrentUserInterface $currentUser,
+        UserServiceInterface $currentUser,
         Stripe $stripe
     ): int
     {
-        if ($currentUser->getRole()->isVisitor()) {
+        $currentUser->load();
+
+        if ($currentUser->isVisitor()) {
             throw new RuntimeException(message: 'Access not allowed to guests', code: 403);
         }
 
