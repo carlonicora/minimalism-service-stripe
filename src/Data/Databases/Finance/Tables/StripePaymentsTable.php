@@ -44,7 +44,7 @@ class StripePaymentsTable extends AbstractMySqlTable
     {
         $this->sql = 'UPDATE ' . self::getTableName() . ' SET status=?, paymentIntentId=? WHERE paymentId=?;';
 
-        $this->parameters = ['isi', $paymentId, $paymentIntentId, $status];
+        $this->parameters = ['isi', $status, $paymentIntentId, $paymentId];
 
         $this->functions->runSql();
     }
