@@ -15,7 +15,7 @@ create table stripePayments
 (
     paymentId       bigint unsigned auto_increment
         primary key,
-    paymentIntentId char(21)         null,
+    paymentIntentId char(27)         null,
     payerId         bigint unsigned  not null,
     receiperId      bigint unsigned  not null,
     amount          int unsigned     not null,

@@ -26,7 +26,7 @@ class StripePaymentsResourceReader extends AbstractLoader
         $result = $this->builder->build(
             resourceTransformerClass: StripePaymentBuilder::class,
             function: new DataFunction(
-                type: DataFunctionInterface::TYPE_LOADER,
+                type: DataFunctionInterface::TYPE_TABLE,
                 className:StripePaymentsTable::class,
                 functionName: 'byId',
                 parameters: [$paymentId]
