@@ -237,7 +237,7 @@ class Stripe implements StripeServiceInterface
 
             $resourceReader = $this->getPaymentsResourceReader();
             $paymentResource = $resourceReader->byId($payment['paymentId']);
-            $paymentResource->attributes->add(name: 'clientSecret', value: $paymentIntent->client_secret);
+            $paymentResource->attributes->update(name: 'clientSecret', value: $paymentIntent->client_secret);
 
             $result->addResource($paymentResource);
         } catch(CardException $e) {
