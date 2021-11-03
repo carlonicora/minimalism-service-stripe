@@ -49,7 +49,7 @@ enum Currency: string
     }
 
     /**
-     * @return array
+     * @return PaymentMethods[]
      */
     public function paymentMethods(): array
     {

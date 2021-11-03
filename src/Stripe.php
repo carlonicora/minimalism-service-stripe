@@ -168,7 +168,7 @@ class Stripe implements StripeServiceInterface
      * @param int $receiperId
      * @param Amount $amount
      * @param Amount $phlowFee
-     * @param string $receipeEmail
+     * @param string $receiptEmail
      * @return Document
      */
     public function paymentIntent(
@@ -176,7 +176,7 @@ class Stripe implements StripeServiceInterface
         int    $receiperId,
         Amount $amount,
         Amount $phlowFee,
-        string $receipeEmail
+        string $receiptEmail
     ): Document
     {
         $result = new Document();
@@ -198,14 +198,19 @@ class Stripe implements StripeServiceInterface
             $accountsReader = $this->getAccountsDataReader();
             $receiperStripeAccount = $accountsReader->byUserId($receiperId);
 
+            $paymentMethods = [];
+            foreach ($amount->currency()->paymentMethods() as $method) {
+                $paymentMethods []= $method->value;
+            }
+
             $paymentIntent = $this->client->paymentIntents->create(
                 [
                     'amount' => $amount->inCents(),
                     'application_fee_amount' => $phlowFee->inCents(),
-                    'currency' => $amount->currency(),
-                    'payment_method_types' => $amount->currency()->paymentMethods(),
-                    'receipe_email' => $receipeEmail,
-                    'meta' => [
+                    'currency' => $amount->currency()->value,
+                    'payment_method_types' => $paymentMethods,
+                    'receipt_email' => $receiptEmail,
+                    'metadata' => [
                         'paymentId' => $payment['paymentId'],
                         'payerId' => $payerId,
                         'receiverId' => $receiperId

@@ -25,7 +25,7 @@ class StripePaymentsDataWriter extends AbstractLoader
         int           $amount,
         int           $phlowFeeAmount,
         string        $currency,
-        PaymentStatus $status,
+        PaymentStatus $status
     ): array
     {
         $payment = [
@@ -34,7 +34,7 @@ class StripePaymentsDataWriter extends AbstractLoader
             'amount' => $amount,
             'phlowFeeAmount' => $phlowFeeAmount,
             'currency' => $currency,
-            'status' => $status->value,
+            'status' => $status->value
         ];
 
         return $this->data->insert(
@@ -57,10 +57,10 @@ class StripePaymentsDataWriter extends AbstractLoader
         /** @see StripePaymentsTable::updateStatusAndIntentId() */
         $this->data->run(
             tableInterfaceClassName: StripePaymentsTable::class,
-            functionName: 'updateStatus',
+            functionName: 'updateStatusAndIntentId',
             parameters: [
                 'paymentId' => $paymentId,
-                'status' => $status,
+                'status' => $status->value,
                 'paymentIntentId' => $paymentIntentId
             ],
         );
