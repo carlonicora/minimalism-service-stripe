@@ -9,7 +9,6 @@ use CarloNicora\Minimalism\Services\Pools;
 use CarloNicora\Minimalism\Services\Stripe\Data\Builders\AccountLinkBuilder;
 use CarloNicora\Minimalism\Services\Stripe\Data\Databases\Finance\Tables\Enums\AccountConnectionStatus;
 use CarloNicora\Minimalism\Services\Stripe\Data\Databases\Finance\Tables\Enums\PaymentStatus;
-use CarloNicora\Minimalism\Services\Stripe\Interfaces\StripePlatformInterface;
 use CarloNicora\Minimalism\Services\Stripe\Interfaces\StripeServiceInterface;
 use CarloNicora\Minimalism\Services\Stripe\Logger\StripeLogger;
 use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
@@ -44,7 +43,6 @@ class Stripe implements StripeServiceInterface
      * @param StripeLogger $logger
      * @param Path $path
      * @param EncrypterInterface $encrypter
-     * @param StripePlatformInterface $urls
      * @param string $MINIMALISM_SERVICE_STRIPE_API_KEY
      * @param string $MINIMALISM_SERVICE_STRIPE_CLIENT_ID
      */
@@ -53,7 +51,6 @@ class Stripe implements StripeServiceInterface
         private StripeLogger $logger,
         private Path $path,
         private EncrypterInterface $encrypter,
-        private StripePlatformInterface $urls,
         private string $MINIMALISM_SERVICE_STRIPE_API_KEY,
         private string $MINIMALISM_SERVICE_STRIPE_CLIENT_ID
     )
@@ -76,11 +73,15 @@ class Stripe implements StripeServiceInterface
     /**
      * @param int $userId
      * @param string $email
+     * @param string $refreshUrl
+     * @param string $returnUrl
      * @return Document
      */
     public function connectAccount(
         int $userId,
         string $email,
+        string $refreshUrl,
+        string $returnUrl
     ): Document
     {
         $result = new Document();
@@ -96,8 +97,8 @@ class Stripe implements StripeServiceInterface
 
             $link = $this->client->accountLinks->create([
                 'account' => $account->id,
-                'refresh_url' => $this->urls->getRefreshUrlForAccountConnection(),
-                'return_url' =>  $this->urls->getReturnUrlForAccountConnection(),
+                'refresh_url' => $refreshUrl,
+                'return_url' => $returnUrl,
                 'type' => self::ACCOUNT_ONBOARDING
             ]);
 

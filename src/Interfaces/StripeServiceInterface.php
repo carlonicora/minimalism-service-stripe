@@ -11,11 +11,15 @@ interface StripeServiceInterface extends ServiceInterface
     /**
      * @param int $userId
      * @param string $email
+     * @param string $refreshUrl
+     * @param string $returnUrl
      * @return Document
      */
     public function connectAccount(
         int $userId,
         string $email,
+        string $refreshUrl,
+        string $returnUrl,
     ): Document;
 
     /**
