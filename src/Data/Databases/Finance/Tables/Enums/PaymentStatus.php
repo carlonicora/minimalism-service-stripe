@@ -4,7 +4,8 @@ namespace CarloNicora\Minimalism\Services\Stripe\Data\Databases\Finance\Tables\E
 
 enum PaymentStatus: int
 {
-    case Pending = 0;
-    case Successful = 1;
+    case Created = 0;
+    case Sent = 1;
+    case Successful = 2;
     case Error = 2;
 }

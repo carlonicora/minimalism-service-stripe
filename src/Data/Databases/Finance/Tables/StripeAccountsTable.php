@@ -28,6 +28,22 @@ class StripeAccountsTable extends AbstractMySqlTable
     ];
 
     /**
+     * @param int $userId
+     * @return array
+     * @throws Exception
+     */
+    public function byUserId(
+        int $userId
+    ): array
+    {
+        $this->sql = 'SELECT * FROM ' . static::getTableName()
+            . ' WHERE userId = ? ';
+        $this->parameters = ['i', $userId];
+
+        return $this->functions->runRead();
+    }
+
+    /**
      * @param int $accountId
      * @param int $connectionStatus
      * @throws Exception

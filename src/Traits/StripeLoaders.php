@@ -3,8 +3,10 @@
 namespace CarloNicora\Minimalism\Services\Stripe\Traits;
 
 use CarloNicora\Minimalism\Interfaces\DataLoaderInterface;
+use CarloNicora\Minimalism\Services\Stripe\Data\DataReaders\StripeAccountsDataReader;
 use CarloNicora\Minimalism\Services\Stripe\Data\DataWriters\StripeAccountsDataWriter;
 use CarloNicora\Minimalism\Services\Stripe\Data\DataWriters\StripePaymentsDataWriter;
+use CarloNicora\Minimalism\Services\Stripe\Data\ResourceReaders\StripePaymentsResourceReader;
 use Exception;
 
 trait StripeLoaders
@@ -42,6 +44,17 @@ trait StripeLoaders
     }
 
     /**
+     * @return StripeAccountsDataReader|DataLoaderInterface
+     * @throws Exception
+     */
+    public function getAccountsDataReader(): StripeAccountsDataReader|DataLoaderInterface
+    {
+        return $this->getDataLoader(
+            dataLoaderName: StripeAccountsDataReader::class
+        );
+    }
+
+    /**
      * @return StripePaymentsDataWriter|DataLoaderInterface
      * @throws Exception
      */
@@ -49,6 +62,17 @@ trait StripeLoaders
     {
         return $this->getDataLoader(
             dataLoaderName: StripePaymentsDataWriter::class
+        );
+    }
+
+    /**
+     * @return StripePaymentsResourceReader|DataLoaderInterface
+     * @throws Exception
+     */
+    public function getPaymentsResourceReader(): StripePaymentsResourceReader|DataLoaderInterface
+    {
+        return $this->getDataLoader(
+            dataLoaderName: StripePaymentsResourceReader::class
         );
     }
 }

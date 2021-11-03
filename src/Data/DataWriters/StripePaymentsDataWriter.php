@@ -14,24 +14,30 @@ class StripePaymentsDataWriter extends AbstractLoader
      * @param int $payerId
      * @param int $receiperId
      * @param int $amount
+     * @param int $phlowFeeAmount
      * @param string $currency
+     * @param PaymentStatus $status
+     * @return array
      */
     public function create(
-        int    $payerId,
-        int    $receiperId,
-        int    $amount,
-        string $currency,
-    ): void
+        int           $payerId,
+        int           $receiperId,
+        int           $amount,
+        int           $phlowFeeAmount,
+        string        $currency,
+        PaymentStatus $status,
+    ): array
     {
         $payment = [
             'payerId' => $payerId,
             'receiperId' => $receiperId,
             'amount' => $amount,
+            'phlowFeeAmount' => $phlowFeeAmount,
             'currency' => $currency,
-            'status' => PaymentStatus::Pending->value
+            'status' => $status->value,
         ];
 
-        $this->data->insert(
+        return $this->data->insert(
             tableInterfaceClassName: StripePaymentsTable::class,
             records: $payment
         );
@@ -39,20 +45,23 @@ class StripePaymentsDataWriter extends AbstractLoader
 
     /**
      * @param int $paymentId
-     * @param int $status
+     * @param PaymentStatus $status
+     * @param string $paymentIntentId
      */
-    public function updatePaymentStatus(
+    public function updatePaymentStatusAndIntentId(
         int $paymentId,
-        int $status
+        PaymentStatus $status,
+        string $paymentIntentId
     ): void
     {
-        /** @see StripePaymentsTable::updateStatus() */
+        /** @see StripePaymentsTable::updateStatusAndIntentId() */
         $this->data->run(
             tableInterfaceClassName: StripePaymentsTable::class,
             functionName: 'updateStatus',
             parameters: [
                 'paymentId' => $paymentId,
-                'status' => $status
+                'status' => $status,
+                'paymentIntentId' => $paymentIntentId
             ],
         );
 

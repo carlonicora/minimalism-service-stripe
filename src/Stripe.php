@@ -8,8 +8,10 @@ use CarloNicora\Minimalism\Services\Path;
 use CarloNicora\Minimalism\Services\Pools;
 use CarloNicora\Minimalism\Services\Stripe\Data\Builders\AccountLinkBuilder;
 use CarloNicora\Minimalism\Services\Stripe\Data\Databases\Finance\Tables\Enums\AccountConnectionStatus;
+use CarloNicora\Minimalism\Services\Stripe\Data\Databases\Finance\Tables\Enums\PaymentStatus;
 use CarloNicora\Minimalism\Services\Stripe\Interfaces\StripeServiceInterface;
 use CarloNicora\Minimalism\Services\Stripe\Logger\StripeLogger;
+use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
 use CarloNicora\Minimalism\Services\Stripe\Traits\StripeLoaders;
 use Exception;
 use Stripe\BaseStripeClient;
@@ -115,6 +117,123 @@ class Stripe implements StripeServiceInterface
             );
 
             $result->addResource($resource);
+        } catch(CardException $e) {
+            // TODO what should we do if a card was declined?
+            // Since it's a decline, \Stripe\Exception\CardException will be caught
+            $error = 'Type is:' . $e->getError()->type . '\n';
+            $error .= 'Code is:' . $e->getError()->code . '\n';
+            $error .= 'Param is:' . $e->getError()->param . '\n';
+        } catch (RateLimitException $e) {
+            $error = 'Too many requests made to the Stripe API too quickly';
+        } catch (InvalidRequestException $e) {
+            $error = 'Invalid parameters were supplied to Stripe\'s API';
+        } catch (AuthenticationException $e) {
+            $error = 'Authentication with Stripe\'s API failed (maybe you changed API keys recently)';
+        } catch (ApiConnectionException $e) {
+            $error = 'Network communication with Stripe failed';
+        } catch (ApiErrorException $e) {
+            $error = 'Stripe has failed to proccess your request. Please, try again later.';
+        } catch (Exception $e) {
+            $error = $e->getMessage();
+        }
+
+        if (isset($e) && !empty($error)) {
+            if ($e instanceof ApiErrorException) {
+                $status = $e->getHttpStatus();
+                $title = $e->getError()->message;
+            } else {
+                $status = 500;
+                $title = 'Internal error';
+            }
+            $result->addError(new Error($e, httpStatusCode: $status, detail: $error, title: $title));
+
+            $this->logger->error(
+                message: $error,
+                context: [
+                    'exception' => [
+                        'message' => $e->getMessage(),
+                        'file' => $e->getFile(),
+                        'line' => $e->getLine(),
+                        'trace' => $e->getTraceAsString()
+                    ]
+                ]
+            );
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param int $payerId
+     * @param int $receiperId
+     * @param Amount $amount
+     * @param Amount $phlowFee
+     * @param string $receipeEmail
+     * @return Document
+     */
+    public function paymentIntent(
+        int    $payerId,
+        int    $receiperId,
+        Amount $amount,
+        Amount $phlowFee,
+        string $receipeEmail
+    ): Document
+    {
+        $result = new Document();
+
+        // TODO test idempotency
+        // TODO test different currencies, check fees conversions
+        // TODO what if one part of the code below failed? Show we rollback the 'transaction'?
+        try {
+            $paymentsWriter = $this->getPaymentsDataWriter();
+            $payment = $paymentsWriter->create(
+                payerId: $payerId,
+                receiperId: $receiperId,
+                amount: $amount->inCents(),
+                phlowFeeAmount: $phlowFee->inCents(),
+                currency: $amount->currency()->value,
+                status: PaymentStatus::Created
+            );
+
+            $accountsReader = $this->getAccountsDataReader();
+            $receiperStripeAccount = $accountsReader->byUserId($receiperId);
+
+            $paymentIntent = $this->client->paymentIntents->create(
+                [
+                    'amount' => $amount->inCents(),
+                    'application_fee_amount' => $phlowFee->inCents(),
+                    'currency' => $amount->currency(),
+                    'payment_method_types' => $amount->currency()->paymentMethods(),
+                    'receipe_email' => $receipeEmail,
+                    'meta' => [
+                        'paymentId' => $payment['paymentId'],
+                        'payerId' => $payerId,
+                        'receiverId' => $receiperId
+                    ],
+                    'transfer_data' => [
+                        'destination' => $receiperStripeAccount['stripeAccountId'],
+                    ],
+                    // TODO check how statement_descriptor works. Should we add an author's name to a payment details (22 chars limit)?
+                    // Should we allow a user to choose a payment type on the front end?
+                    // TODO check how setup_future_usage works. It remembers, which payment type a user has chosen the last time.
+                ],
+                // TODO what are the benefit for a payer if he/she connect his/her account?
+//                [
+//                    'stripe_account' => $payerStripeAccount['stripeAccountId']
+//                ]
+            );
+
+            $paymentsWriter->updatePaymentStatusAndIntentId(
+                paymentId: $payment['paymentId'],
+                status: PaymentStatus::Sent,
+                paymentIntentId: $paymentIntent->id
+            );
+
+            $resourceReader = $this->getPaymentsResourceReader();
+            $paymentResource = $resourceReader->byId($payment['paymentId']);
+            $paymentResource->attributes->add(name: 'clientSecret', value: $paymentIntent->client_secret);
+
+            $result->addResource($paymentResource);
         } catch(CardException $e) {
             // TODO what should we do if a card was declined?
             // Since it's a decline, \Stripe\Exception\CardException will be caught

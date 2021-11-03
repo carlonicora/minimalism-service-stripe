@@ -16,10 +16,12 @@ class StripePaymentsTable extends AbstractMySqlTable
         'paymentId' => FieldInterface::INTEGER
             + FieldInterface::PRIMARY_KEY
             + FieldInterface::AUTO_INCREMENT,
+        'paymentIntentId' => FieldInterface::STRING,
         'payerId' => FieldInterface::INTEGER,
         'receiperId' => FieldInterface::INTEGER,
         'amount' => FieldInterface::INTEGER,
         'currency' => FieldInterface::STRING,
+        'phlowFeeAmount' => FieldInterface::INTEGER,
         'status' => FieldInterface::INTEGER,
         'error' => FieldInterface::STRING,
         'createdAt' => FieldInterface::STRING
@@ -31,16 +33,18 @@ class StripePaymentsTable extends AbstractMySqlTable
     /**
      * @param int $paymentId
      * @param int $status
+     * @param string $paymentIntentId
      * @throws Exception
      */
-    public function updateStatus(
+    public function updateStatusAndIntentId(
         int $paymentId,
-        int $status
+        int $status,
+        string $paymentIntentId
     ): void
     {
-        $this->sql = 'UPDATE ' . self::getTableName() . ' SET status=? WHERE accountId=?;';
+        $this->sql = 'UPDATE ' . self::getTableName() . ' SET status=?, paymentIntentId=? WHERE accountId=?;';
 
-        $this->parameters = ['ii', $paymentId, $status];
+        $this->parameters = ['isi', $paymentId, $paymentIntentId, $status];
 
         $this->functions->runSql();
     }
