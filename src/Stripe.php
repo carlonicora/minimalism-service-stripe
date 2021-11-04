@@ -3,6 +3,7 @@ namespace CarloNicora\Minimalism\Services\Stripe;
 
 use CarloNicora\JsonApi\Document;
 use CarloNicora\JsonApi\Objects\Error;
+use CarloNicora\Minimalism\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Services\Path;
 use CarloNicora\Minimalism\Services\Pools;
@@ -14,6 +15,7 @@ use CarloNicora\Minimalism\Services\Stripe\Logger\StripeLogger;
 use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
 use CarloNicora\Minimalism\Services\Stripe\Traits\StripeLoaders;
 use Exception;
+use Stripe\Account;
 use Stripe\BaseStripeClient;
 use Stripe\Exception\ApiConnectionException;
 use Stripe\Exception\ApiErrorException;
@@ -47,12 +49,12 @@ class Stripe implements StripeServiceInterface
      * @param string $MINIMALISM_SERVICE_STRIPE_CLIENT_ID
      */
     public function __construct(
-        private Pools $pools,
-        private StripeLogger $logger,
-        private Path $path,
+        private Pools              $pools,
+        private StripeLogger       $logger,
+        private Path               $path,
         private EncrypterInterface $encrypter,
-        private string $MINIMALISM_SERVICE_STRIPE_API_KEY,
-        private string $MINIMALISM_SERVICE_STRIPE_CLIENT_ID
+        private string             $MINIMALISM_SERVICE_STRIPE_API_KEY,
+        private string             $MINIMALISM_SERVICE_STRIPE_CLIENT_ID
     )
     {
         \Stripe\Stripe::setApiKey($this->MINIMALISM_SERVICE_STRIPE_API_KEY);
@@ -73,93 +75,67 @@ class Stripe implements StripeServiceInterface
     /**
      * @param int $userId
      * @param string $email
-     * @param string $refreshUrl
-     * @param string $returnUrl
-     * @return Document
+     * @return Account
+     * @throws ApiErrorException
+     * @throws Exception
      */
     public function connectAccount(
-        int $userId,
+        int    $userId,
         string $email,
-        string $refreshUrl,
-        string $returnUrl
-    ): Document
+    ): Account
     {
-        $result = new Document();
         try {
-            $account = $this->client->accounts->create([
+            $existingConnectedAccount = $this->getAccountsDataReader()->byUserId($userId);
+            return $this->client->accounts->retrieve($existingConnectedAccount['stripeAccountId']);
+        } catch (RecordNotFoundException) {
+            $newAccount = $this->client->accounts->create([
                 'type' => 'standard',
                 'email' => $email,
                 'metadata' => ['userId' => $userId],
             ]);
 
-            // TODO what should we do if account was connected, but link failed to be created?
-            // TODO what should we do if the current account is connected already?
-
-            $link = $this->client->accountLinks->create([
-                'account' => $account->id,
-                'refresh_url' => $refreshUrl,
-                'return_url' => $returnUrl,
-                'type' => self::ACCOUNT_ONBOARDING
-            ]);
-
-            $builder = new AccountLinkBuilder(
-                path: $this->path,
-                encrypter: $this->encrypter
-            );
-            $builder->setAttributes($link->toArray());
-            $resource = $builder->getResourceObject();
-
-            $accountWriter = $this->getAccountsDataWriter();
-            $accountWriter->create(
+            $this->getAccountsDataWriter()->create(
                 userId: $userId,
-                stripeAccountId: $account->id,
+                stripeAccountId: $newAccount->id,
                 email: $email,
                 connectionStatus: AccountConnectionStatus::Pending
             );
 
-            $result->addResource($resource);
-        } catch(CardException $e) {
-            // TODO what should we do if a card was declined?
-            // Since it's a decline, \Stripe\Exception\CardException will be caught
-            $error = 'Type is:' . $e->getError()->type . '\n';
-            $error .= 'Code is:' . $e->getError()->code . '\n';
-            $error .= 'Param is:' . $e->getError()->param . '\n';
-        } catch (RateLimitException $e) {
-            $error = 'Too many requests made to the Stripe API too quickly';
-        } catch (InvalidRequestException $e) {
-            $error = 'Invalid parameters were supplied to Stripe\'s API';
-        } catch (AuthenticationException $e) {
-            $error = 'Authentication with Stripe\'s API failed (maybe you changed API keys recently)';
-        } catch (ApiConnectionException $e) {
-            $error = 'Network communication with Stripe failed';
-        } catch (ApiErrorException $e) {
-            $error = 'Stripe has failed to proccess your request. Please, try again later.';
-        } catch (Exception $e) {
-            $error = $e->getMessage();
+            return $newAccount;
         }
+    }
 
-        if (isset($e) && !empty($error)) {
-            if ($e instanceof ApiErrorException) {
-                $status = $e->getHttpStatus();
-                $title = $e->getError()->message;
-            } else {
-                $status = 500;
-                $title = 'Internal error';
-            }
-            $result->addError(new Error($e, httpStatusCode: $status, detail: $error, title: $title));
+    /**
+     * @param string $accountId
+     * @param string $refreshUrl
+     * @param string $returnUrl
+     * @return Document
+     * @throws ApiErrorException
+     * @throws Exception
+     */
+    public function createAccountOnboardingLink(
+        string $accountId,
+        string $refreshUrl,
+        string $returnUrl
+    ): Document
+    {
+        $result = new Document();
 
-            $this->logger->error(
-                message: $error,
-                context: [
-                    'exception' => [
-                        'message' => $e->getMessage(),
-                        'file' => $e->getFile(),
-                        'line' => $e->getLine(),
-                        'trace' => $e->getTraceAsString()
-                    ]
-                ]
-            );
-        }
+        $link = $this->client->accountLinks->create([
+            'account' => $accountId,
+            'refresh_url' => $refreshUrl,
+            'return_url' => $returnUrl,
+            'type' => self::ACCOUNT_ONBOARDING
+        ]);
+
+        $builder = new AccountLinkBuilder(
+            path: $this->path,
+            encrypter: $this->encrypter
+        );
+        $builder->setAttributes($link->toArray());
+        $resource = $builder->getResourceObject();
+
+        $result->addResource($resource);
 
         return $result;
     }
@@ -187,7 +163,7 @@ class Stripe implements StripeServiceInterface
         // TODO what if one part of the code below failed? Show we rollback the 'transaction'?
         try {
             $paymentsWriter = $this->getPaymentsDataWriter();
-            $payment = $paymentsWriter->create(
+            $payment        = $paymentsWriter->create(
                 payerId: $payerId,
                 receiperId: $receiperId,
                 amount: $amount->inCents(),
@@ -196,12 +172,12 @@ class Stripe implements StripeServiceInterface
                 status: PaymentStatus::Created
             );
 
-            $accountsReader = $this->getAccountsDataReader();
+            $accountsReader        = $this->getAccountsDataReader();
             $receiperStripeAccount = $accountsReader->byUserId($receiperId);
 
             $paymentMethods = [];
             foreach ($amount->currency()->paymentMethods() as $method) {
-                $paymentMethods []= $method->value;
+                $paymentMethods [] = $method->value;
             }
 
             $paymentIntent = $this->client->paymentIntents->create(
@@ -223,7 +199,7 @@ class Stripe implements StripeServiceInterface
                     // Should we allow a user to choose a payment type on the front end?
                     // TODO check how setup_future_usage works. It remembers, which payment type a user has chosen the last time.
                 ],
-                // TODO what are the benefit for a payer if he/she connect his/her account?
+            // TODO what are the benefit for a payer if he/she connect his/her account?
 //                [
 //                    'stripe_account' => $payerStripeAccount['stripeAccountId']
 //                ]
@@ -235,23 +211,23 @@ class Stripe implements StripeServiceInterface
                 paymentIntentId: $paymentIntent->id
             );
 
-            $resourceReader = $this->getPaymentsResourceReader();
+            $resourceReader  = $this->getPaymentsResourceReader();
             $paymentResource = $resourceReader->byId($payment['paymentId']);
             $paymentResource->attributes->update(name: 'clientSecret', value: $paymentIntent->client_secret);
 
             $result->addResource($paymentResource);
-        } catch(CardException $e) {
+        } catch (CardException $e) {
             // TODO what should we do if a card was declined?
             // Since it's a decline, \Stripe\Exception\CardException will be caught
             $error = 'Type is:' . $e->getError()->type . '\n';
             $error .= 'Code is:' . $e->getError()->code . '\n';
             $error .= 'Param is:' . $e->getError()->param . '\n';
-        } catch (RateLimitException $e) {
-            $error = 'Too many requests made to the Stripe API too quickly';
         } catch (InvalidRequestException $e) {
             $error = 'Invalid parameters were supplied to Stripe\'s API';
         } catch (AuthenticationException $e) {
             $error = 'Authentication with Stripe\'s API failed (maybe you changed API keys recently)';
+        } catch (RateLimitException $e) {
+            $error = 'Too many requests made to the Stripe API too quickly';
         } catch (ApiConnectionException $e) {
             $error = 'Network communication with Stripe failed';
         } catch (ApiErrorException $e) {
@@ -260,13 +236,13 @@ class Stripe implements StripeServiceInterface
             $error = $e->getMessage();
         }
 
-        if (isset($e) && !empty($error)) {
+        if (isset($e) && ! empty($error)) {
             if ($e instanceof ApiErrorException) {
                 $status = $e->getHttpStatus();
-                $title = $e->getError()->message;
+                $title  = $e->getError()->message;
             } else {
                 $status = 500;
-                $title = 'Internal error';
+                $title  = 'Internal error';
             }
             $result->addError(new Error($e, httpStatusCode: $status, detail: $error, title: $title));
 
