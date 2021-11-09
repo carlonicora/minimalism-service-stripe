@@ -54,4 +54,8 @@ interface StripeServiceInterface extends ServiceInterface
         string $receiptEmail
     ): Document;
 
+    /**
+     * @return string
+     */
+    public function getAccountWebhookSecret(): string;
 }

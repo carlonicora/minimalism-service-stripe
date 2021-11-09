@@ -3,8 +3,8 @@
 namespace CarloNicora\Minimalism\Services\Stripe\Data\DataWriters;
 
 use CarloNicora\Minimalism\Abstracts\AbstractLoader;
-use CarloNicora\Minimalism\Services\Stripe\Data\Databases\Finance\Tables\Enums\AccountConnectionStatus;
 use CarloNicora\Minimalism\Services\Stripe\Data\Databases\Finance\Tables\StripeAccountsTable;
+use CarloNicora\Minimalism\Services\Stripe\Enums\AccountStatus;
 
 class StripeAccountsDataWriter extends AbstractLoader
 {
@@ -13,20 +13,23 @@ class StripeAccountsDataWriter extends AbstractLoader
      * @param int $userId
      * @param string $stripeAccountId
      * @param string $email
-     * @param AccountConnectionStatus $connectionStatus
+     * @param AccountStatus $status
+     * @param bool $payoutsEnabled
      */
     public function create(
-        int                     $userId,
-        string                  $stripeAccountId,
-        string                  $email,
-        AccountConnectionStatus $connectionStatus
+        int           $userId,
+        string        $stripeAccountId,
+        string        $email,
+        AccountStatus $status,
+        bool          $payoutsEnabled
     ): void
     {
         $account = [
             'userId' => $userId,
             'stripeAccountId' => $stripeAccountId,
             'email' => $email,
-            'connectionStatus' => $connectionStatus->value
+            'status' => $status->value,
+            'payoutsEnabled' => $payoutsEnabled
         ];
 
         $this->data->insert(
@@ -36,23 +39,25 @@ class StripeAccountsDataWriter extends AbstractLoader
     }
 
     /**
-     * @param int $accountId
-     * @param int $connectionStatus
+     * @param int $userId
+     * @param AccountStatus $status
+     * @param bool $payoutsEnabled
      */
-    public function updateConnectionStatus(
-        int $accountId,
-        int $connectionStatus
+    public function updateAccountStatuses(
+        int           $userId,
+        AccountStatus $status,
+        bool          $payoutsEnabled
     ): void
     {
-        /** @see StripeAccountsTable::updateStatus() */
+        /** @see StripeAccountsTable::updateStatuses() */
         $this->data->run(
             tableInterfaceClassName: StripeAccountsTable::class,
-            functionName: 'updateStatus',
+            functionName: 'updateStatuses',
             parameters: [
-                'accountId' => $accountId,
-                'connectionStatus' => $connectionStatus
+                'userId' => $userId,
+                'status' => $status->value,
+                'payoutsEnabled' => $payoutsEnabled
             ],
         );
-
     }
 }

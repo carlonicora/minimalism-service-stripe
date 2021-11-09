@@ -19,7 +19,8 @@ class StripeAccountsTable extends AbstractMySqlTable
         'userId' => FieldInterface::INTEGER,
         'stripeAccountId' => FieldInterface::STRING,
         'email' => FieldInterface::STRING,
-        'connectionStatus' => FieldInterface::INTEGER,
+        'status' => FieldInterface::STRING,
+        'payoutsEnabled' => FieldInterface::INTEGER,
         'error' => FieldInterface::STRING,
         'createdAt' => FieldInterface::STRING
             + FieldInterface::TIME_CREATE,
@@ -44,18 +45,36 @@ class StripeAccountsTable extends AbstractMySqlTable
     }
 
     /**
-     * @param int $accountId
-     * @param int $connectionStatus
+     * @param string $stripeAccountId
+     * @return array
      * @throws Exception
      */
-    public function updateStatus(
-        int $accountId,
-        int $connectionStatus
+    public function byStripeAccountId(
+        string $stripeAccountId
+    ): array
+    {
+        $this->sql = 'SELECT * FROM ' . static::getTableName()
+            . ' WHERE stripeAccountId = ? ';
+        $this->parameters = ['s', $stripeAccountId];
+
+        return $this->functions->runRead();
+    }
+
+    /**
+     * @param int $userId
+     * @param string $status
+     * @param bool $payoutsEnabled
+     * @throws Exception
+     */
+    public function updateStatuses(
+        int    $userId,
+        string $status,
+        bool   $payoutsEnabled
     ): void
     {
-        $this->sql = 'UPDATE ' . self::getTableName() . ' SET connectionStatus=? WHERE accountId=?;';
+        $this->sql = 'UPDATE ' . self::getTableName() . ' SET status=?, payoutsEnabled=? WHERE userId=?;';
 
-        $this->parameters = ['ii', $accountId, $connectionStatus];
+        $this->parameters = ['sii', $status, $payoutsEnabled, $userId];
 
         $this->functions->runSql();
     }

@@ -8,8 +8,8 @@ use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Services\Path;
 use CarloNicora\Minimalism\Services\Pools;
 use CarloNicora\Minimalism\Services\Stripe\Data\Builders\AccountLinkBuilder;
-use CarloNicora\Minimalism\Services\Stripe\Data\Databases\Finance\Tables\Enums\AccountConnectionStatus;
 use CarloNicora\Minimalism\Services\Stripe\Data\Databases\Finance\Tables\Enums\PaymentStatus;
+use CarloNicora\Minimalism\Services\Stripe\Enums\AccountStatus;
 use CarloNicora\Minimalism\Services\Stripe\Interfaces\StripeServiceInterface;
 use CarloNicora\Minimalism\Services\Stripe\Logger\StripeLogger;
 use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
@@ -35,6 +35,8 @@ class Stripe implements StripeServiceInterface
 
     private const ACCOUNT_ONBOARDING = 'account_onboarding';
 
+    private const ACCOUNT_TYPE = 'standard';
+
     /**
      * @var StripeClient
      */
@@ -54,7 +56,8 @@ class Stripe implements StripeServiceInterface
         private Path               $path,
         private EncrypterInterface $encrypter,
         private string             $MINIMALISM_SERVICE_STRIPE_API_KEY,
-        private string             $MINIMALISM_SERVICE_STRIPE_CLIENT_ID
+        private string             $MINIMALISM_SERVICE_STRIPE_CLIENT_ID,
+        private string             $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_ACCOUNTS
     )
     {
         \Stripe\Stripe::setApiKey($this->MINIMALISM_SERVICE_STRIPE_API_KEY);
@@ -86,10 +89,22 @@ class Stripe implements StripeServiceInterface
     {
         try {
             $existingConnectedAccount = $this->getAccountsDataReader()->byUserId($userId);
-            return $this->client->accounts->retrieve($existingConnectedAccount['stripeAccountId']);
+            $account = $this->client->accounts->retrieve($existingConnectedAccount['stripeAccountId']);
+            $status = AccountStatus::calculate($account);
+            if ($existingConnectedAccount['status'] !== $status->value
+                || (bool)$existingConnectedAccount['payoutsEnabled'] !== $account->payouts_enabled
+            ) {
+                $this->getAccountsDataWriter()->updateAccountStatuses(
+                    userId: $existingConnectedAccount['userId'],
+                    status: $status,
+                    payoutsEnabled: $account->payouts_enabled
+                );
+            }
+
+            return $account;
         } catch (RecordNotFoundException) {
             $newAccount = $this->client->accounts->create([
-                'type' => 'standard',
+                'type' => self::ACCOUNT_TYPE,
                 'email' => $email,
                 'metadata' => ['userId' => $userId],
             ]);
@@ -98,7 +113,8 @@ class Stripe implements StripeServiceInterface
                 userId: $userId,
                 stripeAccountId: $newAccount->id,
                 email: $email,
-                connectionStatus: AccountConnectionStatus::Pending
+                status: AccountStatus::calculate($newAccount),
+                payoutsEnabled: $newAccount->payouts_enabled
             );
 
             return $newAccount;
@@ -260,6 +276,14 @@ class Stripe implements StripeServiceInterface
         }
 
         return $result;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAccountWebhookSecret(): string
+    {
+        return $this->MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_ACCOUNTS;
     }
 
     public function initialise(): void

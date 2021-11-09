@@ -1,15 +1,18 @@
 create table stripeAccounts
 (
-    accountId        bigint unsigned auto_increment
-        primary key,
-    userId           bigint unsigned  not null,
+    userId           bigint unsigned primary key,
     stripeAccountId  char(21)         not null,
     email            varchar(255)     not null,
-    connectionStatus tinyint unsigned not null,
+    status           varchar(255)     null,
+    payoutsEnabled   tinyint(3) unsigned not null,
     error            varchar(255)     null,
     createdAt        timestamp        not null,
     updatedAt        timestamp        null
 );
+
+create unique index stripeAccounts_stripeAccountId_uindex
+    on stripeAccounts (stripeAccountId);
+
 
 create table stripePayments
 (
@@ -27,3 +30,12 @@ create table stripePayments
     updatedAt       timestamp        null
 );
 
+create table stripeEvents
+(
+    eventId      char(28)     not null,
+    type         varchar(128) not null,
+    dataObjectId varchar(64)  null,
+    created      timestamp    not null,
+    constraint stripeEvents_eventId_uindex
+        unique (eventId)
+);
