@@ -49,6 +49,7 @@ class Stripe implements StripeServiceInterface
      * @param EncrypterInterface $encrypter
      * @param string $MINIMALISM_SERVICE_STRIPE_API_KEY
      * @param string $MINIMALISM_SERVICE_STRIPE_CLIENT_ID
+     * @param string $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_ACCOUNTS
      */
     public function __construct(
         private Pools              $pools,

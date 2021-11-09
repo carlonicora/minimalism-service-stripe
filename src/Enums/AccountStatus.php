@@ -22,7 +22,7 @@ enum AccountStatus: string
         Account $account
     ): self
     {
-        if ($account->requirements->offsetExists('disabled_reason')) {
+        if ($account->requirements->offsetExists('disabled_reason') && $account->requirements->offsetGet('disabled_reason') !== null) {
             $disabledReason = DisabledReason::from($account->requirements->offsetGet('disabled_reason'));
             return $disabledReason->accountStatus();
         }

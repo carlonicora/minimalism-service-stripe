@@ -20,8 +20,8 @@ class StripeEventsDataWriter extends AbstractLoader
         $records = [
             'eventId' => $event->id,
             'type' => $event->type,
-            'dataObjectId' => $event->data->id ?? null,
-            'created' => $event->created
+            'dataObjectId' => $event->data->object->id ?? null,
+            'created' => date(format: 'Y-m-d H:i:s', timestamp: $event->created)
         ];
 
         return $this->data->insert(

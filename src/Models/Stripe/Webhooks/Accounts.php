@@ -10,7 +10,7 @@ use CarloNicora\Minimalism\Services\Stripe\Data\DataWriters\StripeEventsDataWrit
 use CarloNicora\Minimalism\Services\Stripe\Enums\AccountStatus;
 use CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks\Abstracts\AbstractWebhook;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
-use Stripe\Account;
+use RuntimeException;
 use Stripe\Event;
 
 class Accounts extends AbstractWebhook
@@ -43,8 +43,10 @@ class Accounts extends AbstractWebhook
             $eventsDataWriter,
         );
 
-        /** @var Account $stripeAccount */
-        $stripeAccount = $event->data;
+        $stripeAccount = $event->data->object ?? null;
+        if (! $stripeAccount) {
+            throw new RuntimeException(message: 'Malformed Stripe account event doesn\'t contain an account', code: 500);
+        }
         $account       = $accountsDataReader->byStripeAccountId($stripeAccount->id);
         $realStatus    = AccountStatus::calculate($stripeAccount);
         if ($account['status'] !== $realStatus->value
