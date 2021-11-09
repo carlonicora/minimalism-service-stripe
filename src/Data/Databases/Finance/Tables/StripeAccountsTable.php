@@ -13,10 +13,8 @@ class StripeAccountsTable extends AbstractMySqlTable
 
     /** @var array */
     protected static array $fields = [
-        'accountId' => FieldInterface::INTEGER
-            + FieldInterface::PRIMARY_KEY
-            + FieldInterface::AUTO_INCREMENT,
-        'userId' => FieldInterface::INTEGER,
+        'userId' => FieldInterface::INTEGER
+            + FieldInterface::PRIMARY_KEY,
         'stripeAccountId' => FieldInterface::STRING,
         'email' => FieldInterface::STRING,
         'status' => FieldInterface::STRING,
