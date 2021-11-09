@@ -28,7 +28,7 @@ class Links extends AbstractModel
      *     @OA\Response(
      *         response=201,
      *         description="A new link created",
-     *         @OA\JsonContent(ref="#/components/schemas/stripeLink")
+     *         @OA\JsonContent(ref="#/components/schemas/stripeAccountLink")
      *     ),
      *     @OA\Response(response=422, ref="#/components/responses/422"),
      *     @OA\Response(response=401, ref="#/components/responses/401"),

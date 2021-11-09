@@ -19,9 +19,7 @@ use Exception;
  *     title="Stripe payment",
  *     description="Stripe payment resource",
  *     allOf={@OA\Schema(ref="#/components/schemas/stripePaymentIdentifier")},
- *     @OA\Property(property="attributes", ref="#/components/schemas/stripePaymentAttributes"),
- *     @OA\Property(property="links", ref="#/components/schemas/stripePaymentLinks"),
- *     @OA\Property(property="relationships", ref="#/components/schemas/stripePaymentRelationships"),
+ *     @OA\Property(property="attributes", ref="#/components/schemas/stripePaymentAttributes")
  * )
  *
  * @OA\Schema(
@@ -29,6 +27,7 @@ use Exception;
  *     title="Stripe payment attributes",
  *     description="Stripe payment resource attributes",
  *     @OA\Property(property="paymentIntentId", type="string", format="", nullable=true, minLength="21", maxLength="21", example="pi_3Jqwy6JVYb6RvKNf1xM0of17"),
+ *     @OA\Property(property="clientSecret", type="string", format="", nullable=false, minLength="1", maxLength="100", example="client_secret_hash"),
  *     @OA\Property(property="amount", type="number", format="int32", nullable=false, minimum="1", maximum="20000", example="123"),
  *     @OA\Property(property="currency", type="string", format="", nullable=false, minLength="1", maxLength="100", example="usd"),
  *     @OA\Property(property="status", type="number", format="int32", nullable=false, minimum="0", maximum="3", example="1"),
