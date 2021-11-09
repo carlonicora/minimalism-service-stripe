@@ -280,6 +280,18 @@ class Stripe implements StripeServiceInterface
     }
 
     /**
+     * @param int $userId
+     * @return array
+     * @throws RecordNotFoundException
+     * @throws Exception
+     */
+    public function getAccountStatuses(int $userId): array
+    {
+        $account = $this->getAccountsDataReader()->byUserId($userId);
+        return [$account['status'], (bool)$account['payoutsEnabled']];
+    }
+
+    /**
      * @return string
      */
     public function getAccountWebhookSecret(): string
