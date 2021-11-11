@@ -18,7 +18,7 @@ class StripePaymentIntentsTable extends AbstractMySqlTable
         'payerId' => FieldInterface::INTEGER,
         'payerEmail' => FieldInterface::STRING,
         'receiperId' => FieldInterface::INTEGER,
-        'recеiperAccountId' => FieldInterface::STRING,
+        'receiperAccountId' => FieldInterface::STRING,
         'amount' => FieldInterface::INTEGER,
         'currency' => FieldInterface::STRING,
         'phlowFeeAmount' => FieldInterface::INTEGER,
