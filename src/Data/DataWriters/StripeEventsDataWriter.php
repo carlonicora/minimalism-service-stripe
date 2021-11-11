@@ -31,7 +31,7 @@ class StripeEventsDataWriter extends AbstractLoader
             'type' => $type,
             'objectId' => $relatedObjectId,
             'details' => $details ? json_encode($details, flags: JSON_THROW_ON_ERROR) : null,
-            'createdAt' => $created
+            'createdAt' => date(format: 'Y-m-d H:i:s', timestamp: $created)
         ];
 
         return $this->data->insert(
