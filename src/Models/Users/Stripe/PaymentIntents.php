@@ -10,15 +10,15 @@ use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use RuntimeException;
 
-class Payments extends AbstractModel
+class PaymentIntents extends AbstractModel
 {
 
     /**
      * @OA\Post(
-     *     path="/users/{user_id}/stripe/payments",
+     *     path="/users/{user_id}/stripe/paymentIntents",
      *     tags={"stripe"},
      *     summary="Create a new Stripe payment intent",
-     *     operationId="createStripePayment",
+     *     operationId="createStripePaymentIntent",
      *     @OA\Parameter(ref="#/components/parameters/user_id"),
      *     @OA\RequestBody(
      *         @OA\JsonContent(
@@ -37,7 +37,7 @@ class Payments extends AbstractModel
      *     @OA\Response(
      *         response=201,
      *         description="A new Stripe payment intent created",
-     *         @OA\JsonContent(ref="#/components/schemas/stripePayment")
+     *         @OA\JsonContent(ref="#/components/schemas/stripePaymentIntent")
      *     ),
      *     @OA\Response(response=422, ref="#/components/responses/422"),
      *     @OA\Response(response=401, ref="#/components/responses/401"),
