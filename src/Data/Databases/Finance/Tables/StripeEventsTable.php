@@ -12,10 +12,11 @@ class StripeEventsTable extends AbstractMySqlTable
 
     /** @var array */
     protected static array $fields = [
-        'eventId' => FieldInterface::STRING+
+        'eventId' => FieldInterface::STRING +
             FieldInterface::PRIMARY_KEY,
         'type' => FieldInterface::STRING,
-        'dataObjectId' => FieldInterface::STRING,
+        'relatedObjectId' => FieldInterface::STRING,
+        'details' => FieldInterface::STRING,
         'created' => FieldInterface::STRING
     ];
 

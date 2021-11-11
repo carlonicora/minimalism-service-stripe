@@ -7,26 +7,25 @@ use Exception;
 
 /**
  * @OA\Schema(
- *     schema="stripePaymentIdentifier",
- *     title="Stripe payment identifier",
- *     description="Stripe payment resource identifier",
+ *     schema="stripePaymentIntentIdentifier",
+ *     title="Stripe payment intent identifier",
+ *     description="Stripe payment intent resource identifier",
  *     @OA\Property(property="id", type="string", nullable=false, minLength=18, maxLength=18, example="Nz6r5K9lpG4D8jZBmG"),
- *     @OA\Property(property="type", type="string", nullable=false, example="stripePayment")
+ *     @OA\Property(property="type", type="string", nullable=false, example="stripePaymentIntent")
  * )
  *
  * @OA\Schema(
- *     schema="stripePayment",
- *     title="Stripe payment",
- *     description="Stripe payment resource",
- *     allOf={@OA\Schema(ref="#/components/schemas/stripePaymentIdentifier")},
- *     @OA\Property(property="attributes", ref="#/components/schemas/stripePaymentAttributes")
+ *     schema="stripePaymentIntent",
+ *     title="Stripe payment intent",
+ *     description="Stripe payment intent resource",
+ *     allOf={@OA\Schema(ref="#/components/schemas/stripePaymentIntentIdentifier")},
+ *     @OA\Property(property="attributes", ref="#/components/schemas/stripePaymentIntentAttributes")
  * )
  *
  * @OA\Schema(
- *     schema="stripePaymentAttributes",
- *     title="Stripe payment attributes",
- *     description="Stripe payment resource attributes",
- *     @OA\Property(property="paymentIntentId", type="string", format="", nullable=true, minLength="21", maxLength="21", example="pi_3Jqwy6JVYb6RvKNf1xM0of17"),
+ *     schema="stripePaymentIntentAttributes",
+ *     title="Stripe payment intent attributes",
+ *     description="Stripe payment intent resource attributes",
  *     @OA\Property(property="clientSecret", type="string", format="", nullable=false, minLength="1", maxLength="100", example="client_secret_hash"),
  *     @OA\Property(property="amount", type="number", format="int32", nullable=false, minimum="1", maximum="20000", example="123"),
  *     @OA\Property(property="currency", type="string", format="", nullable=false, minLength="1", maxLength="100", example="usd"),
@@ -36,11 +35,11 @@ use Exception;
  *     @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true, example="2021-01-01 23:59:59")
  * )
  */
-class StripePaymentBuilder extends AbstractResourceBuilder
+class StripePaymentIntentBuilder extends AbstractResourceBuilder
 {
 
     /** @var string  */
-    protected string $type = 'stripePayment';
+    protected string $type = 'stripePaymentIntent';
 
     /**
      * @param array $data
@@ -50,8 +49,7 @@ class StripePaymentBuilder extends AbstractResourceBuilder
         array $data
     ): void
     {
-        $this->response->id = $this->encrypter->encryptId($data['paymentId']);
-        $this->response->attributes->add(name: 'paymentIntentId', value: $data['paymentIntentId']);
+        $this->response->id = $data['paymentIntentId'];
         $this->response->attributes->add(name: 'clientSecret', value: $data['clientSecret']);
         $this->response->attributes->add(name: 'amount', value: $data['amount']);
         $this->response->attributes->add(name: 'currency', value: $data['currency']);

@@ -43,7 +43,7 @@ interface StripeServiceInterface extends ServiceInterface
      * @param int $receiperId
      * @param Amount $amount
      * @param Amount $phlowFee
-     * @param string $receiptEmail
+     * @param string $payerEmail
      * @return Document
      */
     public function paymentIntent(
@@ -51,7 +51,7 @@ interface StripeServiceInterface extends ServiceInterface
         int    $receiperId,
         Amount $amount,
         Amount $phlowFee,
-        string $receiptEmail
+        string $payerEmail
     ): Document;
 
     /**

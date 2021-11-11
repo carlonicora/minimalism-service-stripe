@@ -5,8 +5,8 @@ namespace CarloNicora\Minimalism\Services\Stripe\Traits;
 use CarloNicora\Minimalism\Interfaces\DataLoaderInterface;
 use CarloNicora\Minimalism\Services\Stripe\Data\DataReaders\StripeAccountsDataReader;
 use CarloNicora\Minimalism\Services\Stripe\Data\DataWriters\StripeAccountsDataWriter;
-use CarloNicora\Minimalism\Services\Stripe\Data\DataWriters\StripePaymentsDataWriter;
-use CarloNicora\Minimalism\Services\Stripe\Data\ResourceReaders\StripePaymentsResourceReader;
+use CarloNicora\Minimalism\Services\Stripe\Data\DataWriters\StripePaymentIntentsDataWriter;
+use CarloNicora\Minimalism\Services\Stripe\Data\ResourceReaders\StripePaymentIntentsResourceReader;
 use Exception;
 
 trait StripeLoaders
@@ -55,24 +55,24 @@ trait StripeLoaders
     }
 
     /**
-     * @return StripePaymentsDataWriter|DataLoaderInterface
+     * @return StripePaymentIntentsDataWriter|DataLoaderInterface
      * @throws Exception
      */
-    public function getPaymentsDataWriter(): StripePaymentsDataWriter|DataLoaderInterface
+    public function getPaymentIntentsDataWriter(): StripePaymentIntentsDataWriter|DataLoaderInterface
     {
         return $this->getDataLoader(
-            dataLoaderName: StripePaymentsDataWriter::class
+            dataLoaderName: StripePaymentIntentsDataWriter::class
         );
     }
 
     /**
-     * @return StripePaymentsResourceReader|DataLoaderInterface
+     * @return StripePaymentIntentsResourceReader|DataLoaderInterface
      * @throws Exception
      */
-    public function getPaymentsResourceReader(): StripePaymentsResourceReader|DataLoaderInterface
+    public function getPaymentIntentsResourceReader(): StripePaymentIntentsResourceReader|DataLoaderInterface
     {
         return $this->getDataLoader(
-            dataLoaderName: StripePaymentsResourceReader::class
+            dataLoaderName: StripePaymentIntentsResourceReader::class
         );
     }
 }

@@ -6,24 +6,23 @@ use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractMySqlTable;
 use CarloNicora\Minimalism\Services\MySQL\Interfaces\FieldInterface;
 use Exception;
 
-class StripePaymentsTable extends AbstractMySqlTable
+class StripePaymentIntentsTable extends AbstractMySqlTable
 {
     /** @var string */
-    protected static string $tableName = 'stripePayments';
+    protected static string $tableName = 'stripePaymentIntents';
 
     /** @var array */
     protected static array $fields = [
-        'paymentId' => FieldInterface::INTEGER
-            + FieldInterface::PRIMARY_KEY
-            + FieldInterface::AUTO_INCREMENT,
-        'paymentIntentId' => FieldInterface::STRING,
+        'paymentIntentId' => FieldInterface::STRING
+            + FieldInterface::PRIMARY_KEY,
         'payerId' => FieldInterface::INTEGER,
+        'payerEmail' => FieldInterface::STRING,
         'receiperId' => FieldInterface::INTEGER,
+        'recеiperAccountId' => FieldInterface::STRING,
         'amount' => FieldInterface::INTEGER,
         'currency' => FieldInterface::STRING,
         'phlowFeeAmount' => FieldInterface::INTEGER,
-        'status' => FieldInterface::INTEGER,
-        'error' => FieldInterface::STRING,
+        'status' => FieldInterface::STRING,
         'createdAt' => FieldInterface::STRING
             + FieldInterface::TIME_CREATE,
         'updatedAt' => FieldInterface::STRING
@@ -31,20 +30,18 @@ class StripePaymentsTable extends AbstractMySqlTable
     ];
 
     /**
-     * @param int $paymentId
-     * @param int $status
      * @param string $paymentIntentId
+     * @param string $status
      * @throws Exception
      */
-    public function updateStatusAndIntentId(
-        int $paymentId,
-        int $status,
-        string $paymentIntentId
+    public function updateStatus(
+        string $paymentIntentId,
+        string $status,
     ): void
     {
-        $this->sql = 'UPDATE ' . self::getTableName() . ' SET status=?, paymentIntentId=? WHERE paymentId=?;';
+        $this->sql = 'UPDATE ' . self::getTableName() . ' SET status=? WHERE paymentIntentId=?;';
 
-        $this->parameters = ['isi', $status, $paymentIntentId, $paymentId];
+        $this->parameters = ['ss', $status, $paymentIntentId];
 
         $this->functions->runSql();
     }

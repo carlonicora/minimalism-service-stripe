@@ -8,8 +8,8 @@ use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Services\Path;
 use CarloNicora\Minimalism\Services\Pools;
 use CarloNicora\Minimalism\Services\Stripe\Data\Builders\AccountLinkBuilder;
-use CarloNicora\Minimalism\Services\Stripe\Data\Databases\Finance\Tables\Enums\PaymentStatus;
 use CarloNicora\Minimalism\Services\Stripe\Enums\AccountStatus;
+use CarloNicora\Minimalism\Services\Stripe\Enums\PaymentIntentStatus;
 use CarloNicora\Minimalism\Services\Stripe\Interfaces\StripeServiceInterface;
 use CarloNicora\Minimalism\Services\Stripe\Logger\StripeLogger;
 use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
@@ -162,7 +162,7 @@ class Stripe implements StripeServiceInterface
      * @param int $receiperId
      * @param Amount $amount
      * @param Amount $phlowFee
-     * @param string $receiptEmail
+     * @param string $payerEmail
      * @return Document
      */
     public function paymentIntent(
@@ -170,69 +170,58 @@ class Stripe implements StripeServiceInterface
         int    $receiperId,
         Amount $amount,
         Amount $phlowFee,
-        string $receiptEmail
+        string $payerEmail
     ): Document
     {
         $result = new Document();
 
         // TODO test idempotency
         // TODO test different currencies, check fees conversions
-        // TODO what if one part of the code below failed? Show we rollback the 'transaction'?
+        // TODO what if one part of the code below failed? Should we rollback the 'transaction'?
         try {
-            $paymentsWriter = $this->getPaymentsDataWriter();
-            $payment        = $paymentsWriter->create(
-                payerId: $payerId,
-                receiperId: $receiperId,
-                amount: $amount->inCents(),
-                phlowFeeAmount: $phlowFee->inCents(),
-                currency: $amount->currency()->value,
-                status: PaymentStatus::Created
-            );
-
-            $accountsReader        = $this->getAccountsDataReader();
-            $receiperStripeAccount = $accountsReader->byUserId($receiperId);
+            $receiperLocalAccount = $this->getAccountsDataReader()->byUserId($receiperId);
 
             $paymentMethods = [];
             foreach ($amount->currency()->paymentMethods() as $method) {
                 $paymentMethods [] = $method->value;
             }
 
-            $paymentIntent = $this->client->paymentIntents->create(
+            $stripePaymentIntent = $this->client->paymentIntents->create(
                 [
                     'amount' => $amount->inCents(),
                     'application_fee_amount' => $phlowFee->inCents(),
                     'currency' => $amount->currency()->value,
                     'payment_method_types' => $paymentMethods,
-                    'receipt_email' => $receiptEmail,
+                    'receipt_email' => $payerEmail,
                     'metadata' => [
-                        'paymentId' => $payment['paymentId'],
                         'payerId' => $payerId,
                         'receiverId' => $receiperId
                     ],
                     'transfer_data' => [
-                        'destination' => $receiperStripeAccount['stripeAccountId'],
+                        'destination' => $receiperLocalAccount['stripeAccountId'],
                     ],
+                    // TODO payment_method_options
                     // TODO check how statement_descriptor works. Should we add an author's name to a payment details (22 chars limit)?
-                    // Should we allow a user to choose a payment type on the front end?
-                    // TODO check how setup_future_usage works. It remembers, which payment type a user has chosen the last time.
+                    // TODO Should we allow a user to choose a payment type on the front end?
                 ],
-            // TODO what are the benefit for a payer if he/she connect his/her account?
-//                [
-//                    'stripe_account' => $payerStripeAccount['stripeAccountId']
-//                ]
             );
 
-            $paymentsWriter->updatePaymentStatusAndIntentId(
-                paymentId: $payment['paymentId'],
-                status: PaymentStatus::Sent,
-                paymentIntentId: $paymentIntent->id
+            $this->getPaymentIntentsDataWriter()->create(
+                paymentIntentId: $stripePaymentIntent->id,
+                payerId: $payerId,
+                payerEmail: $payerEmail,
+                receiperId: $receiperId,
+                receiperAccountId: $receiperLocalAccount['stripeAccountId'],
+                amount: $amount->inCents(),
+                phlowFeeAmount: $phlowFee->inCents(),
+                currency: $amount->currency()->value,
+                status: PaymentIntentStatus::from($stripePaymentIntent->status)
             );
 
-            $resourceReader  = $this->getPaymentsResourceReader();
-            $paymentResource = $resourceReader->byId($payment['paymentId']);
-            $paymentResource->attributes->update(name: 'clientSecret', value: $paymentIntent->client_secret);
+            $localPaymentIntentResource = $this->getPaymentIntentsResourceReader()->byId($stripePaymentIntent->id);
+            $localPaymentIntentResource->attributes->update(name: 'clientSecret', value: $stripePaymentIntent->client_secret);
 
-            $result->addResource($paymentResource);
+            $result->addResource($localPaymentIntentResource);
         } catch (CardException $e) {
             // TODO what should we do if a card was declined?
             // Since it's a decline, \Stripe\Exception\CardException will be caught

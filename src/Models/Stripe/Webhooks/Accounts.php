@@ -10,7 +10,7 @@ use CarloNicora\Minimalism\Services\Stripe\Data\DataWriters\StripeEventsDataWrit
 use CarloNicora\Minimalism\Services\Stripe\Enums\AccountStatus;
 use CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks\Abstracts\AbstractWebhook;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
-use RuntimeException;
+use Stripe\Account;
 use Stripe\Event;
 
 class Accounts extends AbstractWebhook
@@ -37,23 +37,20 @@ class Accounts extends AbstractWebhook
         StripeAccountsDataWriter $accountsDataWriter,
     ): int
     {
-        $event = $this->processEvent(
+        /** @var Account $stripeAccount */
+        $stripeAccount = $this->processEvent(
             $stripe->getAccountWebhookSecret(),
             $eventsDataReader,
             $eventsDataWriter,
         );
 
-        $stripeAccount = $event->data->object ?? null;
-        if (! $stripeAccount) {
-            throw new RuntimeException(message: 'Malformed Stripe account event doesn\'t contain an account', code: 500);
-        }
-        $account       = $accountsDataReader->byStripeAccountId($stripeAccount->id);
-        $realStatus    = AccountStatus::calculate($stripeAccount);
-        if ($account['status'] !== $realStatus->value
-            || (bool)$account['payoutsEnabled'] !== $stripeAccount->payouts_enabled
+        $localAccount = $accountsDataReader->byStripeAccountId($stripeAccount->id);
+        $realStatus   = AccountStatus::calculate($stripeAccount);
+        if ($localAccount['status'] !== $realStatus->value
+            || (bool)$localAccount['payoutsEnabled'] !== $stripeAccount->payouts_enabled
         ) {
             $accountsDataWriter->updateAccountStatuses(
-                userId: $account['userId'],
+                userId: $localAccount['userId'],
                 status: $realStatus->value,
                 payoutsEnabled: $stripeAccount->payouts_enabled
             );

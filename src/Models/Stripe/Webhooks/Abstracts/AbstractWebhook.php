@@ -5,10 +5,14 @@ namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks\Abstract
 use CarloNicora\Minimalism\Abstracts\AbstractModel;
 use CarloNicora\Minimalism\Services\Stripe\Data\DataReaders\StripeEventsDataReader;
 use CarloNicora\Minimalism\Services\Stripe\Data\DataWriters\StripeEventsDataWriter;
+use CarloNicora\Minimalism\Services\Stripe\Enums\AccountStatus;
 use LogicException;
 use RuntimeException;
+use Stripe\Account;
 use Stripe\Event;
 use Stripe\Exception\SignatureVerificationException;
+use Stripe\PaymentIntent;
+use Stripe\StripeObject;
 use Stripe\Webhook;
 use UnexpectedValueException;
 
@@ -25,10 +29,10 @@ class AbstractWebhook extends AbstractModel
      * @return Event
      */
     protected function processEvent(
-        string $webhookSecret,
+        string                 $webhookSecret,
         StripeEventsDataReader $eventsDataReader,
         StripeEventsDataWriter $eventsDataWriter,
-    ): Event
+    ): StripeObject
     {
         if (empty(static::SUPPORTED_EVENT_TYPES)) {
             throw new LogicException(message: 'SUPPORTED_EVENT_TYPES class property must be defined in ' . static::class);
@@ -51,9 +55,30 @@ class AbstractWebhook extends AbstractModel
             throw new RuntimeException(message: 'A dublicate webhook was ignored', code: 400);
         }
 
-        $eventsDataWriter->create($event);
+        $object = $event->data->object ?? null;
+        if (! $object) {
+            throw new RuntimeException(message: 'Malformed Stripe event doesn\'t contain a related object', code: 500);
+        }
 
-        return $event;
+        $details = match (get_class($object)) {
+            Account::class => ['status' => AccountStatus::calculate($object)->value],
+            PaymentIntent::class => [
+                'last_payment_error' => $object->last_payment_error,
+                'canceled_at' => $object->canceled_at,
+                'cancellation_reason' => $object->cancellation_reason
+            ],
+            default => null
+        };
+
+        $eventsDataWriter->create(
+            eventId: $event->id,
+            type: $event->type,
+            created: $event->created,
+            relatedObjectId: $object->id,
+            details: $details
+        );
+
+        return $object;
     }
 
 }
