@@ -84,6 +84,6 @@ class Payments extends AbstractModel
             payerEmail: $currentUser->getEmail(),
         );
 
-        return 201;
+        return current($this->document->errors)?->status ?? 201;
     }
 }

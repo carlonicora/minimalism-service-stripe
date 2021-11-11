@@ -108,7 +108,7 @@ class Links extends AbstractModel
             throw $fatalException;
         }
 
-        return 201;
+        return current($this->document->errors)?->status ?? 201;
     }
 
 }
