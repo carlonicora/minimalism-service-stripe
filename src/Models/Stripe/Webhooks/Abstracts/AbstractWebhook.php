@@ -6,6 +6,7 @@ use CarloNicora\Minimalism\Abstracts\AbstractModel;
 use CarloNicora\Minimalism\Services\Stripe\Data\DataReaders\StripeEventsDataReader;
 use CarloNicora\Minimalism\Services\Stripe\Data\DataWriters\StripeEventsDataWriter;
 use CarloNicora\Minimalism\Services\Stripe\Enums\AccountStatus;
+use JsonException;
 use LogicException;
 use RuntimeException;
 use Stripe\Account;
@@ -27,6 +28,7 @@ class AbstractWebhook extends AbstractModel
      * @param StripeEventsDataReader $eventsDataReader
      * @param StripeEventsDataWriter $eventsDataWriter
      * @return Event
+     * @throws JsonException
      */
     protected function processEvent(
         string                 $webhookSecret,
@@ -73,9 +75,9 @@ class AbstractWebhook extends AbstractModel
         $eventsDataWriter->create(
             eventId: $event->id,
             type: $event->type,
-            created: $event->created,
+            createdAt: date(format: 'Y-m-d H:i:s', timestamp: $event->created),
             relatedObjectId: $object->id,
-            details: $details
+            details: $details ? json_encode($details, flags: JSON_THROW_ON_ERROR) : null
         );
 
         return $object;

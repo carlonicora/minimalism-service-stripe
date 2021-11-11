@@ -10,6 +10,7 @@ use CarloNicora\Minimalism\Services\Stripe\Data\DataWriters\StripePaymentIntents
 use CarloNicora\Minimalism\Services\Stripe\Enums\PaymentIntentStatus;
 use CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks\Abstracts\AbstractWebhook;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
+use JsonException;
 use Stripe\Event;
 use Stripe\PaymentIntent;
 
@@ -33,7 +34,7 @@ class Payments extends AbstractWebhook
      * @param StripePaymentIntentsDataReader $paymentsDataReader
      * @param StripePaymentIntentsDataWriter $paymentsDataWriter
      * @return int
-     * @throws RecordNotFoundException
+     * @throws RecordNotFoundException|JsonException
      */
     public function post(
         Stripe                         $stripe,

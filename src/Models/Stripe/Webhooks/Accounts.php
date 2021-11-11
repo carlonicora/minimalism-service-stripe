@@ -10,6 +10,7 @@ use CarloNicora\Minimalism\Services\Stripe\Data\DataWriters\StripeEventsDataWrit
 use CarloNicora\Minimalism\Services\Stripe\Enums\AccountStatus;
 use CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks\Abstracts\AbstractWebhook;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
+use JsonException;
 use Stripe\Account;
 use Stripe\Event;
 
@@ -28,6 +29,7 @@ class Accounts extends AbstractWebhook
      * @param StripeAccountsDataWriter $accountsDataWriter
      * @return int
      * @throws RecordNotFoundException
+     * @throws JsonException
      */
     public function post(
         Stripe                   $stripe,

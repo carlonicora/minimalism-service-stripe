@@ -4,7 +4,6 @@ namespace CarloNicora\Minimalism\Services\Stripe\Data\DataWriters;
 
 use CarloNicora\Minimalism\Abstracts\AbstractLoader;
 use CarloNicora\Minimalism\Services\Stripe\Data\Databases\Finance\Tables\StripeEventsTable;
-use JsonException;
 
 class StripeEventsDataWriter extends AbstractLoader
 {
@@ -12,26 +11,25 @@ class StripeEventsDataWriter extends AbstractLoader
     /**
      * @param string $eventId
      * @param string $type
-     * @param int $created
+     * @param string $createdAt
      * @param string $relatedObjectId
-     * @param array|null $details
+     * @param string|null $details
      * @return array
-     * @throws JsonException
      */
     public function create(
         string $eventId,
         string $type,
-        int    $created,
+        string $createdAt,
         string $relatedObjectId,
-        array  $details = null
+        string $details = null
     ): array
     {
         $records = [
             'eventId' => $eventId,
             'type' => $type,
             'objectId' => $relatedObjectId,
-            'details' => $details ? json_encode($details, flags: JSON_THROW_ON_ERROR) : null,
-            'createdAt' => date(format: 'Y-m-d H:i:s', timestamp: $created)
+            'details' => $details,
+            'createdAt' => $createdAt
         ];
 
         return $this->data->insert(
