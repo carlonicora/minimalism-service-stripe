@@ -38,5 +38,5 @@ create table stripeEvents
     type            varchar(128) not null,
     relatedObjectId varchar(64) null,
     details         json null,
-    created         timestamp    not null
+    createdAt       timestamp    not null
 );

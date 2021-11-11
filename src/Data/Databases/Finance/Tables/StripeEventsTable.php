@@ -17,7 +17,7 @@ class StripeEventsTable extends AbstractMySqlTable
         'type' => FieldInterface::STRING,
         'relatedObjectId' => FieldInterface::STRING,
         'details' => FieldInterface::STRING,
-        'created' => FieldInterface::STRING
+        'createdAt' => FieldInterface::STRING
     ];
 
 }
