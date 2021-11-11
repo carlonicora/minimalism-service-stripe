@@ -16,9 +16,8 @@ create unique index stripeAccounts_stripeAccountId_uindex
 
 create table stripePaymentIntents
 (
-    paymentId             bigint unsigned auto_increment
+    paymentIntentId       char(27) not null
         primary key,
-    stripePaymentIntentId char(27) null,
     payerId               bigint unsigned not null,
     payerEmail            varchar(255) not null,
     receiperId            bigint unsigned not null,
@@ -34,10 +33,10 @@ create table stripePaymentIntents
 
 create table stripeEvents
 (
-    eventId      char(28)     not null,
-    type         varchar(128) not null,
-    dataObjectId varchar(64)  null,
-    created      timestamp    not null,
-    constraint stripeEvents_eventId_uindex
-        unique (eventId)
+    eventId         char(28)     not null
+        primary key,
+    type            varchar(128) not null,
+    relatedObjectId varchar(64) null,
+    details         json null,
+    created         timestamp    not null
 );
