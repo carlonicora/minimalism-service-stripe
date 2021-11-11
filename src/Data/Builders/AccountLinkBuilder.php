@@ -27,10 +27,7 @@ use Exception;
  *     description="Stripe account link resource attributes",
  *     @OA\Property(property="createdAt", type="string", format="date-time", nullable=false, example="2021-01-01 23:59:59"),
  *     @OA\Property(property="expiresAt", type="string", format="date-time", nullable=false, example="2021-01-01 23:59:59"),
- *     @OA\Property(
- *         property="url",
- *         @OA\Property(property="href", type="string", format="uri", nullable=false, example="https://connect.stripe.com/setup/s/01Xqa1jU8uiQ")
- *     )
+ *     @OA\Property(property="url", type="string", format="uri", nullable=false, example="https://connect.stripe.com/setup/s/01Xqa1jU8uiQ")
  * )
  */
 class AccountLinkBuilder extends AbstractResourceBuilder

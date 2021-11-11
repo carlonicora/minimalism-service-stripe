@@ -20,18 +20,12 @@ class Accounts extends AbstractModel
      * @OA\Post(
      *     path="/stripe/accounts",
      *     tags={"stripe"},
-     *     summary="Create a new connected Stripe account for a user",
-     *     operationId="createConnectedStripAccount",
-     *     @OA\RequestBody(
-     *         @OA\JsonContent(
-     *             description="A new account resource",
-     *             ref="#/components/schemas/account"
-     *         )
-     *     ),
+     *     summary="Сonnect user's Phlow account to Stripe",
+     *     operationId="createConnectedStripeAccount",
      *     @OA\Response(
      *         response=201,
-     *         description="A new account created",
-     *         @OA\JsonContent(ref="#/components/schemas/account")
+     *         description="Account connected",
+     *         @OA\JsonContent(ref="#/components/schemas/stripeAccountLink")
      *     ),
      *     @OA\Response(response=422, ref="#/components/responses/422"),
      *     @OA\Response(response=401, ref="#/components/responses/401"),
