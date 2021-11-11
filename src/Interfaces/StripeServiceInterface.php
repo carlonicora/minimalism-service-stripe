@@ -60,6 +60,11 @@ interface StripeServiceInterface extends ServiceInterface
     public function getAccountWebhookSecret(): string;
 
     /**
+     * @return string
+     */
+    public function getPaymentsWebhookSecret(): string;
+
+    /**
      * @param int $userId
      * @return array
      */

@@ -50,6 +50,7 @@ class Stripe implements StripeServiceInterface
      * @param string $MINIMALISM_SERVICE_STRIPE_API_KEY
      * @param string $MINIMALISM_SERVICE_STRIPE_CLIENT_ID
      * @param string $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_ACCOUNTS
+     * @param string $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_PAYMENTS
      */
     public function __construct(
         private Pools              $pools,
@@ -58,7 +59,9 @@ class Stripe implements StripeServiceInterface
         private EncrypterInterface $encrypter,
         private string             $MINIMALISM_SERVICE_STRIPE_API_KEY,
         private string             $MINIMALISM_SERVICE_STRIPE_CLIENT_ID,
-        private string             $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_ACCOUNTS
+        private string             $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_ACCOUNTS,
+        private string             $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_PAYMENTS
+
     )
     {
         \Stripe\Stripe::setApiKey($this->MINIMALISM_SERVICE_STRIPE_API_KEY);
@@ -286,6 +289,14 @@ class Stripe implements StripeServiceInterface
     public function getAccountWebhookSecret(): string
     {
         return $this->MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_ACCOUNTS;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPaymentsWebhookSecret(): string
+    {
+        return $this->MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_PAYMENTS;
     }
 
     public function initialise(): void
