@@ -54,9 +54,9 @@ enum Currency: string
     public function paymentMethods(): array
     {
         return match ($this) {
-            self::EUR,
+            self::EUR => [PaymentMethods::Card, PaymentMethods::SepaDebit],
             self::USD,
-            self::GBP => [PaymentMethods::Card, PaymentMethods::SepaDebit],
+            self::GBP => [PaymentMethods::Card],
 
         };
     }
