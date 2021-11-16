@@ -43,6 +43,22 @@ class StripeAccountsTable extends AbstractMySqlTable
     }
 
     /**
+     * @param string $email
+     * @return array
+     * @throws Exception
+     */
+    public function byEmail(
+        string $email
+    ): array
+    {
+        $this->sql = 'SELECT * FROM ' . static::getTableName()
+            . ' WHERE email = ? ';
+        $this->parameters = ['s', $email];
+
+        return $this->functions->runRead();
+    }
+
+    /**
      * @param string $stripeAccountId
      * @return array
      * @throws Exception

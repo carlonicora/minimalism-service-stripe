@@ -11,10 +11,10 @@ use CarloNicora\Minimalism\Services\Stripe\Data\Builders\AccountLinkBuilder;
 use CarloNicora\Minimalism\Services\Stripe\Enums\AccountStatus;
 use CarloNicora\Minimalism\Services\Stripe\Enums\PaymentIntentStatus;
 use CarloNicora\Minimalism\Services\Stripe\Interfaces\StripeServiceInterface;
-use CarloNicora\Minimalism\Services\Stripe\Logger\StripeLogger;
 use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
 use CarloNicora\Minimalism\Services\Stripe\Traits\StripeLoaders;
 use Exception;
+use RuntimeException;
 use Stripe\Account;
 use Stripe\BaseStripeClient;
 use Stripe\Exception\ApiConnectionException;
@@ -107,6 +107,10 @@ class Stripe implements StripeServiceInterface
 
             return $account;
         } catch (RecordNotFoundException) {
+            if ($this->getAccountsDataReader()->byUserEmail($email)) {
+                throw new RuntimeException(message: 'A Stripe account with such an email is already connected', code: 422);
+            }
+
             $newAccount = $this->client->accounts->create([
                 'type' => self::ACCOUNT_TYPE,
                 'email' => $email,
@@ -205,7 +209,6 @@ class Stripe implements StripeServiceInterface
                     ],
                     // TODO payment_method_options
                     // TODO check how statement_descriptor works. Should we add an author's name to a payment details (22 chars limit)?
-                    // TODO Should we allow a user to choose a payment type on the front end?
                 ],
             );
 
@@ -301,11 +304,9 @@ class Stripe implements StripeServiceInterface
 
     public function initialise(): void
     {
-        // TODO: Implement initialise() method.
     }
 
     public function destroy(): void
     {
-        // TODO: Implement destroy() method.
     }
 }

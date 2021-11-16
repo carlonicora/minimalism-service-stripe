@@ -29,6 +29,22 @@ class StripeAccountsDataReader extends AbstractLoader
     }
 
     /**
+     * @param string $email
+     * @return array
+     */
+    public function byUserEmail(
+        string $email
+    ): array
+    {
+        /** @see StripeAccountsTable::byEmail() */
+        return $this->data->read(
+            tableInterfaceClassName: StripeAccountsTable::class,
+            functionName: 'byEmail',
+            parameters: ['email' => $email]
+        );
+    }
+
+    /**
      * @param string $stripeAccountId
      * @return array
      * @throws RecordNotFoundException
