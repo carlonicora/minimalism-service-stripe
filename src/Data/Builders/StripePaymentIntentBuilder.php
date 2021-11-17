@@ -2,6 +2,7 @@
 
 namespace CarloNicora\Minimalism\Services\Stripe\Data\Builders;
 
+use CarloNicora\JsonApi\Objects\Link;
 use CarloNicora\Minimalism\Services\Builder\Abstracts\AbstractResourceBuilder;
 use Exception;
 
@@ -19,7 +20,8 @@ use Exception;
  *     title="Stripe payment intent",
  *     description="Stripe payment intent resource",
  *     allOf={@OA\Schema(ref="#/components/schemas/stripePaymentIntentIdentifier")},
- *     @OA\Property(property="attributes", ref="#/components/schemas/stripePaymentIntentAttributes")
+ *     @OA\Property(property="attributes", ref="#/components/schemas/stripePaymentIntentAttributes"),
+ *     @OA\Property(property="links", ref="#/components/schemas/stripePaymentIntentLinks")
  * )
  *
  * @OA\Schema(
@@ -33,6 +35,13 @@ use Exception;
  *     @OA\Property(property="error", type="string", format="", nullable=true, minLength="1", maxLength="255", example="Error details"),
  *     @OA\Property(property="createdAt", type="string", format="date-time", nullable=false, example="2021-01-01 23:59:59"),
  *     @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true, example="2021-01-01 23:59:59")
+ * )
+ *
+ * @OA\Schema(
+ *     schema="stripePaymentIntentLinks",
+ *     title="Stripe payment intent links",
+ *     description="Stripe payment intent resource links",
+ *     @OA\Property(property="self", type="string", format="uri", nullable=false, minLength="1", maxLength="100", example="https://api.phlow.com/v2.5/stripe/paymentIntents/pi_3JwjWIJVYb6RvKNf0QzDSKYp")
  * )
  */
 class StripePaymentIntentBuilder extends AbstractResourceBuilder
@@ -57,5 +66,23 @@ class StripePaymentIntentBuilder extends AbstractResourceBuilder
         $this->response->attributes->add(name: 'error', value: $data['error']);
         $this->response->attributes->add(name: 'createdAt', value: $data['createdAt']);
         $this->response->attributes->add(name: 'updatedAt', value: $data['updatedAt']);
+    }
+
+    /**
+     * @param array $data
+     * @throws Exception
+     */
+    public function setLinks(
+        array $data
+    ): void
+    {
+        $this->response->links->add(
+            new Link(
+                name: 'self',
+                href: $this->path->getUrl()
+                . 'stripe/paymentIntents/'
+                . $data['paymentIntentId']
+            )
+        );
     }
 }
