@@ -80,7 +80,6 @@ class PaymentIntents extends AbstractModel
                 cents: $payload['phlowFee']['cents'],
                 // TODO check if Phlow can accept this currency, read about multicurrency https://stripe.com/docs/connect/currencies
                 currency: Currency::from($payload['phlowFee']['currency']),
-                validateMin: Amount::SKIP_MIN_VALIDATION
             ),
             payerEmail: $currentUser->getEmail(),
         );

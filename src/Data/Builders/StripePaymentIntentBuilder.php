@@ -4,6 +4,8 @@ namespace CarloNicora\Minimalism\Services\Stripe\Data\Builders;
 
 use CarloNicora\JsonApi\Objects\Link;
 use CarloNicora\Minimalism\Services\Builder\Abstracts\AbstractResourceBuilder;
+use CarloNicora\Minimalism\Services\Stripe\Enums\Currency;
+use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
 use Exception;
 
 /**
@@ -21,7 +23,8 @@ use Exception;
  *     description="Stripe payment intent resource",
  *     allOf={@OA\Schema(ref="#/components/schemas/stripePaymentIntentIdentifier")},
  *     @OA\Property(property="attributes", ref="#/components/schemas/stripePaymentIntentAttributes"),
- *     @OA\Property(property="links", ref="#/components/schemas/stripePaymentIntentLinks")
+ *     @OA\Property(property="links", ref="#/components/schemas/stripePaymentIntentLinks"),
+ *     @OA\Property(property="relationships", ref="#/components/schemas/stripePaymentIntentRelationships"),
  * )
  *
  * @OA\Schema(
@@ -29,7 +32,16 @@ use Exception;
  *     title="Stripe payment intent attributes",
  *     description="Stripe payment intent resource attributes",
  *     @OA\Property(property="clientSecret", type="string", format="", nullable=false, minLength="1", maxLength="100", example="client_secret_hash"),
- *     @OA\Property(property="amount", type="number", format="int32", nullable=false, minimum="1", maximum="20000", example="123"),
+ *     @OA\Property(property="amount",
+ *         @OA\Property(property="amount", type="number", format="int32", nullable=false, minimum="0", maximum="1000", example="123"),
+ *         @OA\Property(property="cents", type="number", format="int32", nullable=true, minimum="0", maximum="99", example="99"),
+ *         @OA\Property(property="currency", type="string", format="", nullable=false, minLength="3", maxLength="3", example="gbp")
+ *     ),
+ *     @OA\Property(property="phlowFeeAmount",
+ *         @OA\Property(property="amount", type="number", format="int32", nullable=false, minimum="0", maximum="1000", example="123"),
+ *         @OA\Property(property="cents", type="number", format="int32", nullable=true, minimum="0", maximum="99", example="99"),
+ *         @OA\Property(property="currency", type="string", format="", nullable=false, minLength="3", maxLength="3", example="gbp")
+ *     ),
  *     @OA\Property(property="currency", type="string", format="", nullable=false, minLength="1", maxLength="100", example="usd"),
  *     @OA\Property(property="status", type="number", format="int32", nullable=false, minimum="0", maximum="3", example="1"),
  *     @OA\Property(property="error", type="string", format="", nullable=true, minLength="1", maxLength="255", example="Error details"),
@@ -43,11 +55,18 @@ use Exception;
  *     description="Stripe payment intent resource links",
  *     @OA\Property(property="self", type="string", format="uri", nullable=false, minLength="1", maxLength="100", example="https://api.phlow.com/v2.5/stripe/paymentIntents/pi_3JwjWIJVYb6RvKNf0QzDSKYp")
  * )
+ *
+ * @OA\Schema(
+ *     schema="stripePaymentIntentRelationships",
+ *     title="Stripe payment intent relationships",
+ *     description="Stripe payment intent resource relationships",
+ *     @OA\Property(property="receiper", ref="#/components/schemas/user")
+ * )
  */
 class StripePaymentIntentBuilder extends AbstractResourceBuilder
 {
 
-    /** @var string  */
+    /** @var string */
     protected string $type = 'stripePaymentIntent';
 
     /**
@@ -58,9 +77,21 @@ class StripePaymentIntentBuilder extends AbstractResourceBuilder
         array $data
     ): void
     {
+        $currency = Currency::from($data['currency']);
+        $amount = Amount::fromCents(
+            amountInCents: $data['amount'],
+            currency: $currency
+        );
+
+        $fee = Amount::fromCents(
+            amountInCents: $data['phlowFeeAmount'],
+            currency: $currency
+        );
+
         $this->response->id = $data['paymentIntentId'];
         $this->response->attributes->add(name: 'clientSecret', value: $data['clientSecret'] ?? null);
-        $this->response->attributes->add(name: 'amount', value: $data['amount']);
+        $this->response->attributes->add(name: 'amount', value: ['integer' => $amount->integer(), 'cents' => $amount->cents(), 'currency' => $amount->currency()->value]);
+        $this->response->attributes->add(name: 'phlowFeeAmount', value: ['integer' => $fee->integer(), 'cents' => $fee->cents(), 'currency' => $fee->currency()->value]);
         $this->response->attributes->add(name: 'currency', value: $data['currency']);
         $this->response->attributes->add(name: 'status', value: $data['status']);
         $this->response->attributes->add(name: 'error', value: $data['error']);
