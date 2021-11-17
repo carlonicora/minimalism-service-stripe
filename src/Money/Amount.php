@@ -25,20 +25,18 @@ class Amount
 
     /**
      * @param int $amountInCents
-     * @param Currency $currency
-     * @return static
+     * @param string $currencyString
+     * @return array
      */
     public static function fromCents(
-        int      $amountInCents,
-        Currency $currency,
-    ): self
+        int    $amountInCents,
+        string $currencyString,
+    ): array
     {
-        $integer = intdiv(num1: $amountInCents, num2: $currency->multiplier());
-        return new Amount(
-            integer: $integer,
-            cents: $amountInCents - $integer * $currency->multiplier(),
-            currency: $currency,
-        );
+        $currency = Currency::from($currencyString);
+        $integer  = intdiv(num1: $amountInCents, num2: $currency->multiplier());
+
+        return [$integer, $amountInCents - $integer * $currency->multiplier()];
     }
 
     /**

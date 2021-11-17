@@ -4,7 +4,6 @@ namespace CarloNicora\Minimalism\Services\Stripe\Data\Builders;
 
 use CarloNicora\JsonApi\Objects\Link;
 use CarloNicora\Minimalism\Services\Builder\Abstracts\AbstractResourceBuilder;
-use CarloNicora\Minimalism\Services\Stripe\Enums\Currency;
 use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
 use Exception;
 
@@ -42,7 +41,6 @@ use Exception;
  *         @OA\Property(property="cents", type="number", format="int32", nullable=true, minimum="0", maximum="99", example="99"),
  *         @OA\Property(property="currency", type="string", format="", nullable=false, minLength="3", maxLength="3", example="gbp")
  *     ),
- *     @OA\Property(property="currency", type="string", format="", nullable=false, minLength="1", maxLength="100", example="usd"),
  *     @OA\Property(property="status", type="number", format="int32", nullable=false, minimum="0", maximum="3", example="1"),
  *     @OA\Property(property="error", type="string", format="", nullable=true, minLength="1", maxLength="255", example="Error details"),
  *     @OA\Property(property="createdAt", type="string", format="date-time", nullable=false, example="2021-01-01 23:59:59"),
@@ -77,22 +75,13 @@ class StripePaymentIntentBuilder extends AbstractResourceBuilder
         array $data
     ): void
     {
-        $currency = Currency::from($data['currency']);
-        $amount = Amount::fromCents(
-            amountInCents: $data['amount'],
-            currency: $currency
-        );
-
-        $fee = Amount::fromCents(
-            amountInCents: $data['phlowFeeAmount'],
-            currency: $currency
-        );
+        [$amountInt, $amountCents] = Amount::fromCents($data['amount'], $data['currency']);
+        [$feeAmountInt, $feeAmountCents] = Amount::fromCents($data['phlowFeeAmount'], $data['currency']);
 
         $this->response->id = $data['paymentIntentId'];
         $this->response->attributes->add(name: 'clientSecret', value: $data['clientSecret'] ?? null);
-        $this->response->attributes->add(name: 'amount', value: ['integer' => $amount->integer(), 'cents' => $amount->cents(), 'currency' => $amount->currency()->value]);
-        $this->response->attributes->add(name: 'phlowFeeAmount', value: ['integer' => $fee->integer(), 'cents' => $fee->cents(), 'currency' => $fee->currency()->value]);
-        $this->response->attributes->add(name: 'currency', value: $data['currency']);
+        $this->response->attributes->add(name: 'amount', value: ['integer' => $amountInt, 'cents' => $amountCents, 'currency' => $data['currency']]);
+        $this->response->attributes->add(name: 'phlowFeeAmount', value: ['integer' => $feeAmountInt, 'cents' => $feeAmountCents, 'currency' => $data['currency']]);
         $this->response->attributes->add(name: 'status', value: $data['status']);
         $this->response->attributes->add(name: 'error', value: $data['error']);
         $this->response->attributes->add(name: 'createdAt', value: $data['createdAt']);
