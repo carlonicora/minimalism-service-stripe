@@ -50,7 +50,7 @@ class StripePaymentIntentBuilder extends AbstractResourceBuilder
     ): void
     {
         $this->response->id = $data['paymentIntentId'];
-        $this->response->attributes->add(name: 'clientSecret', value: $data['clientSecret']);
+        $this->response->attributes->add(name: 'clientSecret', value: $data['clientSecret'] ?? null);
         $this->response->attributes->add(name: 'amount', value: $data['amount']);
         $this->response->attributes->add(name: 'currency', value: $data['currency']);
         $this->response->attributes->add(name: 'status', value: $data['status']);

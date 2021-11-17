@@ -1,6 +1,6 @@
 <?php
 
-namespace CarloNicora\Minimalism\Services\Stripe\Logger;
+namespace CarloNicora\Minimalism\Services\Stripe;
 
 use CarloNicora\Minimalism\Interfaces\LoggerInterface as MinimalismLoggerInterface;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
