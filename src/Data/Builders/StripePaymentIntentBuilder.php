@@ -62,7 +62,8 @@ use Exception;
  *     schema="stripePaymentIntentRelationships",
  *     title="Stripe payment intent relationships",
  *     description="Stripe payment intent resource relationships",
- *     @OA\Property(property="receiper", ref="#/components/schemas/user")
+ *     @OA\Property(property="receiper", ref="#/components/schemas/user"),
+ *     @OA\Property(property="payer", ref="#/components/schemas/user")
  * )
  */
 class StripePaymentIntentBuilder extends AbstractResourceBuilder
