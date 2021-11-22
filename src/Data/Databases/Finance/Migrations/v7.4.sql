@@ -5,7 +5,6 @@ create table stripeAccounts
     email            varchar(255)     not null,
     status           varchar(64)      null,
     payoutsEnabled   tinyint(3) unsigned not null,
-    error            varchar(255)     null,
     createdAt        timestamp        not null,
     updatedAt        timestamp        null
 );

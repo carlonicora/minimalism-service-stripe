@@ -19,7 +19,6 @@ class StripeAccountsTable extends AbstractMySqlTable
         'email' => FieldInterface::STRING,
         'status' => FieldInterface::STRING,
         'payoutsEnabled' => FieldInterface::INTEGER,
-        'error' => FieldInterface::STRING,
         'createdAt' => FieldInterface::STRING
             + FieldInterface::TIME_CREATE,
         'updatedAt' => FieldInterface::STRING

@@ -7,6 +7,7 @@ use CarloNicora\Minimalism\Services\Stripe\Data\DataReaders\StripeAccountsDataRe
 use CarloNicora\Minimalism\Services\Stripe\Data\DataReaders\StripeEventsDataReader;
 use CarloNicora\Minimalism\Services\Stripe\Data\DataWriters\StripeAccountsDataWriter;
 use CarloNicora\Minimalism\Services\Stripe\Data\DataWriters\StripeEventsDataWriter;
+use CarloNicora\Minimalism\Services\Stripe\Data\ResourceReaders\StripeAccountsResourceReader;
 use CarloNicora\Minimalism\Services\Stripe\Enums\AccountStatus;
 use CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks\Abstracts\AbstractWebhook;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
@@ -22,21 +23,40 @@ class Accounts extends AbstractWebhook
     ];
 
     /**
+     * @OA\Post(
+     *     path="/webhooks/accounts",
+     *     tags={"stripe"},
+     *     summary="Webhook to manage Stripe accounts",
+     *     operationId="webhookStripeAccounts",
+     *     @OA\Response(
+     *         response=201,
+     *         description="created",
+     *         @OA\JsonContent(ref="#/components/schemas/stripeAccount")
+     *     ),
+     *     @OA\Response(response=422, ref="#/components/responses/422"),
+     *     @OA\Response(response=401, ref="#/components/responses/401"),
+     *     @OA\Response(response=403, ref="#/components/responses/403"),
+     *     @OA\Response(response=405, ref="#/components/responses/405"),
+     *     @OA\Response(response=410, ref="#/components/responses/410"),
+     *     @OA\Response(response=429, ref="#/components/responses/429")
+     * )
      * @param Stripe $stripe
      * @param StripeEventsDataReader $eventsDataReader
      * @param StripeEventsDataWriter $eventsDataWriter
+     * @param StripeAccountsResourceReader $accountsResourceReader
      * @param StripeAccountsDataReader $accountsDataReader
      * @param StripeAccountsDataWriter $accountsDataWriter
      * @return int
-     * @throws RecordNotFoundException
      * @throws JsonException
+     * @throws RecordNotFoundException
      */
     public function post(
-        Stripe                   $stripe,
-        StripeEventsDataReader   $eventsDataReader,
-        StripeEventsDataWriter   $eventsDataWriter,
-        StripeAccountsDataReader $accountsDataReader,
-        StripeAccountsDataWriter $accountsDataWriter,
+        Stripe                       $stripe,
+        StripeEventsDataReader       $eventsDataReader,
+        StripeEventsDataWriter       $eventsDataWriter,
+        StripeAccountsResourceReader $accountsResourceReader,
+        StripeAccountsDataReader     $accountsDataReader,
+        StripeAccountsDataWriter     $accountsDataWriter,
     ): int
     {
         /** @var Account $stripeAccount */
@@ -53,10 +73,14 @@ class Accounts extends AbstractWebhook
         ) {
             $accountsDataWriter->updateAccountStatuses(
                 userId: $localAccount['userId'],
-                status: $realStatus->value,
+                status: $realStatus,
                 payoutsEnabled: $stripeAccount->payouts_enabled
             );
         }
+
+        $this->document->addResource(
+            $accountsResourceReader->byUserId($localAccount['userId'])
+        );
 
         return 201;
     }
