@@ -26,7 +26,6 @@ create table stripePaymentIntents
     phlowFeeAmount        int unsigned not null,
     currency              char(3)      not null,
     status                varchar(64)  not null,
-    error                 varchar(255) null,
     createdAt             timestamp    not null,
     updatedAt             timestamp null
 );
