@@ -87,7 +87,6 @@ class StripePaymentIntentBuilder extends AbstractResourceBuilder
         $this->response->attributes->add(name: 'amount', value: ['integer' => $amountInt, 'cents' => $amountCents, 'currency' => $data['currency']]);
         $this->response->attributes->add(name: 'phlowFeeAmount', value: ['integer' => $feeAmountInt, 'cents' => $feeAmountCents, 'currency' => $data['currency']]);
         $this->response->attributes->add(name: 'status', value: $data['status']);
-        $this->response->attributes->add(name: 'error', value: $data['error']);
         $this->response->attributes->add(name: 'createdAt', value: $data['createdAt']);
         $this->response->attributes->add(name: 'updatedAt', value: $data['updatedAt']);
     }
@@ -126,6 +125,18 @@ class StripePaymentIntentBuilder extends AbstractResourceBuilder
                 className: UsersDataReader::class,
                 functionName: 'byUserId',
                 parameters: ['payerId']
+            )
+        );
+
+        /** @see UsersDataReader::byUserId() */
+        $response[] = new RelationshipBuilder(
+            name: 'receiper',
+            builderClassName: UserBuilder::class,
+            function: new DataFunction(
+                type: DataFunctionInterface::TYPE_LOADER,
+                className: UsersDataReader::class,
+                functionName: 'byUserId',
+                parameters: ['receiperId']
             )
         );
 
