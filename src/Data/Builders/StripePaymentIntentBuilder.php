@@ -3,7 +3,11 @@
 namespace CarloNicora\Minimalism\Services\Stripe\Data\Builders;
 
 use CarloNicora\JsonApi\Objects\Link;
+use CarloNicora\Minimalism\Interfaces\DataFunctionInterface;
+use CarloNicora\Minimalism\Objects\DataFunction;
 use CarloNicora\Minimalism\Services\Builder\Abstracts\AbstractResourceBuilder;
+use CarloNicora\Minimalism\Services\Builder\Objects\RelationshipBuilder;
+use CarloNicora\Minimalism\Services\Stripe\Data\DataReaders\UsersDataReader;
 use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
 use Exception;
 
@@ -105,4 +109,27 @@ class StripePaymentIntentBuilder extends AbstractResourceBuilder
             )
         );
     }
+
+    /**
+     * @return array|null
+     */
+    public function getRelationshipReaders(): ?array
+    {
+        $response = [];
+
+        /** @see UsersDataReader::byUserId() */
+        $response[] = new RelationshipBuilder(
+            name: 'payer',
+            builderClassName: UserBuilder::class,
+            function: new DataFunction(
+                type: DataFunctionInterface::TYPE_LOADER,
+                className: UsersDataReader::class,
+                functionName: 'byUserId',
+                parameters: ['payerId']
+            )
+        );
+
+        return $response;
+    }
+
 }
