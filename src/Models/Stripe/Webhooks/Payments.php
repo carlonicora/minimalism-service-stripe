@@ -4,12 +4,13 @@ namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks;
 
 use CarloNicora\Minimalism\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\Stripe\Data\DataReaders\StripeEventsDataReader;
-use CarloNicora\Minimalism\Services\Stripe\Data\DataReaders\StripePaymentIntentsDataReader;
 use CarloNicora\Minimalism\Services\Stripe\Data\DataWriters\StripeEventsDataWriter;
 use CarloNicora\Minimalism\Services\Stripe\Data\DataWriters\StripePaymentIntentsDataWriter;
+use CarloNicora\Minimalism\Services\Stripe\Data\ResourceReaders\StripePaymentIntentsResourceReader;
 use CarloNicora\Minimalism\Services\Stripe\Enums\PaymentIntentStatus;
 use CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks\Abstracts\AbstractWebhook;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
+use Exception;
 use JsonException;
 use Stripe\Event;
 use Stripe\PaymentIntent;
@@ -31,17 +32,18 @@ class Payments extends AbstractWebhook
      * @param Stripe $stripe
      * @param StripeEventsDataReader $eventsDataReader
      * @param StripeEventsDataWriter $eventsDataWriter
-     * @param StripePaymentIntentsDataReader $paymentsDataReader
+     * @param StripePaymentIntentsResourceReader $paymentsResourceReader
      * @param StripePaymentIntentsDataWriter $paymentsDataWriter
      * @return int
      * @throws RecordNotFoundException|JsonException
+     * @throws Exception
      */
     public function post(
-        Stripe                         $stripe,
-        StripeEventsDataReader         $eventsDataReader,
-        StripeEventsDataWriter         $eventsDataWriter,
-        StripePaymentIntentsDataReader $paymentsDataReader,
-        StripePaymentIntentsDataWriter $paymentsDataWriter
+        Stripe                             $stripe,
+        StripeEventsDataReader             $eventsDataReader,
+        StripeEventsDataWriter             $eventsDataWriter,
+        StripePaymentIntentsResourceReader $paymentsResourceReader,
+        StripePaymentIntentsDataWriter     $paymentsDataWriter
     ): int
     {
         /** @var PaymentIntent $stripePaymentIntent */
@@ -51,14 +53,16 @@ class Payments extends AbstractWebhook
             $eventsDataWriter,
         );
 
-        $localPayment = $paymentsDataReader->byId($stripePaymentIntent->id);
+        $localPayment = $paymentsResourceReader->byId($stripePaymentIntent->id);
 
-        if ($localPayment['status'] !== $stripePaymentIntent->status) {
+        if ($localPayment->attributes->get('status') !== $stripePaymentIntent->status) {
             $paymentsDataWriter->updateStatus(
                 paymentIntentId: $stripePaymentIntent->id,
                 status: PaymentIntentStatus::from($stripePaymentIntent->status)
             );
         }
+
+        $this->document->addResource($localPayment);
 
         return 201;
     }
