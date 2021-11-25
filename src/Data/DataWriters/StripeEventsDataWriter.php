@@ -27,7 +27,7 @@ class StripeEventsDataWriter extends AbstractLoader
         $records = [
             'eventId' => $eventId,
             'type' => $type,
-            'objectId' => $relatedObjectId,
+            'relatedObjectId' => $relatedObjectId,
             'details' => $details,
             'createdAt' => $createdAt
         ];
