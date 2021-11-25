@@ -55,8 +55,6 @@ class Accounts extends AbstractModel
             throw new RuntimeException(message: 'Access not allowed to guests', code: 403);
         }
 
-        // TODO list and analyze accounts connection errors. What should we return to the user in that case?
-
         try {
             $account = $stripe->connectAccount(
                 userId: $currentUser->getId(),
@@ -68,28 +66,9 @@ class Accounts extends AbstractModel
                 refreshUrl: $defaultService->getApplicationUrl() . StripeServiceInterface::REFRESH_URL,
                 returnUrl: $defaultService->getApplicationUrl() . StripeServiceInterface::RETURN_URL,
             );
-//        } catch (CardException $permissionException) {
-            // TODO implement
-//        } catch (PermissionException $permissionException) {
-            //TODO what should we return to a user, how to help him/her to sovle the issue
-        } catch (IdempotencyException|ApiConnectionException $tryLaterException) {
-            // TODO the fronted should show a 'Try again' message
-
-            $logger->error(
-                message: 'Stripe has failed to proccess your request. Please, try again later.',
-                domain: 'Stripe',
-                context: [
-                    'userId' => $currentUser->getId(),
-                    'account' => $account?->id ?? null,
-                    'exception' => [
-                        'message' => $tryLaterException->getMessage(),
-                        'file' => $tryLaterException->getFile(),
-                        'line' => $tryLaterException->getLine(),
-                        'trace' => $tryLaterException->getTraceAsString()
-                    ]
-                ]
-            );
         } catch (ApiErrorException $fatalException) {
+            // IdempotencyException|ApiConnectionException $tryAgain
+            // CardException|PermissionException $additionalInfoToUser
             // OAuthErrorException|UnknownApiErrorException|InvalidRequestException|AuthenticationException
             $logger->critical(
                 message: 'API has failed to connect a user account to Stripe',

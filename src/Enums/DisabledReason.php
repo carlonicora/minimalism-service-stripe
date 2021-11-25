@@ -24,8 +24,8 @@ enum DisabledReason: string
             self::RequirementsPastDue => AccountStatus::Restricted,
             self::RequirementsPendingVerification,
             self::Listed,
-            self::PlatformPaused, // TODO test if platform_used = pending
-            self::Other, // TODO test if other = pending
+            self::PlatformPaused,
+            self::Other,
             self::UnderReview         => AccountStatus::Pending,
             self::RejectedFraud,
             self::RejectedListed,

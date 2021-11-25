@@ -70,7 +70,6 @@ class Stripe implements StripeServiceInterface
         $this->client = new StripeClient([
             'api_key' => $this->MINIMALISM_SERVICE_STRIPE_API_KEY,
             'client_id' => $this->MINIMALISM_SERVICE_STRIPE_CLIENT_ID,
-            //TODO should we set our own stripe account here? I don't think so, but will dig deeper
             'stripe_account' => null,
             'stripe_version' => self::VERSION,
             'api_base' => BaseStripeClient::DEFAULT_API_BASE,
@@ -182,9 +181,6 @@ class Stripe implements StripeServiceInterface
     {
         $result = new Document();
 
-        // TODO test idempotency
-        // TODO test different currencies, check fees conversions
-        // TODO what if one part of the code below failed? Should we rollback the 'transaction'?
         try {
             $receiperLocalAccount = $this->getAccountsDataReader()->byUserId($receiperId);
 
@@ -207,8 +203,6 @@ class Stripe implements StripeServiceInterface
                     'transfer_data' => [
                         'destination' => $receiperLocalAccount['stripeAccountId'],
                     ],
-                    // TODO payment_method_options
-                    // TODO check how statement_descriptor works. Should we add an author's name to a payment details (22 chars limit)?
                 ],
             );
 
@@ -228,20 +222,6 @@ class Stripe implements StripeServiceInterface
             $localPaymentIntentResource->attributes->update(name: 'clientSecret', value: $stripePaymentIntent->client_secret);
 
             $result->addResource($localPaymentIntentResource);
-        } catch (CardException $e) {
-            // TODO what should we do if a card was declined?
-            // Since it's a decline, \Stripe\Exception\CardException will be caught
-            $error = 'Type is:' . $e->getError()->type . '\n';
-            $error .= 'Code is:' . $e->getError()->code . '\n';
-            $error .= 'Param is:' . $e->getError()->param . '\n';
-        } catch (InvalidRequestException $e) {
-            $error = 'Invalid parameters were supplied to Stripe\'s API';
-        } catch (AuthenticationException $e) {
-            $error = 'Authentication with Stripe\'s API failed (maybe you changed API keys recently)';
-        } catch (RateLimitException $e) {
-            $error = 'Too many requests made to the Stripe API too quickly';
-        } catch (ApiConnectionException $e) {
-            $error = 'Network communication with Stripe failed';
         } catch (ApiErrorException $e) {
             $error = 'Stripe has failed to proccess your request. Please, try again later.';
         } catch (Exception $e) {

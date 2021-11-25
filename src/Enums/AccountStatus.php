@@ -31,8 +31,6 @@ enum AccountStatus: string
             throw new LogicException(message: 'Connected account status with disabled payouts without disabled reason not implemented', code: 500);
         }
 
-        // TODO test Pending status with enabled payouts
-
         $cardPaymentCapability = Capability::from($account->capabilities->offsetGet('card_payments'));
 
         if ($cardPaymentCapability === Capability::Active) {
@@ -63,7 +61,6 @@ enum AccountStatus: string
             if ($currentDeadline !== null
                 && ! empty($curentlyDue) && empty($pastDue)
             ) {
-                // TODO maybe future requirements can be non empty while requirements are?
                 return self::RestrictedSoon;
             }
 
