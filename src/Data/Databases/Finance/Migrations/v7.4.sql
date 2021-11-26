@@ -15,7 +15,7 @@ create unique index stripeAccounts_stripeAccountId_uindex
 
 create table stripePaymentIntents
 (
-    paymentIntentId       bigint unsigned primary key,
+    paymentIntentId       bigint unsigned auto_increment primary key,
     stripePaymentIntentId char(27) not null,
     payerId               bigint unsigned not null,
     payerEmail            varchar(255) not null,
