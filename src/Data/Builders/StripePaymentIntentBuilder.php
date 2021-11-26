@@ -34,6 +34,7 @@ use Exception;
  *     schema="stripePaymentIntentAttributes",
  *     title="Stripe payment intent attributes",
  *     description="Stripe payment intent resource attributes",
+ *     @OA\Property(property="stripePaymentIntentId", type="string", format="", nullable=false, minLength="1", maxLength="100", example="pi_asdfas1234234"),
  *     @OA\Property(property="clientSecret", type="string", format="", nullable=false, minLength="1", maxLength="100", example="client_secret_hash"),
  *     @OA\Property(property="amount",
  *         @OA\Property(property="amount", type="number", format="int32", nullable=false, minimum="0", maximum="1000", example="123"),
@@ -83,7 +84,8 @@ class StripePaymentIntentBuilder extends AbstractResourceBuilder
         [$amountInt, $amountCents] = Amount::fromCents($data['amount'], $data['currency']);
         [$feeAmountInt, $feeAmountCents] = Amount::fromCents($data['phlowFeeAmount'], $data['currency']);
 
-        $this->response->id = $data['paymentIntentId'];
+        $this->response->id = $this->encrypter->encryptId($data['paymentIntentId']);
+        $this->response->attributes->add(name: 'stripePaymentIntentId', value: $data['stripePaymentIntentId']);
         $this->response->attributes->add(name: 'clientSecret', value: $data['clientSecret'] ?? null);
         $this->response->attributes->add(name: 'amount', value: ['integer' => $amountInt, 'cents' => $amountCents, 'currency' => $data['currency']]);
         $this->response->attributes->add(name: 'phlowFeeAmount', value: ['integer' => $feeAmountInt, 'cents' => $feeAmountCents, 'currency' => $data['currency']]);
