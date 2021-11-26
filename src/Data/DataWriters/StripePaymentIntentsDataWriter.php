@@ -35,7 +35,7 @@ class StripePaymentIntentsDataWriter extends AbstractLoader
     ): array
     {
         $payment = [
-            'paymentIntentId' => $paymentIntentId,
+            'stripePaymentIntentId' => $paymentIntentId,
             'payerId' => $payerId,
             'payerEmail' => $payerEmail,
             'receiperId' => $receiperId,
