@@ -18,18 +18,18 @@ class StripePaymentIntentsResourceReader extends AbstractLoader
      * @return ResourceObject
      * @throws RecordNotFoundException
      */
-    public function byId(
+    public function byStripePaymentIntentId(
         string $paymentIntentId
     ): ResourceObject
     {
-        /** @see StripePaymentIntentsTable::byId() */
+        /** @see StripePaymentIntentsTable::byStripePaymentIntentId() */
         $result = current($this->builder->build(
             resourceTransformerClass: StripePaymentIntentBuilder::class,
             function: new DataFunction(
                 type: DataFunctionInterface::TYPE_TABLE,
                 className:StripePaymentIntentsTable::class,
-                functionName: 'byId',
-                parameters: [$paymentIntentId]
+                functionName: 'byStripePaymentIntentId',
+                parameters: ['paymentIntentId' => $paymentIntentId]
             )
         ));
 

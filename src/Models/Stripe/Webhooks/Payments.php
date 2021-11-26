@@ -70,7 +70,7 @@ class Payments extends AbstractWebhook
             $eventsDataWriter,
         );
 
-        $localPayment = $paymentsResourceReader->byId($stripePaymentIntent->id);
+        $localPayment = $paymentsResourceReader->byStripePaymentIntentId($stripePaymentIntent->id);
 
         if ($localPayment->attributes->get('status') !== $stripePaymentIntent->status) {
             $paymentsDataWriter->updateStatus(

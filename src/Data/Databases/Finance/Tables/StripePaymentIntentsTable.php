@@ -13,8 +13,9 @@ class StripePaymentIntentsTable extends AbstractMySqlTable
 
     /** @var array */
     protected static array $fields = [
-        'paymentIntentId' => FieldInterface::STRING
+        'paymentIntentId' => FieldInterface::INTEGER
             + FieldInterface::PRIMARY_KEY,
+        'stripePaymentIntentId' => FieldInterface::STRING,
         'payerId' => FieldInterface::INTEGER,
         'payerEmail' => FieldInterface::STRING,
         'receiperId' => FieldInterface::INTEGER,
@@ -28,6 +29,22 @@ class StripePaymentIntentsTable extends AbstractMySqlTable
         'updatedAt' => FieldInterface::STRING
             + FieldInterface::TIME_UPDATE,
     ];
+
+    /**
+     * @param string $paymentIntentId
+     * @return array
+     * @throws Exception
+     */
+    public function byStripePaymentIntentId(
+        string $paymentIntentId
+    ): array
+    {
+        $this->sql = 'SELECT * FROM ' . static::getTableName()
+            . ' WHERE stripePaymentIntentid = ? ';
+        $this->parameters = ['s', $paymentIntentId];
+
+        return $this->functions->runRead();
+    }
 
     /**
      * @param string $paymentIntentId

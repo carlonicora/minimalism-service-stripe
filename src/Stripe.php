@@ -17,12 +17,7 @@ use Exception;
 use RuntimeException;
 use Stripe\Account;
 use Stripe\BaseStripeClient;
-use Stripe\Exception\ApiConnectionException;
 use Stripe\Exception\ApiErrorException;
-use Stripe\Exception\AuthenticationException;
-use Stripe\Exception\CardException;
-use Stripe\Exception\OAuth\InvalidRequestException;
-use Stripe\Exception\RateLimitException;
 use Stripe\StripeClient;
 
 class Stripe implements StripeServiceInterface
@@ -218,7 +213,7 @@ class Stripe implements StripeServiceInterface
                 status: PaymentIntentStatus::from($stripePaymentIntent->status)
             );
 
-            $localPaymentIntentResource = $this->getPaymentIntentsResourceReader()->byId($stripePaymentIntent->id);
+            $localPaymentIntentResource = $this->getPaymentIntentsResourceReader()->byStripePaymentIntentId($stripePaymentIntent->id);
             $localPaymentIntentResource->attributes->update(name: 'clientSecret', value: $stripePaymentIntent->client_secret);
 
             $result->addResource($localPaymentIntentResource);

@@ -10,9 +10,7 @@ use CarloNicora\Minimalism\Services\Stripe\Interfaces\StripeServiceInterface;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use Exception;
 use RuntimeException;
-use Stripe\Exception\ApiConnectionException;
 use Stripe\Exception\ApiErrorException;
-use Stripe\Exception\IdempotencyException;
 
 class Accounts extends AbstractModel
 {

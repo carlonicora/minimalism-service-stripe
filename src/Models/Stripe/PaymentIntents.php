@@ -59,7 +59,7 @@ class PaymentIntents extends AbstractModel
         PositionedParameter $intent
     ): int
     {
-        $paymentIntentData = $intentsDataReader->byId($intent->getValue());
+        $paymentIntentData = $intentsDataReader->byStripePaymentIntentId($intent->getValue());
 
         $userService->load();
         if ($userService->getId() !== $paymentIntentData['payerId']) {
@@ -67,7 +67,7 @@ class PaymentIntents extends AbstractModel
         }
 
         $this->document->addResource(
-            $intentsResourceReader->byId($intent->getValue())
+            $intentsResourceReader->byStripePaymentIntentId($intent->getValue())
         );
 
         return 200;
