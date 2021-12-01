@@ -30,7 +30,7 @@ class AbstractWebhook extends AbstractModel
      * @return Event
      * @throws JsonException
      */
-    protected function processEvent(
+    protected static function processEvent(
         string                 $webhookSecret,
         StripeEventsDataReader $eventsDataReader,
         StripeEventsDataWriter $eventsDataWriter,

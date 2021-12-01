@@ -60,7 +60,7 @@ class Accounts extends AbstractWebhook
     ): int
     {
         /** @var Account $stripeAccount */
-        $stripeAccount = $this->processEvent(
+        $stripeAccount = self::processEvent(
             $stripe->getAccountWebhookSecret(),
             $eventsDataReader,
             $eventsDataWriter,

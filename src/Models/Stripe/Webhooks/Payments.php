@@ -64,7 +64,7 @@ class Payments extends AbstractWebhook
     ): int
     {
         /** @var PaymentIntent $stripePaymentIntent */
-        $stripePaymentIntent = $this->processEvent(
+        $stripePaymentIntent = self::processEvent(
             $stripe->getPaymentsWebhookSecret(),
             $eventsDataReader,
             $eventsDataWriter,
