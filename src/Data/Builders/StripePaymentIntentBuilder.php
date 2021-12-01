@@ -107,7 +107,7 @@ class StripePaymentIntentBuilder extends AbstractResourceBuilder
                 name: 'self',
                 href: $this->path->getUrl()
                 . 'stripe/paymentIntents/'
-                . $data['paymentIntentId']
+                . $data['stripePaymentIntentId']
             )
         );
     }
