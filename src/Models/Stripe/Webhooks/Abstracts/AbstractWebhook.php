@@ -54,7 +54,7 @@ class AbstractWebhook extends AbstractModel
         }
 
         if (! empty($eventsDataReader->byId($event->id))) {
-            throw new RuntimeException(message: 'A dublicate webhook was ignored', code: 400);
+            throw new RuntimeException(message: 'A dublicate webhook was ignored', code: 200);
         }
 
         $object = $event->data->object ?? null;
