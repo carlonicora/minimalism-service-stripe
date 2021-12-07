@@ -22,7 +22,11 @@ class StripeAccountsDataReader extends AbstractLoader
         $result = $this->data->read(
             tableInterfaceClassName: StripeAccountsTable::class,
             functionName: 'byUserId',
-            parameters: ['userId' => $userId]
+            parameters: ['userId' => $userId],
+            cacheBuilder: $this->cacheFactory->create(
+                cacheName: 'stripeAccount',
+                identifier: $userId
+            )
         );
 
         return $this->returnSingleValue($result, recordType: 'Stripe account');

@@ -35,6 +35,10 @@ class StripeAccountsDataWriter extends AbstractLoader
         $this->data->insert(
             tableInterfaceClassName: StripeAccountsTable::class,
             records: $account,
+            cacheBuilder: $this->cacheFactory->create(
+                cacheName: 'stripeAccount',
+                identifier: $userId
+            )
         );
     }
 
@@ -58,6 +62,13 @@ class StripeAccountsDataWriter extends AbstractLoader
                 'status' => $status->value,
                 'payoutsEnabled' => $payoutsEnabled
             ],
+        );
+
+        $this->cache->invalidate(
+            $this->cacheFactory->create(
+                cacheName: 'stripeAccount',
+                identifier: $userId
+            )
         );
     }
 }
