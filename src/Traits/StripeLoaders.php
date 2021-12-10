@@ -2,7 +2,6 @@
 
 namespace CarloNicora\Minimalism\Services\Stripe\Traits;
 
-use CarloNicora\Minimalism\Interfaces\DataLoaderInterface;
 use CarloNicora\Minimalism\Services\Stripe\Data\DataReaders\StripeAccountsDataReader;
 use CarloNicora\Minimalism\Services\Stripe\Data\DataWriters\StripeAccountsDataWriter;
 use CarloNicora\Minimalism\Services\Stripe\Data\DataWriters\StripePaymentIntentsDataWriter;
@@ -16,15 +15,15 @@ trait StripeLoaders
 
     /**
      * @param string $dataLoaderName
-     * @return DataLoaderInterface
+     * @return StripeAccountsDataWriter|StripeAccountsDataReader|StripePaymentIntentsDataWriter|StripePaymentIntentsResourceReader
      * @throws Exception
      */
     private function getDataLoader(
         string $dataLoaderName
-    ): DataLoaderInterface
+    ): StripeAccountsDataWriter|StripeAccountsDataReader|StripePaymentIntentsDataWriter|StripePaymentIntentsResourceReader
     {
         if (!array_key_exists($dataLoaderName, $this->dataLoaders)){
-            $this->dataLoaders[$dataLoaderName] = $this->pools->get(
+            $this->dataLoaders[$dataLoaderName] = $this->objectFactory->create(
                 className: $dataLoaderName
             );
         }
@@ -33,10 +32,10 @@ trait StripeLoaders
     }
 
     /**
-     * @return StripeAccountsDataWriter|DataLoaderInterface
+     * @return StripeAccountsDataWriter
      * @throws Exception
      */
-    public function getAccountsDataWriter(): StripeAccountsDataWriter|DataLoaderInterface
+    public function getAccountsDataWriter(): StripeAccountsDataWriter
     {
         return $this->getDataLoader(
             dataLoaderName: StripeAccountsDataWriter::class
@@ -44,10 +43,10 @@ trait StripeLoaders
     }
 
     /**
-     * @return StripeAccountsDataReader|DataLoaderInterface
+     * @return StripeAccountsDataReader
      * @throws Exception
      */
-    public function getAccountsDataReader(): StripeAccountsDataReader|DataLoaderInterface
+    public function getAccountsDataReader(): StripeAccountsDataReader
     {
         return $this->getDataLoader(
             dataLoaderName: StripeAccountsDataReader::class
@@ -55,10 +54,10 @@ trait StripeLoaders
     }
 
     /**
-     * @return StripePaymentIntentsDataWriter|DataLoaderInterface
+     * @return StripePaymentIntentsDataWriter
      * @throws Exception
      */
-    public function getPaymentIntentsDataWriter(): StripePaymentIntentsDataWriter|DataLoaderInterface
+    public function getPaymentIntentsDataWriter(): StripePaymentIntentsDataWriter
     {
         return $this->getDataLoader(
             dataLoaderName: StripePaymentIntentsDataWriter::class
@@ -66,10 +65,10 @@ trait StripeLoaders
     }
 
     /**
-     * @return StripePaymentIntentsResourceReader|DataLoaderInterface
+     * @return StripePaymentIntentsResourceReader
      * @throws Exception
      */
-    public function getPaymentIntentsResourceReader(): StripePaymentIntentsResourceReader|DataLoaderInterface
+    public function getPaymentIntentsResourceReader(): StripePaymentIntentsResourceReader
     {
         return $this->getDataLoader(
             dataLoaderName: StripePaymentIntentsResourceReader::class

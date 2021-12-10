@@ -3,9 +3,9 @@
 namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe;
 
 use CarloNicora\Minimalism\Abstracts\AbstractModel;
-use CarloNicora\Minimalism\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Interfaces\UserServiceInterface;
 use CarloNicora\Minimalism\Parameters\PositionedParameter;
+use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\Stripe\Data\DataReaders\StripePaymentIntentsDataReader;
 use CarloNicora\Minimalism\Services\Stripe\Data\ResourceReaders\StripePaymentIntentsResourceReader;
 use RuntimeException;

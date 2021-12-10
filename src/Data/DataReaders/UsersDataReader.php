@@ -2,7 +2,7 @@
 
 namespace CarloNicora\Minimalism\Services\Stripe\Data\DataReaders;
 
-use CarloNicora\Minimalism\Abstracts\AbstractLoader;
+use CarloNicora\Minimalism\Services\DataMapper\Abstracts\AbstractLoader;
 use JetBrains\PhpStorm\ArrayShape;
 
 class UsersDataReader extends AbstractLoader

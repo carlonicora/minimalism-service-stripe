@@ -34,4 +34,9 @@ class StripeLogger implements LoggerInterface, ServiceInterface
     public function destroy(): void
     {
     }
+
+    public static function getBaseInterface(): ?string
+    {
+        return LoggerInterface::class;
+    }
 }

@@ -44,7 +44,7 @@ enum Currency: string
         return match ($this) {
             self::EUR, // Stripe - 0.50€
             self::USD, // Stripe - 0.5$
-            self::GBP => 1 * $this->multiplier() // Stripe - 0.30£
+            self::GBP => $this->multiplier() // Stripe - 0.30£
         };
     }
 

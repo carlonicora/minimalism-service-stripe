@@ -3,10 +3,10 @@
 namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Accounts;
 
 use CarloNicora\Minimalism\Abstracts\AbstractModel;
-use CarloNicora\Minimalism\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Interfaces\DefaultServiceInterface;
 use CarloNicora\Minimalism\Interfaces\LoggerInterface;
 use CarloNicora\Minimalism\Interfaces\UserServiceInterface;
+use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\Stripe\Data\DataReaders\StripeAccountsDataReader;
 use CarloNicora\Minimalism\Services\Stripe\Interfaces\StripeServiceInterface;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;

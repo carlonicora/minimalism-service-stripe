@@ -2,8 +2,8 @@
 
 namespace CarloNicora\Minimalism\Services\Stripe\Data\DataReaders;
 
-use CarloNicora\Minimalism\Abstracts\AbstractLoader;
-use CarloNicora\Minimalism\Exceptions\RecordNotFoundException;
+use CarloNicora\Minimalism\Services\DataMapper\Abstracts\AbstractLoader;
+use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\Stripe\Data\Databases\Finance\Tables\StripePaymentIntentsTable;
 
 class StripePaymentIntentsDataReader extends AbstractLoader

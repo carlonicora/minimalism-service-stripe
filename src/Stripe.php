@@ -3,10 +3,11 @@ namespace CarloNicora\Minimalism\Services\Stripe;
 
 use CarloNicora\JsonApi\Document;
 use CarloNicora\JsonApi\Objects\Error;
-use CarloNicora\Minimalism\Exceptions\RecordNotFoundException;
-use CarloNicora\Minimalism\Interfaces\EncrypterInterface;
+use CarloNicora\Minimalism\Abstracts\AbstractService;
+use CarloNicora\Minimalism\Factories\ObjectFactory;
+use CarloNicora\Minimalism\Interfaces\Encrypter\Interfaces\EncrypterInterface;
+use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\Path;
-use CarloNicora\Minimalism\Services\Pools;
 use CarloNicora\Minimalism\Services\Stripe\Data\Builders\AccountLinkBuilder;
 use CarloNicora\Minimalism\Services\Stripe\Enums\AccountStatus;
 use CarloNicora\Minimalism\Services\Stripe\Enums\PaymentIntentStatus;
@@ -20,7 +21,7 @@ use Stripe\BaseStripeClient;
 use Stripe\Exception\ApiErrorException;
 use Stripe\StripeClient;
 
-class Stripe implements StripeServiceInterface
+class Stripe extends AbstractService implements StripeServiceInterface
 {
 
     use StripeLoaders;
@@ -38,7 +39,7 @@ class Stripe implements StripeServiceInterface
     private StripeClient $client;
 
     /**
-     * @param Pools $pools
+     * @param ObjectFactory $objectFactory
      * @param StripeLogger $logger
      * @param Path $path
      * @param EncrypterInterface $encrypter
@@ -48,7 +49,7 @@ class Stripe implements StripeServiceInterface
      * @param string $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_PAYMENTS
      */
     public function __construct(
-        private Pools              $pools,
+        private ObjectFactory      $objectFactory,
         private StripeLogger       $logger,
         private Path               $path,
         private EncrypterInterface $encrypter,
@@ -59,6 +60,8 @@ class Stripe implements StripeServiceInterface
 
     )
     {
+        parent::__construct();
+
         \Stripe\Stripe::setApiKey($this->MINIMALISM_SERVICE_STRIPE_API_KEY);
         \Stripe\Stripe::setLogger($logger);
 
@@ -147,6 +150,7 @@ class Stripe implements StripeServiceInterface
         ]);
 
         $builder = new AccountLinkBuilder(
+            objectFactory: $this->objectFactory,
             path: $this->path,
             encrypter: $this->encrypter
         );
@@ -283,5 +287,10 @@ class Stripe implements StripeServiceInterface
 
     public function destroy(): void
     {
+    }
+
+    public static function getBaseInterface(): ?string
+    {
+        return StripeServiceInterface::class;
     }
 }

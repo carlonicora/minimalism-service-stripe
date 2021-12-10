@@ -2,7 +2,7 @@
 
 namespace CarloNicora\Minimalism\Services\Stripe\Data\DataWriters;
 
-use CarloNicora\Minimalism\Abstracts\AbstractLoader;
+use CarloNicora\Minimalism\Services\DataMapper\Abstracts\AbstractLoader;
 use CarloNicora\Minimalism\Services\Stripe\Data\Databases\Finance\Tables\StripeEventsTable;
 
 class StripeEventsDataWriter extends AbstractLoader

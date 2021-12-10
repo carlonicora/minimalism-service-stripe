@@ -3,8 +3,8 @@
 namespace CarloNicora\Minimalism\Services\Stripe\Data\Builders;
 
 use CarloNicora\JsonApi\Objects\Link;
-use CarloNicora\Minimalism\Interfaces\DataFunctionInterface;
-use CarloNicora\Minimalism\Objects\DataFunction;
+use CarloNicora\Minimalism\Interfaces\Data\Interfaces\DataFunctionInterface;
+use CarloNicora\Minimalism\Interfaces\Data\Objects\DataFunction;
 use CarloNicora\Minimalism\Services\Builder\Abstracts\AbstractResourceBuilder;
 use CarloNicora\Minimalism\Services\Builder\Objects\RelationshipBuilder;
 use CarloNicora\Minimalism\Services\Stripe\Data\DataReaders\UsersDataReader;

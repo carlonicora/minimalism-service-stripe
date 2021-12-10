@@ -2,7 +2,7 @@
 
 namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks;
 
-use CarloNicora\Minimalism\Exceptions\RecordNotFoundException;
+use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\Stripe\Data\DataReaders\StripeEventsDataReader;
 use CarloNicora\Minimalism\Services\Stripe\Data\DataWriters\StripeEventsDataWriter;
 use CarloNicora\Minimalism\Services\Stripe\Data\DataWriters\StripePaymentIntentsDataWriter;

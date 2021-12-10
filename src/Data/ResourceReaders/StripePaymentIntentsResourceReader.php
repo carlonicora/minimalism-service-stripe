@@ -3,10 +3,10 @@
 namespace CarloNicora\Minimalism\Services\Stripe\Data\ResourceReaders;
 
 use CarloNicora\JsonApi\Objects\ResourceObject;
-use CarloNicora\Minimalism\Abstracts\AbstractLoader;
-use CarloNicora\Minimalism\Exceptions\RecordNotFoundException;
-use CarloNicora\Minimalism\Interfaces\DataFunctionInterface;
-use CarloNicora\Minimalism\Objects\DataFunction;
+use CarloNicora\Minimalism\Interfaces\Data\Interfaces\DataFunctionInterface;
+use CarloNicora\Minimalism\Interfaces\Data\Objects\DataFunction;
+use CarloNicora\Minimalism\Services\DataMapper\Abstracts\AbstractLoader;
+use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\Stripe\Data\Builders\StripePaymentIntentBuilder;
 use CarloNicora\Minimalism\Services\Stripe\Data\Databases\Finance\Tables\StripePaymentIntentsTable;
 

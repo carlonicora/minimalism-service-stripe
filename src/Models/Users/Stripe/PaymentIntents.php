@@ -3,8 +3,8 @@
 namespace CarloNicora\Minimalism\Services\Stripe\Models\Users\Stripe;
 
 use CarloNicora\Minimalism\Abstracts\AbstractModel;
+use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Interfaces\UserServiceInterface;
-use CarloNicora\Minimalism\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Services\Stripe\Enums\Currency;
 use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
