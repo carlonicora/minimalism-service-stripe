@@ -51,7 +51,7 @@ interface StripeServiceInterface extends ServiceInterface
         int    $receiperId,
         Amount $amount,
         Amount $phlowFee,
-        string $payerEmail
+        string $payerEmail,
     ): Document;
 
     /**

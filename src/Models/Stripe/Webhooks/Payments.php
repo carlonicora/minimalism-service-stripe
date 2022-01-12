@@ -3,11 +3,10 @@
 namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks;
 
 use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
-use CarloNicora\Minimalism\Services\Stripe\Data\DataReaders\StripeEventsDataReader;
-use CarloNicora\Minimalism\Services\Stripe\Data\DataWriters\StripeEventsDataWriter;
-use CarloNicora\Minimalism\Services\Stripe\Data\DataWriters\StripePaymentIntentsDataWriter;
-use CarloNicora\Minimalism\Services\Stripe\Data\ResourceReaders\StripePaymentIntentsResourceReader;
 use CarloNicora\Minimalism\Services\Stripe\Enums\PaymentIntentStatus;
+use CarloNicora\Minimalism\Services\Stripe\Factories\Resources\StripePaymentIntentsResourceFactory;
+use CarloNicora\Minimalism\Services\Stripe\IO\SrtipePaymentIntentIO;
+use CarloNicora\Minimalism\Services\Stripe\IO\StripeEventIO;
 use CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks\Abstracts\AbstractWebhook;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use Exception;
@@ -47,33 +46,31 @@ class Payments extends AbstractWebhook
      * )
      *
      * @param Stripe $stripe
-     * @param StripeEventsDataReader $eventsDataReader
-     * @param StripeEventsDataWriter $eventsDataWriter
-     * @param StripePaymentIntentsResourceReader $paymentsResourceReader
-     * @param StripePaymentIntentsDataWriter $paymentsDataWriter
+     * @param StripeEventIO $eventIO
+     * @param StripePaymentIntentsResourceFactory $paymentResourceFactory
+     * @param SrtipePaymentIntentIO $paymentIntentIO
      * @return int
-     * @throws RecordNotFoundException|JsonException
+     * @throws JsonException
+     * @throws RecordNotFoundException
      * @throws Exception
      */
     public function post(
-        Stripe                             $stripe,
-        StripeEventsDataReader             $eventsDataReader,
-        StripeEventsDataWriter             $eventsDataWriter,
-        StripePaymentIntentsResourceReader $paymentsResourceReader,
-        StripePaymentIntentsDataWriter     $paymentsDataWriter
+        Stripe                              $stripe,
+        StripeEventIO                       $eventIO,
+        StripePaymentIntentsResourceFactory $paymentResourceFactory,
+        SrtipePaymentIntentIO               $paymentIntentIO
     ): int
     {
         /** @var PaymentIntent $stripePaymentIntent */
         $stripePaymentIntent = self::processEvent(
             $stripe->getPaymentsWebhookSecret(),
-            $eventsDataReader,
-            $eventsDataWriter,
+            $eventIO
         );
 
-        $localPayment = $paymentsResourceReader->byStripePaymentIntentId($stripePaymentIntent->id);
+        $localPayment = $paymentResourceFactory->byStripePaymentIntentId($stripePaymentIntent->id);
 
         if ($localPayment->attributes->get('status') !== $stripePaymentIntent->status) {
-            $paymentsDataWriter->updateStatus(
+            $paymentIntentIO->updateStatus(
                 paymentIntentId: $stripePaymentIntent->id,
                 status: PaymentIntentStatus::from($stripePaymentIntent->status)
             );

@@ -1,6 +1,6 @@
 <?php
 
-namespace CarloNicora\Minimalism\Services\Stripe\Data\Databases\Finance\Tables;
+namespace CarloNicora\Minimalism\Services\Stripe\Databases\Finance\Tables;
 
 use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractMySqlTable;
 use CarloNicora\Minimalism\Services\MySQL\Interfaces\FieldInterface;
@@ -20,6 +20,7 @@ class StripePaymentIntentsTable extends AbstractMySqlTable
         'payerEmail' => FieldInterface::STRING,
         'receiperId' => FieldInterface::INTEGER,
         'receiperAccountId' => FieldInterface::STRING,
+        'receiperEmail' => FieldInterface::STRING,
         'amount' => FieldInterface::INTEGER,
         'currency' => FieldInterface::STRING,
         'phlowFeeAmount' => FieldInterface::INTEGER,
@@ -39,7 +40,7 @@ class StripePaymentIntentsTable extends AbstractMySqlTable
         string $paymentIntentId
     ): array
     {
-        $this->sql = 'SELECT * FROM ' . static::getTableName()
+        $this->sql        = 'SELECT * FROM ' . static::getTableName()
             . ' WHERE stripePaymentIntentid = ? ';
         $this->parameters = ['s', $paymentIntentId];
 

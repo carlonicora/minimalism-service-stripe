@@ -5,7 +5,7 @@ namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe;
 use CarloNicora\Minimalism\Abstracts\AbstractModel;
 use CarloNicora\Minimalism\Interfaces\DefaultServiceInterface;
 use CarloNicora\Minimalism\Interfaces\LoggerInterface;
-use CarloNicora\Minimalism\Interfaces\UserServiceInterface;
+use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserServiceInterface;
 use CarloNicora\Minimalism\Services\Stripe\Interfaces\StripeServiceInterface;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use Exception;
@@ -43,9 +43,9 @@ class Accounts extends AbstractModel
      */
     public function post(
         DefaultServiceInterface $defaultService,
-        LoggerInterface $logger,
-        UserServiceInterface $currentUser,
-        Stripe $stripe
+        LoggerInterface         $logger,
+        UserServiceInterface    $currentUser,
+        Stripe                  $stripe
     ): int
     {
         $currentUser->load();

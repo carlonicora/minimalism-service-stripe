@@ -53,13 +53,16 @@ enum AccountStatus: string
             }
 
             if ($currentDeadline === null
-                && ! empty($eventuallyDue) && empty($pastDue) && empty($curentlyDue)
+                && ! empty($eventuallyDue)
+                && empty($pastDue)
+                && empty($curentlyDue)
             ) {
                 return self::Enabled;
             }
 
             if ($currentDeadline !== null
-                && ! empty($curentlyDue) && empty($pastDue)
+                && ! empty($curentlyDue)
+                && empty($pastDue)
             ) {
                 return self::RestrictedSoon;
             }

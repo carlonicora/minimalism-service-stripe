@@ -1,16 +1,16 @@
 <?php
 
-namespace CarloNicora\Minimalism\Services\Stripe\Data\ResourceReaders;
+namespace CarloNicora\Minimalism\Services\Stripe\Factories\Resources;
 
 use CarloNicora\JsonApi\Objects\ResourceObject;
 use CarloNicora\Minimalism\Interfaces\Data\Interfaces\DataFunctionInterface;
 use CarloNicora\Minimalism\Interfaces\Data\Objects\DataFunction;
 use CarloNicora\Minimalism\Services\DataMapper\Abstracts\AbstractLoader;
 use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
-use CarloNicora\Minimalism\Services\Stripe\Data\Builders\StripePaymentIntentBuilder;
-use CarloNicora\Minimalism\Services\Stripe\Data\Databases\Finance\Tables\StripePaymentIntentsTable;
+use CarloNicora\Minimalism\Services\Stripe\Builders\StripePaymentIntentBuilder;
+use CarloNicora\Minimalism\Services\Stripe\Databases\Finance\Tables\StripePaymentIntentsTable;
 
-class StripePaymentIntentsResourceReader extends AbstractLoader
+class StripePaymentIntentsResourceFactory extends AbstractLoader
 {
 
     /**
@@ -27,7 +27,7 @@ class StripePaymentIntentsResourceReader extends AbstractLoader
             resourceTransformerClass: StripePaymentIntentBuilder::class,
             function: new DataFunction(
                 type: DataFunctionInterface::TYPE_TABLE,
-                className:StripePaymentIntentsTable::class,
+                className: StripePaymentIntentsTable::class,
                 functionName: 'byStripePaymentIntentId',
                 parameters: ['paymentIntentId' => $paymentIntentId]
             )

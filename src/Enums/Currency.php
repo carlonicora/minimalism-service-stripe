@@ -13,6 +13,20 @@ enum Currency: string
     /**
      * @return int
      */
+    public function max(): int
+    {
+        return match ($this) {
+            self::EUR,
+            self::USD,
+            self::GBP => 10000 * $this->multiplier()
+            // @see https://stripe.com/docs/currencies#minimum-and-maximum-charge-amounts
+            // Stripe - 99999999 * $this->multiplier()
+        };
+    }
+
+    /**
+     * @return int
+     */
     public function multiplier(): int
     {
         // Define how much cents in one currency unit ($/€/£). Can be 0 for zero-decimal currencies like ¥ (Japaneese yen)
@@ -26,20 +40,8 @@ enum Currency: string
     /**
      * @return int
      */
-    public function max(): int {
-        return match ($this) {
-            self::EUR,
-            self::USD,
-            self::GBP => 10000 * $this->multiplier()
-            // @see https://stripe.com/docs/currencies#minimum-and-maximum-charge-amounts
-            // Stripe - 99999999 * $this->multiplier()
-        };
-    }
-
-    /**
-     * @return int
-     */
-    public function min(): int {
+    public function min(): int
+    {
         // @see https://stripe.com/docs/currencies#minimum-and-maximum-charge-amounts
         return match ($this) {
             self::EUR, // Stripe - 0.50€

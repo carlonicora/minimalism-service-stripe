@@ -1,13 +1,13 @@
 <?php
 
-namespace CarloNicora\Minimalism\Services\Stripe\Data\Builders;
+namespace CarloNicora\Minimalism\Services\Stripe\Builders;
 
 use CarloNicora\JsonApi\Objects\Link;
 use CarloNicora\Minimalism\Interfaces\Data\Interfaces\DataFunctionInterface;
 use CarloNicora\Minimalism\Interfaces\Data\Objects\DataFunction;
 use CarloNicora\Minimalism\Services\Builder\Abstracts\AbstractResourceBuilder;
 use CarloNicora\Minimalism\Services\Builder\Objects\RelationshipBuilder;
-use CarloNicora\Minimalism\Services\Stripe\Data\DataReaders\UsersDataReader;
+use CarloNicora\Minimalism\Services\Stripe\IO\UserIO;
 use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
 use Exception;
 
@@ -119,25 +119,25 @@ class StripePaymentIntentBuilder extends AbstractResourceBuilder
     {
         $response = [];
 
-        /** @see UsersDataReader::byUserId() */
+        /** @see UserIO::byUserId() */
         $response[] = new RelationshipBuilder(
             name: 'payer',
             builderClassName: UserBuilder::class,
             function: new DataFunction(
                 type: DataFunctionInterface::TYPE_LOADER,
-                className: UsersDataReader::class,
+                className: UserIO::class,
                 functionName: 'byUserId',
                 parameters: ['payerId']
             )
         );
 
-        /** @see UsersDataReader::byUserId() */
+        /** @see UserIO::byUserId() */
         $response[] = new RelationshipBuilder(
             name: 'receiper',
             builderClassName: UserBuilder::class,
             function: new DataFunction(
                 type: DataFunctionInterface::TYPE_LOADER,
-                className: UsersDataReader::class,
+                className: UserIO::class,
                 functionName: 'byUserId',
                 parameters: ['receiperId']
             )

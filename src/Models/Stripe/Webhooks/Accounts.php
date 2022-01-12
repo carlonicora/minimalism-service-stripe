@@ -3,12 +3,10 @@
 namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks;
 
 use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
-use CarloNicora\Minimalism\Services\Stripe\Data\DataReaders\StripeAccountsDataReader;
-use CarloNicora\Minimalism\Services\Stripe\Data\DataReaders\StripeEventsDataReader;
-use CarloNicora\Minimalism\Services\Stripe\Data\DataWriters\StripeAccountsDataWriter;
-use CarloNicora\Minimalism\Services\Stripe\Data\DataWriters\StripeEventsDataWriter;
-use CarloNicora\Minimalism\Services\Stripe\Data\ResourceReaders\StripeAccountsResourceReader;
 use CarloNicora\Minimalism\Services\Stripe\Enums\AccountStatus;
+use CarloNicora\Minimalism\Services\Stripe\Factories\Resources\StripeAccountsResourceFactory;
+use CarloNicora\Minimalism\Services\Stripe\IO\StripeAccountIO;
+use CarloNicora\Minimalism\Services\Stripe\IO\StripeEventIO;
 use CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks\Abstracts\AbstractWebhook;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use JsonException;
@@ -41,45 +39,49 @@ class Accounts extends AbstractWebhook
      *     @OA\Response(response=429, ref="#/components/responses/429")
      * )
      * @param Stripe $stripe
-     * @param StripeEventsDataReader $eventsDataReader
-     * @param StripeEventsDataWriter $eventsDataWriter
-     * @param StripeAccountsResourceReader $accountsResourceReader
-     * @param StripeAccountsDataReader $accountsDataReader
-     * @param StripeAccountsDataWriter $accountsDataWriter
+     * @param StripeEventIO $eventIO
+     * @param StripeAccountsResourceFactory $accountsResourceFactory
+     * @param StripeAccountIO $accountIO
      * @return int
      * @throws JsonException
      * @throws RecordNotFoundException
      */
     public function post(
-        Stripe                       $stripe,
-        StripeEventsDataReader       $eventsDataReader,
-        StripeEventsDataWriter       $eventsDataWriter,
-        StripeAccountsResourceReader $accountsResourceReader,
-        StripeAccountsDataReader     $accountsDataReader,
-        StripeAccountsDataWriter     $accountsDataWriter,
+        Stripe                        $stripe,
+        StripeEventIO                 $eventIO,
+        StripeAccountsResourceFactory $accountsResourceFactory,
+        StripeAccountIO               $accountIO,
     ): int
     {
         /** @var Account $stripeAccount */
         $stripeAccount = self::processEvent(
             $stripe->getAccountWebhookSecret(),
-            $eventsDataReader,
-            $eventsDataWriter,
+            $eventIO
         );
 
-        $localAccount = $accountsDataReader->byStripeAccountId($stripeAccount->id);
+        $localAccount = $accountIO->byStripeAccountId($stripeAccount->id);
+        $userId       = $localAccount['userId'];
         $realStatus   = AccountStatus::calculate($stripeAccount);
         if ($localAccount['status'] !== $realStatus->value
             || (bool)$localAccount['payoutsEnabled'] !== $stripeAccount->payouts_enabled
         ) {
-            $accountsDataWriter->updateAccountStatuses(
-                userId: $localAccount['userId'],
+            $accountIO->updateAccountStatuses(
+                userId: $userId,
                 status: $realStatus,
                 payoutsEnabled: $stripeAccount->payouts_enabled
             );
+
+            if ($stripeAccount->payouts_enabled
+                && ($realStatus === AccountStatus::Comlete || $realStatus === AccountStatus::Enabled)
+            ) {
+                $stripe->getOrCreateProduct(
+                    artistId: $userId,
+                );
+            }
         }
 
         $this->document->addResource(
-            $accountsResourceReader->byUserId($localAccount['userId'])
+            $accountsResourceFactory->byUserId($userId)
         );
 
         return 201;

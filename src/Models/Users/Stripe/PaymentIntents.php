@@ -4,7 +4,7 @@ namespace CarloNicora\Minimalism\Services\Stripe\Models\Users\Stripe;
 
 use CarloNicora\Minimalism\Abstracts\AbstractModel;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\PositionedEncryptedParameter;
-use CarloNicora\Minimalism\Interfaces\UserServiceInterface;
+use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserServiceInterface;
 use CarloNicora\Minimalism\Services\Stripe\Enums\Currency;
 use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
@@ -54,13 +54,12 @@ class PaymentIntents extends AbstractModel
      * @return int
      */
     public function post(
-        UserServiceInterface $currentUser,
-        Stripe $stripe,
+        UserServiceInterface         $currentUser,
+        Stripe                       $stripe,
         PositionedEncryptedParameter $receiper,
-        array $payload
+        array                        $payload
     ): int
     {
-        // TODO save receiper email, when such a possibility will be implemented
         $currentUser->load();
 
         if ($currentUser->isVisitor()) {

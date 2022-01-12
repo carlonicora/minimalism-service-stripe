@@ -1,6 +1,6 @@
 <?php
 
-namespace CarloNicora\Minimalism\Services\Stripe\Data\Databases\Finance\Tables;
+namespace CarloNicora\Minimalism\Services\Stripe\Databases\Finance\Tables;
 
 use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractMySqlTable;
 use CarloNicora\Minimalism\Services\MySQL\Interfaces\FieldInterface;
@@ -34,7 +34,7 @@ class StripeAccountsTable extends AbstractMySqlTable
         int $userId
     ): array
     {
-        $this->sql = 'SELECT * FROM ' . static::getTableName()
+        $this->sql        = 'SELECT * FROM ' . static::getTableName()
             . ' WHERE userId = ? ';
         $this->parameters = ['i', $userId];
 
@@ -50,7 +50,7 @@ class StripeAccountsTable extends AbstractMySqlTable
         string $email
     ): array
     {
-        $this->sql = 'SELECT * FROM ' . static::getTableName()
+        $this->sql        = 'SELECT * FROM ' . static::getTableName()
             . ' WHERE email = ? ';
         $this->parameters = ['s', $email];
 
@@ -66,7 +66,7 @@ class StripeAccountsTable extends AbstractMySqlTable
         string $stripeAccountId
     ): array
     {
-        $this->sql = 'SELECT * FROM ' . static::getTableName()
+        $this->sql        = 'SELECT * FROM ' . static::getTableName()
             . ' WHERE stripeAccountId = ? ';
         $this->parameters = ['s', $stripeAccountId];
 

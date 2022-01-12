@@ -1,6 +1,6 @@
 <?php
 
-namespace CarloNicora\Minimalism\Services\Stripe\Data\Builders;
+namespace CarloNicora\Minimalism\Services\Stripe\Builders;
 
 use CarloNicora\Minimalism\Services\Builder\Abstracts\AbstractResourceBuilder;
 use Exception;
@@ -33,7 +33,7 @@ use Exception;
 class AccountLinkBuilder extends AbstractResourceBuilder
 {
 
-    /** @var string  */
+    /** @var string */
     protected string $type = 'stripeAccountLink';
 
     /**

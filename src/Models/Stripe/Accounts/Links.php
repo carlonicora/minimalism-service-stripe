@@ -5,10 +5,10 @@ namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Accounts;
 use CarloNicora\Minimalism\Abstracts\AbstractModel;
 use CarloNicora\Minimalism\Interfaces\DefaultServiceInterface;
 use CarloNicora\Minimalism\Interfaces\LoggerInterface;
-use CarloNicora\Minimalism\Interfaces\UserServiceInterface;
+use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserServiceInterface;
 use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
-use CarloNicora\Minimalism\Services\Stripe\Data\DataReaders\StripeAccountsDataReader;
 use CarloNicora\Minimalism\Services\Stripe\Interfaces\StripeServiceInterface;
+use CarloNicora\Minimalism\Services\Stripe\IO\StripeAccountIO;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use Exception;
 use RuntimeException;
@@ -40,7 +40,7 @@ class Links extends AbstractModel
      * @param UserServiceInterface $currentUser
      * @param LoggerInterface $logger
      * @param Stripe $stripe
-     * @param StripeAccountsDataReader $accountsDataReader
+     * @param StripeAccountIO $accountIO
      * @return int
      * @throws ApiErrorException
      * @throws RecordNotFoundException
@@ -48,10 +48,10 @@ class Links extends AbstractModel
      */
     public function post(
         DefaultServiceInterface $defaultService,
-        UserServiceInterface $currentUser,
-        LoggerInterface $logger,
-        Stripe $stripe,
-        StripeAccountsDataReader $accountsDataReader
+        UserServiceInterface    $currentUser,
+        LoggerInterface         $logger,
+        Stripe                  $stripe,
+        StripeAccountIO         $accountIO
     ): int
     {
         $currentUser->load();
@@ -59,7 +59,7 @@ class Links extends AbstractModel
             throw new RuntimeException(message: 'Access not allowed to guests', code: 403);
         }
 
-        $account = $accountsDataReader->byUserId($currentUser->getId());
+        $account = $accountIO->byUserId($currentUser->getId());
 
         try {
             $this->document = $stripe->createAccountOnboardingLink(

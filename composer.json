@@ -1,17 +1,22 @@
 {
   "name": "carlonicora/minimalism-service-stripe",
   "description": "Stripe payments service for minimalism",
-  "version": "2.0.0-alpha1",
+  "version": "2.0.0-beta1",
   "homepage": "https://carlonicora.com",
   "time": "2021-10-29",
   "license": "MIT",
   "type": "library",
-  "minimum-stability": "alpha",
+  "minimum-stability": "stable",
   "authors": [
     {
       "name": "Carlo Nicora",
       "email": "carlo@carlonicora.com",
       "homepage": "https://carlonicora.com",
+      "role": "Developer"
+    },
+    {
+      "name": "Sergey Kuzminich",
+      "email": "KuzminichSergey@yandex.ru",
       "role": "Developer"
     }
   ],
@@ -22,12 +27,16 @@
   },
   "require": {
     "php": ">=8.1",
-    "carlonicora/minimalism": "~13.0.1",
+    "carlonicora/minimalism": "~13",
     "stripe/stripe-php": "^7.100",
     "carlonicora/minimalism-service-data-mapper": "~1.0",
-    "carlonicora/minimalism-service-mysql": "~5.0.1",
+    "carlonicora/minimalism-service-mysql": "~5.0",
     "carlonicora/minimalism-service-builder": "~2.0",
     "carlonicora/minimalism-service-encrypter": "~4.0",
+    "carlonicora/minimalism-interface-user": "~1.0",
     "ext-json": "*"
+  },
+  "require-dev": {
+    "zircote/swagger-php": "~3.2"
   }
 }

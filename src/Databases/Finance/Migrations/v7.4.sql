@@ -1,12 +1,12 @@
 create table stripeAccounts
 (
-    userId           bigint unsigned primary key,
-    stripeAccountId  char(21)         not null,
-    email            varchar(255)     not null,
-    status           varchar(64)      null,
-    payoutsEnabled   tinyint(3) unsigned not null,
-    createdAt        timestamp        not null,
-    updatedAt        timestamp        null
+    userId          bigint unsigned primary key,
+    stripeAccountId char(21)     not null,
+    email           varchar(255) not null,
+    status          varchar(64) null,
+    payoutsEnabled  tinyint(3) unsigned not null,
+    createdAt       timestamp    not null,
+    updatedAt       timestamp null
 );
 
 create unique index stripeAccounts_stripeAccountId_uindex
@@ -16,7 +16,7 @@ create unique index stripeAccounts_stripeAccountId_uindex
 create table stripePaymentIntents
 (
     paymentIntentId       bigint unsigned auto_increment primary key,
-    stripePaymentIntentId char(27) not null,
+    stripePaymentIntentId char(27)     not null,
     payerId               bigint unsigned not null,
     payerEmail            varchar(255) not null,
     receiperId            bigint unsigned not null,

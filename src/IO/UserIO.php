@@ -1,11 +1,11 @@
 <?php
 
-namespace CarloNicora\Minimalism\Services\Stripe\Data\DataReaders;
+namespace CarloNicora\Minimalism\Services\Stripe\IO;
 
 use CarloNicora\Minimalism\Services\DataMapper\Abstracts\AbstractLoader;
 use JetBrains\PhpStorm\ArrayShape;
 
-class UsersDataReader extends AbstractLoader
+class UserIO extends AbstractLoader
 {
     #[ArrayShape(['userId' => "int"])]
     /**

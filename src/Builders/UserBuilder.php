@@ -1,5 +1,6 @@
 <?php
-namespace CarloNicora\Minimalism\Services\Stripe\Data\Builders;
+
+namespace CarloNicora\Minimalism\Services\Stripe\Builders;
 
 use CarloNicora\JsonApi\Objects\Link;
 use CarloNicora\Minimalism\Services\Builder\Abstracts\AbstractResourceBuilder;
@@ -7,7 +8,7 @@ use Exception;
 
 class UserBuilder extends AbstractResourceBuilder
 {
-    /** @var string  */
+    /** @var string */
     public string $type = 'user';
 
     /**

@@ -3,9 +3,8 @@
 namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks\Abstracts;
 
 use CarloNicora\Minimalism\Abstracts\AbstractModel;
-use CarloNicora\Minimalism\Services\Stripe\Data\DataReaders\StripeEventsDataReader;
-use CarloNicora\Minimalism\Services\Stripe\Data\DataWriters\StripeEventsDataWriter;
 use CarloNicora\Minimalism\Services\Stripe\Enums\AccountStatus;
+use CarloNicora\Minimalism\Services\Stripe\IO\StripeEventIO;
 use JsonException;
 use LogicException;
 use RuntimeException;
@@ -25,15 +24,13 @@ class AbstractWebhook extends AbstractModel
 
     /**
      * @param string $webhookSecret
-     * @param StripeEventsDataReader $eventsDataReader
-     * @param StripeEventsDataWriter $eventsDataWriter
+     * @param StripeEventIO $eventIO
      * @return Event
      * @throws JsonException
      */
     protected static function processEvent(
-        string                 $webhookSecret,
-        StripeEventsDataReader $eventsDataReader,
-        StripeEventsDataWriter $eventsDataWriter,
+        string        $webhookSecret,
+        StripeEventIO $eventIO,
     ): StripeObject
     {
         if (empty(static::SUPPORTED_EVENT_TYPES)) {
@@ -42,7 +39,7 @@ class AbstractWebhook extends AbstractModel
 
         try {
             $signatureHeader = $_SERVER['HTTP_STRIPE_SIGNATURE'];
-            $event = Webhook::constructEvent(file_get_contents('php://input'), $signatureHeader, $webhookSecret);
+            $event           = Webhook::constructEvent(file_get_contents('php://input'), $signatureHeader, $webhookSecret);
         } catch (UnexpectedValueException $e) {
             throw new RuntimeException(message: 'Webhook failed to parse a request', code: 400, previous: $e);
         } catch (SignatureVerificationException $signatureException) {
@@ -53,7 +50,7 @@ class AbstractWebhook extends AbstractModel
             throw new RuntimeException(message: 'Event ' . $event->type . ' can not be processed in the webhook ' . static::class, code: 422);
         }
 
-        if (! empty($eventsDataReader->byId($event->id))) {
+        if (! empty($eventIO->byId($event->id))) {
             throw new RuntimeException(message: 'A dublicate webhook was ignored', code: 200);
         }
 
@@ -63,16 +60,16 @@ class AbstractWebhook extends AbstractModel
         }
 
         $details = match (get_class($object)) {
-            Account::class => ['status' => AccountStatus::calculate($object)->value],
+            Account::class       => ['status' => AccountStatus::calculate($object)->value],
             PaymentIntent::class => [
                 'last_payment_error' => $object->last_payment_error,
                 'canceled_at' => $object->canceled_at,
                 'cancellation_reason' => $object->cancellation_reason
             ],
-            default => null
+            default              => null
         };
 
-        $eventsDataWriter->create(
+        $eventIO->create(
             eventId: $event->id,
             type: $event->type,
             createdAt: date(format: 'Y-m-d H:i:s', timestamp: $event->created),

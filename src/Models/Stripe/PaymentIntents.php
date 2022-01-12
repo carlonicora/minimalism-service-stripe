@@ -3,11 +3,11 @@
 namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe;
 
 use CarloNicora\Minimalism\Abstracts\AbstractModel;
-use CarloNicora\Minimalism\Interfaces\UserServiceInterface;
+use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserServiceInterface;
 use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
-use CarloNicora\Minimalism\Services\Stripe\Data\DataReaders\StripePaymentIntentsDataReader;
-use CarloNicora\Minimalism\Services\Stripe\Data\ResourceReaders\StripePaymentIntentsResourceReader;
+use CarloNicora\Minimalism\Services\Stripe\Factories\Resources\StripePaymentIntentsResourceFactory;
+use CarloNicora\Minimalism\Services\Stripe\IO\SrtipePaymentIntentIO;
 use RuntimeException;
 
 class PaymentIntents extends AbstractModel
@@ -46,20 +46,20 @@ class PaymentIntents extends AbstractModel
      * )
      *
      * @param UserServiceInterface $userService
-     * @param StripePaymentIntentsDataReader $intentsDataReader
-     * @param StripePaymentIntentsResourceReader $intentsResourceReader
+     * @param SrtipePaymentIntentIO $paymentIntentIO
+     * @param StripePaymentIntentsResourceFactory $intentsResourceFactory
      * @param PositionedParameter $intent
      * @return int
      * @throws RecordNotFoundException
      */
     public function get(
-        UserServiceInterface $userService,
-        StripePaymentIntentsDataReader $intentsDataReader,
-        StripePaymentIntentsResourceReader $intentsResourceReader,
-        PositionedParameter $intent
+        UserServiceInterface                $userService,
+        SrtipePaymentIntentIO               $paymentIntentIO,
+        StripePaymentIntentsResourceFactory $intentsResourceFactory,
+        PositionedParameter                 $intent
     ): int
     {
-        $paymentIntentData = $intentsDataReader->byStripePaymentIntentId($intent->getValue());
+        $paymentIntentData = $paymentIntentIO->byStripePaymentIntentId($intent->getValue());
 
         $userService->load();
         if ($userService->getId() !== $paymentIntentData['payerId']) {
@@ -67,7 +67,7 @@ class PaymentIntents extends AbstractModel
         }
 
         $this->document->addResource(
-            $intentsResourceReader->byStripePaymentIntentId($intent->getValue())
+            $intentsResourceFactory->byStripePaymentIntentId($intent->getValue())
         );
 
         return 200;

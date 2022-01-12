@@ -37,5 +37,5 @@ enum Country: string
     case Spain = 'ES';
     case Sweden = 'SE';
     case Switzerland = 'CH';
-    case UnitedKingdom  = 'GB';
+    case UnitedKingdom = 'GB';
 }

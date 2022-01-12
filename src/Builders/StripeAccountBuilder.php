@@ -1,6 +1,6 @@
 <?php
 
-namespace CarloNicora\Minimalism\Services\Stripe\Data\Builders;
+namespace CarloNicora\Minimalism\Services\Stripe\Builders;
 
 use CarloNicora\Minimalism\Services\Builder\Abstracts\AbstractResourceBuilder;
 use Exception;
@@ -15,7 +15,7 @@ use Exception;
  * )
  *
  * @OA\Schema(
-     *     schema="stripeAccount",
+ *     schema="stripeAccount",
  *     title="Stripe account",
  *     description="Stripe account resource",
  *     allOf={@OA\Schema(ref="#/components/schemas/stripeAccountIdentifier")},
