@@ -7,7 +7,7 @@ use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserServiceInterface;
 use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\Stripe\Factories\Resources\StripePaymentIntentsResourceFactory;
-use CarloNicora\Minimalism\Services\Stripe\IO\SrtipePaymentIntentIO;
+use CarloNicora\Minimalism\Services\Stripe\IO\StripePaymentIntentIO;
 use RuntimeException;
 
 class PaymentIntents extends AbstractModel
@@ -46,7 +46,7 @@ class PaymentIntents extends AbstractModel
      * )
      *
      * @param UserServiceInterface $userService
-     * @param SrtipePaymentIntentIO $paymentIntentIO
+     * @param StripePaymentIntentIO $paymentIntentIO
      * @param StripePaymentIntentsResourceFactory $intentsResourceFactory
      * @param PositionedParameter $intent
      * @return int
@@ -54,7 +54,7 @@ class PaymentIntents extends AbstractModel
      */
     public function get(
         UserServiceInterface                $userService,
-        SrtipePaymentIntentIO               $paymentIntentIO,
+        StripePaymentIntentIO               $paymentIntentIO,
         StripePaymentIntentsResourceFactory $intentsResourceFactory,
         PositionedParameter                 $intent
     ): int

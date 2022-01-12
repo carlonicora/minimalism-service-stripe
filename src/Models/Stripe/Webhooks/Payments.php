@@ -5,7 +5,7 @@ namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks;
 use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\Stripe\Enums\PaymentIntentStatus;
 use CarloNicora\Minimalism\Services\Stripe\Factories\Resources\StripePaymentIntentsResourceFactory;
-use CarloNicora\Minimalism\Services\Stripe\IO\SrtipePaymentIntentIO;
+use CarloNicora\Minimalism\Services\Stripe\IO\StripePaymentIntentIO;
 use CarloNicora\Minimalism\Services\Stripe\IO\StripeEventIO;
 use CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks\Abstracts\AbstractWebhook;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
@@ -48,7 +48,7 @@ class Payments extends AbstractWebhook
      * @param Stripe $stripe
      * @param StripeEventIO $eventIO
      * @param StripePaymentIntentsResourceFactory $paymentResourceFactory
-     * @param SrtipePaymentIntentIO $paymentIntentIO
+     * @param StripePaymentIntentIO $paymentIntentIO
      * @return int
      * @throws JsonException
      * @throws RecordNotFoundException
@@ -58,7 +58,7 @@ class Payments extends AbstractWebhook
         Stripe                              $stripe,
         StripeEventIO                       $eventIO,
         StripePaymentIntentsResourceFactory $paymentResourceFactory,
-        SrtipePaymentIntentIO               $paymentIntentIO
+        StripePaymentIntentIO $paymentIntentIO
     ): int
     {
         /** @var PaymentIntent $stripePaymentIntent */

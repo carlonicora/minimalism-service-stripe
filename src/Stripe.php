@@ -17,7 +17,7 @@ use CarloNicora\Minimalism\Services\Stripe\Factories\Resources\StripePaymentInte
 use CarloNicora\Minimalism\Services\Stripe\Factories\Resources\StripeSubscriptionsResourceFactory;
 use CarloNicora\Minimalism\Services\Stripe\Interfaces\StripeServiceInterface;
 use CarloNicora\Minimalism\Services\Stripe\Interfaces\UserInterface;
-use CarloNicora\Minimalism\Services\Stripe\IO\SrtipePaymentIntentIO;
+use CarloNicora\Minimalism\Services\Stripe\IO\StripePaymentIntentIO;
 use CarloNicora\Minimalism\Services\Stripe\IO\StripeAccountIO;
 use CarloNicora\Minimalism\Services\Stripe\IO\StripeCustomerIO;
 use CarloNicora\Minimalism\Services\Stripe\IO\StripeProductIO;
@@ -228,7 +228,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
             $this->userInterface->load($receiperId);
 
-            $paymentIO = $this->objectFactory->create(className: SrtipePaymentIntentIO::class);
+            $paymentIO = $this->objectFactory->create(className: StripePaymentIntentIO::class);
             $paymentIO->create(
                 paymentIntentId: $stripePaymentIntent->id,
                 payerId: $payerId,

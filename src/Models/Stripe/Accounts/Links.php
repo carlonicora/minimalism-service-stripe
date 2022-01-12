@@ -22,7 +22,7 @@ class Links extends AbstractModel
      *     path="/stripe/accounts/links",
      *     tags={"stripe"},
      *     summary="Create a new onboardgin link to Stripe",
-     *     operationId="createSrtipeLink",
+     *     operationId="createStripeLink",
      *     @OA\Response(
      *         response=201,
      *         description="A new link created",

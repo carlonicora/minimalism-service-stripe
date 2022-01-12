@@ -7,7 +7,7 @@ use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundExceptio
 use CarloNicora\Minimalism\Services\Stripe\Databases\Finance\Tables\StripePaymentIntentsTable;
 use CarloNicora\Minimalism\Services\Stripe\Enums\PaymentIntentStatus;
 
-class SrtipePaymentIntentIO extends AbstractLoader
+class StripePaymentIntentIO extends AbstractLoader
 {
 
     /**
