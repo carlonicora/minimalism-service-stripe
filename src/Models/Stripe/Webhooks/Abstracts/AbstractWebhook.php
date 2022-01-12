@@ -69,6 +69,7 @@ class AbstractWebhook extends AbstractModel
             default              => null
         };
 
+        /** @noinspection UnusedFunctionResultInspection */
         $eventIO->create(
             eventId: $event->id,
             type: $event->type,

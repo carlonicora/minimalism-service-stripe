@@ -60,6 +60,7 @@ class Subscriptions
     {
         [$amount, $phlowFeePercent, $frequency] = self::processPayload($currentUser, $payload);
 
+        /** @noinspection UnusedFunctionResultInspection */
         $stripe->subscribe(
             payerId: $currentUser->getId(),
             receiperId: $author->getValue(),

@@ -91,6 +91,7 @@ class StripeAccountIO extends AbstractLoader
             'payoutsEnabled' => $payoutsEnabled
         ];
 
+        /** @noinspection UnusedFunctionResultInspection */
         $this->data->insert(
             tableInterfaceClassName: StripeAccountsTable::class,
             records: $account,
@@ -113,6 +114,7 @@ class StripeAccountIO extends AbstractLoader
     ): void
     {
         /** @see StripeAccountsTable::updateStatuses() */
+        /** @noinspection UnusedFunctionResultInspection */
         $this->data->run(
             tableInterfaceClassName: StripeAccountsTable::class,
             functionName: 'updateStatuses',

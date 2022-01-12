@@ -109,6 +109,7 @@ class StripeSubscriptionIO extends AbstractLoader
     ): void
     {
         /** @see StripePaymentIntentsTable::updateStatus() */
+        /** @noinspection UnusedFunctionResultInspection */
         $this->data->run(
             tableInterfaceClassName: StripePaymentIntentsTable::class,
             functionName: 'updateStatus',

@@ -74,6 +74,7 @@ class Accounts extends AbstractWebhook
             if ($stripeAccount->payouts_enabled
                 && ($realStatus === AccountStatus::Comlete || $realStatus === AccountStatus::Enabled)
             ) {
+                /** @noinspection UnusedFunctionResultInspection */
                 $stripe->getOrCreateProduct(
                     artistId: $userId,
                 );

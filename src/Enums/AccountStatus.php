@@ -27,7 +27,7 @@ enum AccountStatus: string
             return $disabledReason->accountStatus();
         }
 
-        if ($account->payouts_enabled === false) {
+        if (!$account->payouts_enabled) {
             throw new LogicException(message: 'Connected account status with disabled payouts without disabled reason not implemented', code: 500);
         }
 
