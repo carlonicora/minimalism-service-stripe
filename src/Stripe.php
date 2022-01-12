@@ -564,12 +564,20 @@ class Stripe extends AbstractService implements StripeServiceInterface
         return $this->MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_PAYMENTS;
     }
 
+    /**
+     * @return void
+     */
     public function initialise(): void
     {
+        parent::initialise();
     }
 
+    /**
+     * @return void
+     */
     public function destroy(): void
     {
+        parent::destroy();
     }
 
 }
