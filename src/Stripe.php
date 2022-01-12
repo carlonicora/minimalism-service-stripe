@@ -5,7 +5,6 @@ namespace CarloNicora\Minimalism\Services\Stripe;
 use CarloNicora\JsonApi\Document;
 use CarloNicora\JsonApi\Objects\Error;
 use CarloNicora\Minimalism\Abstracts\AbstractService;
-use CarloNicora\Minimalism\Factories\ObjectFactory;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\Path;
@@ -46,23 +45,22 @@ class Stripe extends AbstractService implements StripeServiceInterface
      */
     private StripeClient $client;
 
+    /** @var UserInterface */
+    private UserInterface $userInterface;
+
     /**
-     * @param ObjectFactory $objectFactory
      * @param StripeLogger $logger
      * @param Path $path
      * @param EncrypterInterface $encrypter
-     * @param UserInterface $userInterface
      * @param string $MINIMALISM_SERVICE_STRIPE_API_KEY
      * @param string $MINIMALISM_SERVICE_STRIPE_CLIENT_ID
      * @param string $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_ACCOUNTS
      * @param string $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_PAYMENTS
      */
     public function __construct(
-        protected ObjectFactory    $objectFactory,
         private StripeLogger       $logger,
         private Path               $path,
         private EncrypterInterface $encrypter,
-        private UserInterface      $userInterface,
         private string             $MINIMALISM_SERVICE_STRIPE_API_KEY,
         private string             $MINIMALISM_SERVICE_STRIPE_CLIENT_ID,
         private string             $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_ACCOUNTS,
@@ -84,6 +82,16 @@ class Stripe extends AbstractService implements StripeServiceInterface
             'connect_base' => BaseStripeClient::DEFAULT_CONNECT_BASE,
             'files_base' => BaseStripeClient::DEFAULT_FILES_BASE,
         ]);
+    }
+
+    /**
+     * @param UserInterface $userService
+     * @return void
+     */
+    public function setUserService(
+        UserInterface $userService
+    ): void {
+        $this->userInterface = $userService;
     }
 
     public static function getBaseInterface(): ?string
@@ -229,6 +237,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
             $this->userInterface->load($receiperId);
 
             $paymentIO = $this->objectFactory->create(className: StripePaymentIntentIO::class);
+            /** @noinspection UnusedFunctionResultInspection */
             $paymentIO->create(
                 paymentIntentId: $stripePaymentIntent->id,
                 payerId: $payerId,
@@ -419,6 +428,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
         } catch (RecordNotFoundException) {
             // check if an artist has a connected Stripe account
             $accountsDataReader = $this->objectFactory->create(className: StripeAccountIO::class);
+            /** @noinspection UnusedFunctionResultInspection */
             $accountsDataReader->byUserId($artistId);
 
             $this->userInterface->load($artistId);
@@ -521,6 +531,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
             payerId: $payerId
         );
 
+        /** @noinspection UnusedFunctionResultInspection */
         $this->client->subscriptions->cancel($subscription['stripeSubscriptionId']);
     }
 
