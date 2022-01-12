@@ -4,6 +4,7 @@ namespace CarloNicora\Minimalism\Services\Stripe\Interfaces;
 
 use CarloNicora\JsonApi\Document;
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
+use CarloNicora\Minimalism\Services\Stripe\Enums\SubscriptionFrequency;
 use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
 use Stripe\Account;
 use Stripe\Exception\ApiErrorException;
@@ -70,4 +71,46 @@ interface StripeServiceInterface extends ServiceInterface
      */
     public function getAccountStatuses(int $userId): array;
 
+    /**
+     * @param int $payerId
+     * @param int $receiperId
+     * @param Amount $amount
+     * @param int $phlowFeePercent
+     * @param SubscriptionFrequency $frequency
+     * @return Document
+     */
+    public function subscribe(
+        int                   $payerId,
+        int                   $receiperId,
+        Amount                $amount,
+        int                   $phlowFeePercent,
+        SubscriptionFrequency $frequency = SubscriptionFrequency::Monthly
+    ): Document;
+
+    /**
+     * @param int $receiperId
+     * @param int $payerId
+     * @return void
+     * @throws ApiErrorException
+     */
+    public function cancelSubscription(
+        int $receiperId,
+        int $payerId,
+    ): void;
+
+    /**
+     * @param int $artistId
+     * @return array
+     */
+    public function getOrCreateProduct(
+        int $artistId
+    ): array;
+
+    /**
+     * @param UserInterface $userService
+     * @return void
+     */
+    public function setUserService(
+        UserInterface $userService
+    ): void;
 }
