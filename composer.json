@@ -1,7 +1,7 @@
 {
   "name": "carlonicora/minimalism-service-stripe",
   "description": "Stripe payments service for minimalism",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "homepage": "https://carlonicora.com",
   "time": "2021-10-29",
   "license": "MIT",
@@ -30,7 +30,7 @@
     "carlonicora/minimalism": "~13",
     "stripe/stripe-php": "^7.100",
     "carlonicora/minimalism-service-data-mapper": "~1.0",
-    "carlonicora/jsonapi": "3.0",
+    "carlonicora/jsonapi": "~3.0",
     "carlonicora/minimalism-service-mysql": "~5.0",
     "carlonicora/minimalism-interface-encrypter": "~1.0",
     "carlonicora/minimalism-service-builder": "~2.0",
