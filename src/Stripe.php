@@ -80,6 +80,8 @@ class Stripe extends AbstractService implements StripeServiceInterface
             'connect_base' => BaseStripeClient::DEFAULT_CONNECT_BASE,
             'files_base' => BaseStripeClient::DEFAULT_FILES_BASE,
         ]);
+
+        parent::__construct();
     }
 
     /**

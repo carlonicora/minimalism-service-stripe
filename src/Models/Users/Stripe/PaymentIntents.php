@@ -3,6 +3,7 @@
 namespace CarloNicora\Minimalism\Services\Stripe\Models\Users\Stripe;
 
 use CarloNicora\Minimalism\Abstracts\AbstractModel;
+use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserServiceInterface;
 use CarloNicora\Minimalism\Services\Stripe\Enums\Currency;
@@ -51,14 +52,14 @@ class PaymentIntents extends AbstractModel
      * @param Stripe $stripe
      * @param PositionedEncryptedParameter $receiper
      * @param array $payload
-     * @return int
+     * @return HttpCode
      */
     public function post(
         UserServiceInterface         $currentUser,
         Stripe                       $stripe,
         PositionedEncryptedParameter $receiper,
         array                        $payload
-    ): int
+    ): HttpCode
     {
         $currentUser->load();
 
@@ -82,6 +83,7 @@ class PaymentIntents extends AbstractModel
             payerEmail: $currentUser->getEmail(),
         );
 
-        return current($this->document->errors)?->status ?? 201;
+        $errorCode = current($this->document->errors)?->status;
+        return $errorCode? HttpCode::from($errorCode) : HttpCode::Created;
     }
 }

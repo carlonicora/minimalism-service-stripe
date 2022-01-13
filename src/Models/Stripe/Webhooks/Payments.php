@@ -2,6 +2,7 @@
 
 namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks;
 
+use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\Stripe\Enums\PaymentIntentStatus;
 use CarloNicora\Minimalism\Services\Stripe\Factories\Resources\StripePaymentIntentsResourceFactory;
@@ -49,7 +50,7 @@ class Payments extends AbstractWebhook
      * @param StripeEventIO $eventIO
      * @param StripePaymentIntentsResourceFactory $paymentResourceFactory
      * @param StripePaymentIntentIO $paymentIntentIO
-     * @return int
+     * @return HttpCode
      * @throws JsonException
      * @throws RecordNotFoundException
      * @throws Exception
@@ -59,7 +60,7 @@ class Payments extends AbstractWebhook
         StripeEventIO                       $eventIO,
         StripePaymentIntentsResourceFactory $paymentResourceFactory,
         StripePaymentIntentIO $paymentIntentIO
-    ): int
+    ): HttpCode
     {
         /** @var PaymentIntent $stripePaymentIntent */
         $stripePaymentIntent = self::processEvent(
@@ -78,6 +79,6 @@ class Payments extends AbstractWebhook
 
         $this->document->addResource($localPayment);
 
-        return 201;
+        return HttpCode::Created;
     }
 }

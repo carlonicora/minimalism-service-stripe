@@ -1,7 +1,7 @@
 {
   "name": "carlonicora/minimalism-service-stripe",
   "description": "Stripe payments service for minimalism",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "homepage": "https://carlonicora.com",
   "time": "2021-10-29",
   "license": "MIT",
@@ -27,16 +27,17 @@
   },
   "require": {
     "php": ">=8.1",
-    "carlonicora/minimalism": "~13",
-    "stripe/stripe-php": "^7.100",
-    "carlonicora/minimalism-service-data-mapper": "~1.0",
+    "ext-json": "*",
     "carlonicora/jsonapi": "~3.0",
+    "carlonicora/minimalism": "~13",
+    "carlonicora/minimalism-interface-data": "~1.0",
+    "carlonicora/minimalism-service-data-mapper": "~1.0",
     "carlonicora/minimalism-service-mysql": "~5.0",
     "carlonicora/minimalism-interface-encrypter": "~1.0",
     "carlonicora/minimalism-service-builder": "~2.0",
     "carlonicora/minimalism-service-encrypter": "~4.0",
     "carlonicora/minimalism-interface-user": "~1.0",
-    "ext-json": "*"
+    "stripe/stripe-php": "^7.100",
   },
   "require-dev": {
     "zircote/swagger-php": "~3.2"

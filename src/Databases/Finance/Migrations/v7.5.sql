@@ -20,8 +20,8 @@ create table stripeSubscriptions
 create unique index stripeSubscriptions_subscriptionId_uindex
     on stripeSubscriptions (subscriptionId);
 
-create unique index stripeSubscriptions_authorId_payerId_uindex
-    on stripeSubscriptions (authorId, payerId);
+create unique index stripeSubscriptions_reciperId_payerId_uindex
+    on stripeSubscriptions (reciperId, payerId);
 
 create table stripeCustomers
 (

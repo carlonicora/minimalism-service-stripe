@@ -2,6 +2,7 @@
 
 namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks;
 
+use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\Stripe\Enums\AccountStatus;
 use CarloNicora\Minimalism\Services\Stripe\Factories\Resources\StripeAccountsResourceFactory;
@@ -42,7 +43,7 @@ class Accounts extends AbstractWebhook
      * @param StripeEventIO $eventIO
      * @param StripeAccountsResourceFactory $accountsResourceFactory
      * @param StripeAccountIO $accountIO
-     * @return int
+     * @return HttpCode
      * @throws JsonException
      * @throws RecordNotFoundException
      */
@@ -51,7 +52,7 @@ class Accounts extends AbstractWebhook
         StripeEventIO                 $eventIO,
         StripeAccountsResourceFactory $accountsResourceFactory,
         StripeAccountIO               $accountIO,
-    ): int
+    ): HttpCode
     {
         /** @var Account $stripeAccount */
         $stripeAccount = self::processEvent(
@@ -85,6 +86,6 @@ class Accounts extends AbstractWebhook
             $accountsResourceFactory->byUserId($userId)
         );
 
-        return 201;
+        return HttpCode::Created;
     }
 }

@@ -2,6 +2,7 @@
 
 namespace CarloNicora\Minimalism\Services\Stripe\Models\Users\Stripe;
 
+use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserServiceInterface;
 use CarloNicora\Minimalism\Services\Stripe\Enums\Currency;
@@ -49,14 +50,14 @@ class Subscriptions
      * @param UserServiceInterface $currentUser
      * @param PositionedEncryptedParameter $author
      * @param array $payload
-     * @return int
+     * @return HttpCode
      */
     public function post(
         Stripe                       $stripe,
         UserServiceInterface         $currentUser,
         PositionedEncryptedParameter $author,
         array                        $payload
-    ): int
+    ): HttpCode
     {
         [$amount, $phlowFeePercent, $frequency] = self::processPayload($currentUser, $payload);
 
@@ -69,7 +70,7 @@ class Subscriptions
             frequency: $frequency
         );
 
-        return 201;
+        return HttpCode::Created;
     }
 
     /**
@@ -118,14 +119,14 @@ class Subscriptions
      * @param Stripe $stripe
      * @param UserServiceInterface $currentUser
      * @param PositionedEncryptedParameter $author
-     * @return int
+     * @return HttpCode
      * @throws ApiErrorException
      */
     public function delete(
         Stripe                       $stripe,
         UserServiceInterface         $currentUser,
         PositionedEncryptedParameter $author,
-    ): int
+    ): HttpCode
     {
 
         $currentUser->load();
@@ -138,6 +139,6 @@ class Subscriptions
             payerId: $currentUser->getId()
         );
 
-        return 204;
+        return HttpCode::NoContent;
     }
 }

@@ -3,6 +3,7 @@
 namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Accounts;
 
 use CarloNicora\Minimalism\Abstracts\AbstractModel;
+use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Interfaces\DefaultServiceInterface;
 use CarloNicora\Minimalism\Interfaces\LoggerInterface;
 use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserServiceInterface;
@@ -41,7 +42,7 @@ class Links extends AbstractModel
      * @param LoggerInterface $logger
      * @param Stripe $stripe
      * @param StripeAccountIO $accountIO
-     * @return int
+     * @return HttpCode
      * @throws ApiErrorException
      * @throws RecordNotFoundException
      * @throws Exception
@@ -52,7 +53,7 @@ class Links extends AbstractModel
         LoggerInterface         $logger,
         Stripe                  $stripe,
         StripeAccountIO         $accountIO
-    ): int
+    ): HttpCode
     {
         $currentUser->load();
         if ($currentUser->isVisitor()) {
@@ -88,7 +89,8 @@ class Links extends AbstractModel
             throw $fatalException;
         }
 
-        return current($this->document->errors)?->status ?? 201;
+        $errorCode = current($this->document->errors)?->status;
+        return $errorCode? HttpCode::from($errorCode) : HttpCode::Created;
     }
 
 }

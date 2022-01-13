@@ -41,12 +41,4 @@ class StripeLogger implements LoggerInterface, ServiceInterface
     {
         // TODO are there any other way to initialise StripeLogger dependency in the Stripe service without implementing the ServiceInterface?
     }
-
-    public function initialise(): void
-    {
-    }
-
-    public function destroy(): void
-    {
-    }
 }
