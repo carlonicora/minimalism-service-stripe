@@ -37,7 +37,7 @@
     "carlonicora/minimalism-service-builder": "~2.0",
     "carlonicora/minimalism-service-encrypter": "~4.0",
     "carlonicora/minimalism-interface-user": "~1.0",
-    "stripe/stripe-php": "^7.100",
+    "stripe/stripe-php": "^7.100"
   },
   "require-dev": {
     "zircote/swagger-php": "~3.2"
