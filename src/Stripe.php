@@ -587,14 +587,22 @@ class Stripe extends AbstractService implements StripeServiceInterface
         int $payerId,
     ): void
     {
-        $subscriptionDataReader = $this->objectFactory->create(className: StripeSubscriptionIO::class);
-        $subscription           = $subscriptionDataReader->byReceiperAndPayerIds(
+        $subscriptionIO = $this->objectFactory->create(className: StripeSubscriptionIO::class);
+        $subscription   = $subscriptionIO->byReceiperAndPayerIds(
             receiperId: $receiperId,
             payerId: $payerId
         );
 
+        $receiper = $this->objectFactory->create(StripeAccountIO::class)->byUserId($receiperId);
+
         /** @noinspection UnusedFunctionResultInspection */
-        $this->client->subscriptions->cancel($subscription['stripeSubscriptionId']);
+        $this->client->subscriptions->cancel(
+            $subscription['stripeSubscriptionId'],
+            null,
+            ['stripe_account' => $receiper['stripeAccountId']]
+        );
+
+        $subscriptionIO->delete($subscription);
     }
 
     /**

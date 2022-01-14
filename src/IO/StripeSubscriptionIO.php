@@ -131,4 +131,18 @@ class StripeSubscriptionIO extends AbstractLoader
             ],
         );
     }
+
+    /**
+     * @param array $subscriptions
+     * @return void
+     */
+    public function delete(
+        array $subscriptions
+    ): void
+    {
+        $this->data->delete(
+            tableInterfaceClassName: StripeSubscriptionsTable::class,
+            records: $subscriptions
+        );
+    }
 }
