@@ -16,9 +16,9 @@ use CarloNicora\Minimalism\Services\Stripe\Factories\Resources\StripePaymentInte
 use CarloNicora\Minimalism\Services\Stripe\Factories\Resources\StripeSubscriptionsResourceFactory;
 use CarloNicora\Minimalism\Services\Stripe\Interfaces\StripeServiceInterface;
 use CarloNicora\Minimalism\Services\Stripe\Interfaces\UserInterface;
-use CarloNicora\Minimalism\Services\Stripe\IO\StripePaymentIntentIO;
 use CarloNicora\Minimalism\Services\Stripe\IO\StripeAccountIO;
 use CarloNicora\Minimalism\Services\Stripe\IO\StripeCustomerIO;
+use CarloNicora\Minimalism\Services\Stripe\IO\StripePaymentIntentIO;
 use CarloNicora\Minimalism\Services\Stripe\IO\StripeProductIO;
 use CarloNicora\Minimalism\Services\Stripe\IO\StripeSubscriptionIO;
 use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
@@ -82,19 +82,20 @@ class Stripe extends AbstractService implements StripeServiceInterface
         ]);
     }
 
+    public static function getBaseInterface(): ?string
+    {
+        return StripeServiceInterface::class;
+    }
+
     /**
      * @param UserInterface $userService
      * @return void
      */
     public function setUserService(
         UserInterface $userService
-    ): void {
-        $this->userInterface = $userService;
-    }
-
-    public static function getBaseInterface(): ?string
+    ): void
     {
-        return StripeServiceInterface::class;
+        $this->userInterface = $userService;
     }
 
     /**
@@ -212,7 +213,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
                 $paymentMethods [] = $method->value;
             }
 
-            $payer = $this->getOrCreateCustomer($payerId);
+            $payer = $this->getOrCreatePlatformCustomer($payerId);
 
             $stripePaymentIntent = $this->client->paymentIntents->create(
                 [
@@ -292,7 +293,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
      * @return array
      * @throws Exception
      */
-    protected function getOrCreateCustomer(
+    protected function getOrCreatePlatformCustomer(
         int $userId
     ): array
     {
@@ -337,35 +338,49 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $result = new Document();
 
         try {
-            $product = $this->getOrCreateProduct($receiperId);
+            $accountsDataReader      = $this->objectFactory->create(className: StripeAccountIO::class);
+            $receiper                = $accountsDataReader->byUserId($receiperId);
+            $receiperStripeAccountId = $receiper['stripeAccountId'];
+
+            $product = $this->getOrCreateProduct($receiperId, $receiperStripeAccountId);
 
             $price = $this->createPrice(
                 receiperId: $receiperId,
+                receiperStripeAccountId: $receiperStripeAccountId,
                 payerId: $payerId,
                 stripeProductId: $product['stripeProductId'],
                 amount: $amount,
                 frequency: $frequency
             );
 
-            $customer = $this->getOrCreateCustomer($payerId);
+            $customerId = $this->getCustomerId($payerId, $receiperStripeAccountId);
 
-            $stripeSubscription = $this->client->subscriptions->create([
-                'customer' => $customer['stripeCustomerId'],
-                'items' => [
-                    ['price' => $price->id]
-                ],
-                'expand' => ['latest_invoice.payment_intent'],
-                'application_fee_percent' => $phlowFeePercent
-            ]);
+            $stripeSubscription = $this->client->subscriptions->create(
+                [
+                    'customer' => $customerId,
+                    'items' => [
+                        ['price' => $price->id]
+                    ],
+                    'expand' => ['latest_invoice.payment_intent'],
+                    'application_fee_percent' => $phlowFeePercent,
+                    'payment_behavior' => 'default_incomplete',
+                ], ["stripe_account" => $receiperStripeAccountId]
+            );
+
+            $payer = $accountsDataReader->byUserId($payerId);
 
             $subscriptionIO = $this->objectFactory->create(className: StripeSubscriptionIO::class);
             $subscription   = $subscriptionIO->create(
                 payerId: $payerId,
+                payerEmail: $payer['email'],
+                receiperId: $receiperId,
+                receiperEmail: $receiper['email'],
                 stripeSubscriptionId: $stripeSubscription->id,
                 stripePriceId: $price->id,
-                stripeProductId: $product['productId'],
+                productId: $product['productId'],
                 amount: $amount->inCents(),
                 phlowFeePercent: $phlowFeePercent,
+                status: $stripeSubscription->status,
                 currency: $amount->currency(),
                 frequency: $frequency
             );
@@ -412,36 +427,34 @@ class Stripe extends AbstractService implements StripeServiceInterface
     }
 
     /**
-     * @param int $artistId
+     * @param int $receiperId
+     * @param string $receiperStripeAccountId
      * @return array
-     * @throws RecordNotFoundException
+     * @throws ApiErrorException
      * @throws Exception
      */
     public function getOrCreateProduct(
-        int $artistId
+        int    $receiperId,
+        string $receiperStripeAccountId
     ): array
     {
         try {
-            return $this->objectFactory->create(className: StripeProductIO::class)->byAuthorId($artistId);
+            return $this->objectFactory->create(className: StripeProductIO::class)->byReceiperId($receiperId);
         } catch (RecordNotFoundException) {
-            // check if an artist has a connected Stripe account
-            $accountsDataReader = $this->objectFactory->create(className: StripeAccountIO::class);
-            /** @noinspection UnusedFunctionResultInspection */
-            $accountsDataReader->byUserId($artistId);
-
-            $this->userInterface->load($artistId);
-            $description = 'TODO';
+            $this->userInterface->load($receiperId);
             return $this->createProduct(
-                userId: $artistId,
+                receiperId: $receiperId,
+                receiperStripeAccountId: $receiperStripeAccountId,
                 name: $this->userInterface->getUserName(),
                 email: $this->userInterface->getEmail(),
-                description: $description
+                description: 'Monthly payments to ' . $this->userInterface->getUserName(),
             );
         }
     }
 
     /**
-     * @param int $userId
+     * @param int $receiperId
+     * @param string $receiperStripeAccountId
      * @param string $name
      * @param string $email
      * @param string $description
@@ -450,28 +463,32 @@ class Stripe extends AbstractService implements StripeServiceInterface
      * @throws Exception
      */
     protected function createProduct(
-        int    $userId,
+        int    $receiperId,
+        string $receiperStripeAccountId,
         string $name,
         string $email,
         string $description
     ): array
     {
-        $this->userInterface->load($userId);
+        $this->userInterface->load($receiperId);
 
-        $product = $this->client->products->create([
-            'name' => $name,
-            'description' => $description,
-            'url' => $this->userInterface->getUrl(),
-            'images' => [$this->userInterface->getAvatar()],
-            'metadata' => [
-                'userId' => $userId,
-                'email' => $email
+        $product = $this->client->products->create(
+            [
+                'name' => $name,
+                'description' => $description,
+                'url' => $this->userInterface->getUrl(),
+                'images' => [$this->userInterface->getAvatar()],
+                'metadata' => [
+                    'userId' => $receiperId,
+                    'email' => $email
+                ],
             ],
-        ]);
+            ['stripe_account' => $receiperStripeAccountId]
+        );
 
         return $this->objectFactory->create(className: StripeProductIO::class)->create(
             stripeProductId: $product->id,
-            userId: $userId,
+            receiperId: $receiperId,
             name: $name,
             description: $description
         );
@@ -479,6 +496,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
     /**
      * @param int $receiperId
+     * @param string $receiperStripeAccountId
      * @param int $payerId
      * @param string $stripeProductId
      * @param Amount $amount
@@ -488,27 +506,73 @@ class Stripe extends AbstractService implements StripeServiceInterface
      */
     protected function createPrice(
         int                   $receiperId,
+        string                $receiperStripeAccountId,
         int                   $payerId,
         string                $stripeProductId,
         Amount                $amount,
         SubscriptionFrequency $frequency
     ): Price
     {
-        return $this->client->prices->create([
-            'product' => $stripeProductId,
-            'unit_amount' => $amount->inCents(),
-            'currency' => $amount->currency()->value,
-            'type' => Price::TYPE_RECURRING,
-            'nickname' => $payerId . ' monthly subscription to ' . $receiperId,
-            'recurring' => [
-                'interval' => $frequency->toStipeConstant(),
-                'usage_type' => 'licensed'
+        return $this->client->prices->create(
+            [
+                'product' => $stripeProductId,
+                'unit_amount' => $amount->inCents(),
+                'currency' => $amount->currency()->value,
+                'nickname' => $payerId . ' monthly subscription to ' . $receiperId,
+                'recurring' => [
+                    'interval' => $frequency->toStipeConstant(),
+                    'usage_type' => 'licensed'
+                ],
+                'metadata' => [
+                    'from_user_id' => $payerId,
+                    'to_user_id' => $receiperId
+                ],
             ],
-            'metadata' => [
-                'from_user_id' => $payerId,
-                'to_user_id' => $receiperId
-            ],
-        ]);
+            ['stripe_account' => $receiperStripeAccountId]
+        );
+    }
+
+    /**
+     * @param int $payerId
+     * @param string $receiperStripeAccountId
+     * @return string
+     * @throws ApiErrorException
+     * @throws Exception
+     */
+    protected function getCustomerId(
+        int    $payerId,
+        string $receiperStripeAccountId
+    ): string
+    {
+        $platformCustomer = $this->getOrCreatePlatformCustomer($payerId);
+
+        // TODO check if a customer has a payment method
+        $noPaymentMethod = true;
+        if ($noPaymentMethod) {
+            $this->userInterface->load($payerId);
+            $customer = $this->client->customers->create(
+                [
+                    'email' => $this->userInterface->getEmail(),
+                    'name' => $this->userInterface->getUserName(),
+                    'metadata' => [
+                        'userId' => $payerId
+                    ]
+                ],
+                ['stripe_account' => $receiperStripeAccountId]
+            );
+        } else {
+            $token = $this->client->tokens->create(
+                ['customer' => $platformCustomer['stripeCustomerId']],
+                ['stripe_account' => $receiperStripeAccountId]
+            );
+
+            $customer = $this->client->customers->create(
+                ['source' => $token->id],
+                ['stripe_account' => $receiperStripeAccountId]
+            );
+        }
+
+        return $customer->id;
     }
 
     /**

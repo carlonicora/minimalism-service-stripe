@@ -13,6 +13,7 @@ use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use JsonException;
 use Stripe\Account;
 use Stripe\Event;
+use Stripe\Exception\ApiErrorException;
 
 class Accounts extends AbstractWebhook
 {
@@ -46,6 +47,7 @@ class Accounts extends AbstractWebhook
      * @return HttpCode
      * @throws JsonException
      * @throws RecordNotFoundException
+     * @throws ApiErrorException
      */
     public function post(
         Stripe                        $stripe,
@@ -77,7 +79,8 @@ class Accounts extends AbstractWebhook
             ) {
                 /** @noinspection UnusedFunctionResultInspection */
                 $stripe->getOrCreateProduct(
-                    artistId: $userId,
+                    receiperId: $userId,
+                    receiperStripeAccountId: $stripeAccount->id
                 );
             }
         }

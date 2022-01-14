@@ -14,10 +14,11 @@ class StripeSubscriptionsTable extends AbstractMySqlTable
     /** @var array */
     protected static array $fields = [
         'subscriptionId' => FieldInterface::INTEGER
-            + FieldInterface::PRIMARY_KEY,
+            + FieldInterface::PRIMARY_KEY
+            + FieldInterface::AUTO_INCREMENT,
         'stripeSubscriptionId' => FieldInterface::STRING,
         'stripePriceId' => FieldInterface::STRING,
-        'stripeProductId' => FieldInterface::STRING,
+        'productId' => FieldInterface::INTEGER,
         'payerId' => FieldInterface::INTEGER,
         'payerEmail' => FieldInterface::STRING,
         'receiperId' => FieldInterface::INTEGER,

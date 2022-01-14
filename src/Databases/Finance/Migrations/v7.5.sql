@@ -3,10 +3,10 @@ create table stripeSubscriptions
     subscriptionId       bigint unsigned primary key auto_increment,
     stripeSubscriptionId char(28)     not null,
     stripePriceId        char(30)     not null,
-    stripeProductId      bigint unsigned not null,
+    productId            bigint unsigned not null,
     payerId              bigint unsigned not null,
     payerEmail           varchar(255) not null,
-    reciperId            bigint unsigned not null,
+    receiperId           bigint unsigned not null,
     receiperEmail        varchar(255) not null,
     frequency            enum ('monthly') not null,
     amount               int unsigned not null,
@@ -41,3 +41,21 @@ create unique index stripeCustomers_stripeCustomerId_uindex
 alter table stripePaymentIntents
     add receiperEmail varchar(255) not null after receiperAccountId;
 
+create table stripeProducts
+(
+    productId       bigint unsigned auto_increment,
+    stripeProductId char(19)        not null,
+    receiperId      bigint unsigned not null,
+    name            varchar(255)    not null,
+    description     varchar(255)    null,
+    createdAt       timestamp       not null,
+    updatedAt       timestamp null,
+    constraint stripeProducts_pk
+        primary key (productId)
+);
+
+create unique index stripeProducts_authorId_uindex
+    on stripeProducts (authorId);
+
+create unique index stripeProducts_stripeProductId_uindex
+    on stripeProducts (stripeProductId);

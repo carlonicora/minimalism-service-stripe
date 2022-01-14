@@ -99,11 +99,13 @@ interface StripeServiceInterface extends ServiceInterface
     ): void;
 
     /**
-     * @param int $artistId
+     * @param int $receiperId
+     * @param string $receiperStripeAccountId
      * @return array
      */
     public function getOrCreateProduct(
-        int $artistId
+        int    $receiperId,
+        string $receiperStripeAccountId
     ): array;
 
     /**

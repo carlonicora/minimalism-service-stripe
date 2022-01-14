@@ -60,22 +60,30 @@ class StripeSubscriptionIO extends AbstractLoader
 
     /**
      * @param int $payerId
+     * @param string $payerEmail
+     * @param int $receiperId
+     * @param string $receiperEmail
      * @param string $stripeSubscriptionId
      * @param string $stripePriceId
-     * @param int $stripeProductId
+     * @param int $productId
      * @param int $amount
      * @param int $phlowFeePercent
+     * @param string $status
      * @param Currency $currency
      * @param SubscriptionFrequency $frequency
      * @return array
      */
     public function create(
         int                   $payerId,
+        string                $payerEmail,
+        int                   $receiperId,
+        string                $receiperEmail,
         string                $stripeSubscriptionId,
         string                $stripePriceId,
-        int                   $stripeProductId,
+        int                   $productId,
         int                   $amount,
         int                   $phlowFeePercent,
+        string                $status,
         Currency              $currency,
         SubscriptionFrequency $frequency = SubscriptionFrequency::Monthly
     ): array
@@ -83,11 +91,15 @@ class StripeSubscriptionIO extends AbstractLoader
         $records = [
             'stripeSubscriptionId' => $stripeSubscriptionId,
             'stripePriceId' => $stripePriceId,
-            'stripeProductId' => $stripeProductId,
+            'receiperId' => $receiperId,
+            'receiperEmail' => $receiperEmail,
+            'productId' => $productId,
             'payerId' => $payerId,
+            'payerEmail' => $payerEmail,
             'frequency' => $frequency->value,
             'amount' => $amount,
             'phlowFeePercent' => $phlowFeePercent,
+            'status' => $status,
             'currency' => $currency->value,
             'createdAt' => date(format: 'Y-m-d H:i:s'),
         ];

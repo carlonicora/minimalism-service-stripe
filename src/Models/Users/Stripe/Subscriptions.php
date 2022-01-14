@@ -2,6 +2,7 @@
 
 namespace CarloNicora\Minimalism\Services\Stripe\Models\Users\Stripe;
 
+use CarloNicora\Minimalism\Abstracts\AbstractModel;
 use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserServiceInterface;
@@ -12,7 +13,7 @@ use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use RuntimeException;
 use Stripe\Exception\ApiErrorException;
 
-class Subscriptions
+class Subscriptions extends AbstractModel
 {
 
     /**
@@ -61,8 +62,7 @@ class Subscriptions
     {
         [$amount, $phlowFeePercent, $frequency] = self::processPayload($currentUser, $payload);
 
-        /** @noinspection UnusedFunctionResultInspection */
-        $stripe->subscribe(
+        $this->document = $stripe->subscribe(
             payerId: $currentUser->getId(),
             receiperId: $author->getValue(),
             amount: $amount,
@@ -70,7 +70,8 @@ class Subscriptions
             frequency: $frequency
         );
 
-        return HttpCode::Created;
+        $errorCode = current($this->document->errors)?->status;
+        return $errorCode? HttpCode::from($errorCode) : HttpCode::Created;
     }
 
     /**

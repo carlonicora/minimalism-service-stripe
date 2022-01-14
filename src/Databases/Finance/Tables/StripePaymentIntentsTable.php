@@ -14,7 +14,8 @@ class StripePaymentIntentsTable extends AbstractMySqlTable
     /** @var array */
     protected static array $fields = [
         'paymentIntentId' => FieldInterface::INTEGER
-            + FieldInterface::PRIMARY_KEY,
+            + FieldInterface::PRIMARY_KEY
+            + FieldInterface::AUTO_INCREMENT,
         'stripePaymentIntentId' => FieldInterface::STRING,
         'payerId' => FieldInterface::INTEGER,
         'payerEmail' => FieldInterface::STRING,
