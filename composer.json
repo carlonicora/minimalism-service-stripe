@@ -30,6 +30,7 @@
     "ext-json": "*",
     "carlonicora/jsonapi": "~3.0",
     "carlonicora/minimalism": "~13",
+    "carlonicora/minimalism-service-cacher": "~4.0",
     "carlonicora/minimalism-interface-data": "~1.0",
     "carlonicora/minimalism-service-data-mapper": "~1.0",
     "carlonicora/minimalism-service-mysql": "~5.0",

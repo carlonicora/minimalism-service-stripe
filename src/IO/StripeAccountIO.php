@@ -2,6 +2,7 @@
 
 namespace CarloNicora\Minimalism\Services\Stripe\IO;
 
+use CarloNicora\Minimalism\Services\Cacher\Factories\CacheBuilderFactory;
 use CarloNicora\Minimalism\Services\DataMapper\Abstracts\AbstractLoader;
 use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\Stripe\Databases\Finance\Tables\StripeAccountsTable;
@@ -24,7 +25,7 @@ class StripeAccountIO extends AbstractLoader
             tableInterfaceClassName: StripeAccountsTable::class,
             functionName: 'byUserId',
             parameters: ['userId' => $userId],
-            cacheBuilder: $this->cacheFactory->create(
+            cacheBuilder: CacheBuilderFactory::create(
                 cacheName: 'stripeAccount',
                 identifier: $userId
             )
@@ -95,7 +96,7 @@ class StripeAccountIO extends AbstractLoader
         $this->data->insert(
             tableInterfaceClassName: StripeAccountsTable::class,
             records: $account,
-            cacheBuilder: $this->cacheFactory->create(
+            cacheBuilder: CacheBuilderFactory::create(
                 cacheName: 'stripeAccount',
                 identifier: $userId
             )
@@ -126,7 +127,7 @@ class StripeAccountIO extends AbstractLoader
         );
 
         $this->cache->invalidate(
-            $this->cacheFactory->create(
+            CacheBuilderFactory::create(
                 cacheName: 'stripeAccount',
                 identifier: $userId
             )
