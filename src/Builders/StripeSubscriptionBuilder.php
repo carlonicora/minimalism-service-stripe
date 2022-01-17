@@ -13,50 +13,50 @@ use Exception;
 
 /**
  * @OA\Schema(
- *     schema="stripePaymentIntentIdentifier",
- *     title="Stripe payment intent identifier",
- *     description="Stripe payment intent resource identifier",
+ *     schema="stripeSubscriptionIdentifier",
+ *     title="Stripe subscription identifier",
+ *     description="Stripe subscription resource identifier",
  *     @OA\Property(property="id", type="string", nullable=false, minLength=18, maxLength=18, example="Nz6r5K9lpG4D8jZBmG"),
- *     @OA\Property(property="type", type="string", nullable=false, example="stripePaymentIntent")
+ *     @OA\Property(property="type", type="string", nullable=false, example="stripeSubscription")
  * )
  *
  * @OA\Schema(
- *     schema="stripePaymentIntent",
- *     title="Stripe payment intent",
- *     description="Stripe payment intent resource",
- *     allOf={@OA\Schema(ref="#/components/schemas/stripePaymentIntentIdentifier")},
- *     @OA\Property(property="attributes", ref="#/components/schemas/stripePaymentIntentAttributes"),
- *     @OA\Property(property="links", ref="#/components/schemas/stripePaymentIntentLinks"),
- *     @OA\Property(property="relationships", ref="#/components/schemas/stripePaymentIntentRelationships"),
+ *     schema="stripeSubscription",
+ *     title="Stripe subscription",
+ *     description="Stripe subscription resource",
+ *     allOf={@OA\Schema(ref="#/components/schemas/stripeSubscriptionIdentifier")},
+ *     @OA\Property(property="attributes", ref="#/components/schemas/stripeSubscriptionAttributes"),
+ *     @OA\Property(property="links", ref="#/components/schemas/stripeSubscriptionLinks"),
+ *     @OA\Property(property="relationships", ref="#/components/schemas/stripeSubscriptionRelationships"),
  * )
  *
  * @OA\Schema(
- *     schema="stripePaymentIntentAttributes",
+ *     schema="stripeSubscriptionAttributes",
  *     title="Stripe payment intent attributes",
  *     description="Stripe payment intent resource attributes",
- *     @OA\Property(property="stripePaymentIntentId", type="string", format="", nullable=false, minLength="1", maxLength="100", example="pi_asdfas1234234"),
+ *     @OA\Property(property="stripeSubscriptionId", type="string", format="", nullable=false, minLength="1", maxLength="100", example="pi_asdfas1234234"),
+ *     @OA\Property(property="stripePriceId", type="string", format="", nullable=false, minLength="1", maxLength="100", example="price_1KIx26JVYb6RvKNfnqx0nFMz"),
  *     @OA\Property(property="clientSecret", type="string", format="", nullable=false, minLength="1", maxLength="100", example="client_secret_hash"),
- *     @OA\Property(property="amount",
+ *     @OA\Property(property="receiper",
  *         @OA\Property(property="amount", type="number", format="int32", nullable=false, minimum="0", maximum="1000", example="123"),
  *         @OA\Property(property="cents", type="number", format="int32", nullable=true, minimum="0", maximum="99", example="99"),
  *         @OA\Property(property="currency", type="string", format="", nullable=false, minLength="3", maxLength="3", example="gbp")
  *     ),
  *     @OA\Property(property="phlowFeePercent", type="number", format="int32", nullable=false, minimum="0", maximum="100", example="15"),
  *     @OA\Property(property="status", type="number", format="int32", nullable=false, minimum="0", maximum="3", example="1"),
- *     @OA\Property(property="error", type="string", format="", nullable=true, minLength="1", maxLength="255", example="Error details"),
  *     @OA\Property(property="createdAt", type="string", format="date-time", nullable=false, example="2021-01-01 23:59:59"),
  *     @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true, example="2021-01-01 23:59:59")
  * )
  *
  * @OA\Schema(
- *     schema="stripePaymentIntentLinks",
+ *     schema="stripeSubscriptionLinks",
  *     title="Stripe payment intent links",
  *     description="Stripe payment intent resource links",
  *     @OA\Property(property="self", type="string", format="uri", nullable=false, minLength="1", maxLength="100", example="https://api.phlow.com/v2.5/stripe/paymentIntents/pi_3JwjWIJVYb6RvKNf0QzDSKYp")
  * )
  *
  * @OA\Schema(
- *     schema="stripePaymentIntentRelationships",
+ *     schema="stripeSubscriptionRelationships",
  *     title="Stripe payment intent relationships",
  *     description="Stripe payment intent resource relationships",
  *     @OA\Property(property="receiper", ref="#/components/schemas/user"),
@@ -80,12 +80,11 @@ class StripeSubscriptionBuilder extends AbstractResourceBuilder
         [$amountInt, $amountCents] = Amount::fromCents($data['amount'], $data['currency']);
 
         $this->response->id = $this->encrypter->encryptId($data['subscriptionId']);
+        $this->response->attributes->add(name: 'stripeSubscriptionId', value: $data['stripeSubscriptionId']);
         $this->response->attributes->add(name: 'stripePriceId', value: $data['stripePriceId']);
-        $this->response->attributes->add(name: 'stripeProductId', value: $data['stripeProductId']);
-        $this->response->attributes->add(name: 'stripeSetupIntentId', value: $data['stripeSetupIntentId']);
         $this->response->attributes->add(name: 'clientSecret', value: $data['clientSecret'] ?? null);
         $this->response->attributes->add(name: 'frequency', value: $data['frequency'] ?? null);
-        $this->response->attributes->add(name: 'amount', value: ['integer' => $amountInt, 'cents' => $amountCents, 'currency' => $data['currency']]);
+        $this->response->attributes->add(name: 'receiper', value: ['amount' => $amountInt, 'cents' => $amountCents, 'currency' => $data['currency']]);
         $this->response->attributes->add(name: 'phlowFeePercent', value: $data['phlowFeePercent']);
         $this->response->attributes->add(name: 'status', value: $data['status']);
         $this->response->attributes->add(name: 'createdAt', value: $data['createdAt']);

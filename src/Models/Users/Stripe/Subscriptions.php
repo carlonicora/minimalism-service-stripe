@@ -37,7 +37,7 @@ class Subscriptions extends AbstractModel
      *     @OA\Response(
      *         response=201,
      *         description="A new Stripe subscription to an artist created",
-     *         @OA\JsonContent(ref="#/components/schemas/subscription")
+     *         @OA\JsonContent(ref="#/components/schemas/stripeSubscription")
      *     ),
      *     @OA\Response(response=422, ref="#/components/responses/422"),
      *     @OA\Response(response=401, ref="#/components/responses/401"),
@@ -90,7 +90,7 @@ class Subscriptions extends AbstractModel
         }
 
         $amount = new Amount(
-            integer: $payload['receiper']['integer'],
+            integer: $payload['receiper']['amount'],
             cents: $payload['receiper']['cents'],
             currency: Currency::from($payload['receiper']['currency'])
         );
