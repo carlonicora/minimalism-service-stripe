@@ -7,6 +7,7 @@ use CarloNicora\Minimalism\Interfaces\LoggerInterface as MinimalismLoggerInterfa
 use CarloNicora\Minimalism\Interfaces\ServiceInterface;
 use Stripe\Util\LoggerInterface;
 
+
 class StripeLogger implements LoggerInterface, ServiceInterface
 {
 
@@ -56,5 +57,12 @@ class StripeLogger implements LoggerInterface, ServiceInterface
      * from the service and add them to the session
      */
     public function destroy(): void {}
+
+    /**
+     * @return void
+     */
+    public function unsetObjectFactory(): void
+    {
+    }
 
 }
