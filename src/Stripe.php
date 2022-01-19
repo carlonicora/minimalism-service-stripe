@@ -21,6 +21,7 @@ use CarloNicora\Minimalism\Services\Stripe\IO\StripeCustomerIO;
 use CarloNicora\Minimalism\Services\Stripe\IO\StripePaymentIntentIO;
 use CarloNicora\Minimalism\Services\Stripe\IO\StripeProductIO;
 use CarloNicora\Minimalism\Services\Stripe\IO\StripeSubscriptionIO;
+use CarloNicora\Minimalism\Services\Stripe\Logger\StripeLogger;
 use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
 use Exception;
 use RuntimeException;
@@ -48,8 +49,9 @@ class Stripe extends AbstractService implements StripeServiceInterface
     /** @var UserInterface */
     private UserInterface $userInterface;
 
+    private ?StripeLogger $logger = null;
+
     /**
-     * @param StripeLogger $logger
      * @param Path $path
      * @param EncrypterInterface $encrypter
      * @param string $MINIMALISM_SERVICE_STRIPE_API_KEY
@@ -58,7 +60,6 @@ class Stripe extends AbstractService implements StripeServiceInterface
      * @param string $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_PAYMENTS
      */
     public function __construct(
-        private StripeLogger       $logger,
         private Path               $path,
         private EncrypterInterface $encrypter,
         private string             $MINIMALISM_SERVICE_STRIPE_API_KEY,
@@ -68,8 +69,19 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
     )
     {
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function initialise(
+
+    ): void
+    {
+        $this->logger = $this->objectFactory->create(StripeLogger::class);
+
         \Stripe\Stripe::setApiKey($this->MINIMALISM_SERVICE_STRIPE_API_KEY);
-        \Stripe\Stripe::setLogger($logger);
+        \Stripe\Stripe::setLogger($this->logger);
 
         $this->client = new StripeClient([
             'api_key' => $this->MINIMALISM_SERVICE_STRIPE_API_KEY,
