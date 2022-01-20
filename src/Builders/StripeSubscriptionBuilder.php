@@ -37,6 +37,7 @@ use Exception;
  *     @OA\Property(property="stripeSubscriptionId", type="string", format="", nullable=false, minLength="1", maxLength="100", example="pi_asdfas1234234"),
  *     @OA\Property(property="stripePriceId", type="string", format="", nullable=false, minLength="1", maxLength="100", example="price_1KIx26JVYb6RvKNfnqx0nFMz"),
  *     @OA\Property(property="clientSecret", type="string", format="", nullable=false, minLength="1", maxLength="100", example="client_secret_hash"),
+ *     @OA\Property(property="receiperStripeAccountId", type="string", format="", nullable=false, minLength="1", maxLength="100", example="acct_1JikcyJVYb6RvKNf"),
  *     @OA\Property(property="receiper",
  *         @OA\Property(property="amount", type="number", format="int32", nullable=false, minimum="0", maximum="1000", example="123"),
  *         @OA\Property(property="cents", type="number", format="int32", nullable=true, minimum="0", maximum="99", example="99"),
@@ -82,7 +83,10 @@ class StripeSubscriptionBuilder extends AbstractResourceBuilder
         $this->response->id = $this->encrypter->encryptId($data['subscriptionId']);
         $this->response->attributes->add(name: 'stripeSubscriptionId', value: $data['stripeSubscriptionId']);
         $this->response->attributes->add(name: 'stripePriceId', value: $data['stripePriceId']);
-        $this->response->attributes->add(name: 'clientSecret', value: $data['clientSecret'] ?? null);
+        // client secret should be set later in the code
+        $this->response->attributes->add(name: 'clientSecret', value: null);
+        // receiper stripe account id should be set later in the code
+        $this->response->attributes->add(name: 'receiperStripeAccountId', value: null);
         $this->response->attributes->add(name: 'frequency', value: $data['frequency'] ?? null);
         $this->response->attributes->add(name: 'receiper', value: ['amount' => $amountInt, 'cents' => $amountCents, 'currency' => $data['currency']]);
         $this->response->attributes->add(name: 'phlowFeePercent', value: $data['phlowFeePercent']);

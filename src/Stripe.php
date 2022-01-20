@@ -376,7 +376,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
                     'expand' => ['latest_invoice.payment_intent'],
                     'application_fee_percent' => $phlowFeePercent,
                     'payment_behavior' => 'default_incomplete',
-                ], ["stripe_account" => $receiperStripeAccountId]
+                ], ['stripe_account' => $receiperStripeAccountId]
             );
 
             $payer = $accountsDataReader->byUserId($payerId);
@@ -402,6 +402,11 @@ class Stripe extends AbstractService implements StripeServiceInterface
             $localSubscriptionResource->attributes->update(
                 name: 'clientSecret',
                 value: $stripeSubscription->latest_invoice->payment_intent->client_secret
+            );
+
+            $localSubscriptionResource->attributes->update(
+                name: 'receiperStripeAccountId',
+                value: $receiperStripeAccountId
             );
 
             $result->addResource($localSubscriptionResource);
