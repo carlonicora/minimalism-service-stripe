@@ -1,20 +1,21 @@
 create table stripeSubscriptions
 (
-    subscriptionId       bigint unsigned primary key auto_increment,
-    stripeSubscriptionId char(28)     not null,
-    stripePriceId        char(30)     not null,
-    productId            bigint unsigned not null,
-    payerId              bigint unsigned not null,
-    payerEmail           varchar(255) not null,
-    receiperId           bigint unsigned not null,
-    receiperEmail        varchar(255) not null,
-    frequency            enum ('monthly') not null,
-    amount               int unsigned not null,
-    phlowFeePercent      int unsigned not null,
-    currency             char(3)      not null,
-    status               varchar(64)  not null,
-    createdAt            timestamp    not null,
-    updatedAt            timestamp null
+    subscriptionId            bigint unsigned primary key auto_increment,
+    stripeSubscriptionId      char(28)         not null,
+    stripeLastPaymentIntentId char(27)         not null,
+    stripePriceId             char(30)         not null,
+    productId                 bigint unsigned  not null,
+    payerId                   bigint unsigned  not null,
+    payerEmail                varchar(255)     not null,
+    receiperId                bigint unsigned  not null,
+    receiperEmail             varchar(255)     not null,
+    frequency                 enum ('monthly') not null,
+    amount                    int unsigned     not null,
+    phlowFeePercent           int unsigned     not null,
+    currency                  char(3)          not null,
+    status                    varchar(64)      not null,
+    createdAt                 timestamp        not null,
+    updatedAt                 timestamp        null
 );
 
 create unique index stripeSubscriptions_subscriptionId_uindex
@@ -29,7 +30,7 @@ create table stripeCustomers
     stripeCustomerId char(18)     not null,
     email            varchar(255) not null,
     createdAt        timestamp    not null,
-    updatedAt        timestamp null
+    updatedAt        timestamp    null
 );
 
 create unique index stripeCustomers_userId_uindex
@@ -49,7 +50,7 @@ create table stripeProducts
     name            varchar(255)    not null,
     description     varchar(255)    null,
     createdAt       timestamp       not null,
-    updatedAt       timestamp null,
+    updatedAt       timestamp       null,
     constraint stripeProducts_pk
         primary key (productId)
 );

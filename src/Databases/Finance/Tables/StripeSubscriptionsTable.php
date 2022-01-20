@@ -17,6 +17,7 @@ class StripeSubscriptionsTable extends AbstractMySqlTable
             + FieldInterface::PRIMARY_KEY
             + FieldInterface::AUTO_INCREMENT,
         'stripeSubscriptionId' => FieldInterface::STRING,
+        'stripeLastPaymentIntentId' => FieldInterface::STRING,
         'stripePriceId' => FieldInterface::STRING,
         'productId' => FieldInterface::INTEGER,
         'payerId' => FieldInterface::INTEGER,
@@ -48,6 +49,38 @@ class StripeSubscriptionsTable extends AbstractMySqlTable
         $this->sql        = 'SELECT * FROM ' . static::getTableName()
             . ' WHERE receiperId = ? AND payerId = ?';
         $this->parameters = ['ii', $receiperId, $payerId];
+
+        return $this->functions->runRead();
+    }
+
+    /**
+     * @param string $stripeSubscriptionId
+     * @return array
+     * @throws Exception
+     */
+    public function byStripeSubscriptionId(
+        string $stripeSubscriptionId
+    ): array
+    {
+        $this->sql        = 'SELECT * FROM ' . static::getTableName()
+            . ' WHERE stripeSubscriptionId = ?';
+        $this->parameters = ['i', $stripeSubscriptionId];
+
+        return $this->functions->runRead();
+    }
+
+    /**
+     * @param string $stripePaymentIntentId
+     * @return array
+     * @throws Exception
+     */
+    public function byStripeLastPaymentIntentId(
+        string $stripePaymentIntentId,
+    ): array
+    {
+        $this->sql        = 'SELECT * FROM ' . static::getTableName()
+            . ' WHERE stripeLastPaymentIntentId = ?';
+        $this->parameters = ['i', $stripePaymentIntentId];
 
         return $this->functions->runRead();
     }

@@ -14,12 +14,12 @@ class StripeSubscriptionsResourceFactory extends AbstractLoader
 {
 
     /**
-     * @param string $subscriptionId
+     * @param int $subscriptionId
      * @return ResourceObject
      * @throws RecordNotFoundException
      */
     public function byId(
-        string $subscriptionId
+        int $subscriptionId
     ): ResourceObject
     {
         /** @see StripeSubscriptionsTable::readById() */
@@ -35,6 +35,60 @@ class StripeSubscriptionsResourceFactory extends AbstractLoader
 
         if ($result === false) {
             throw new RecordNotFoundException(message: 'Stripe subscription not found', code: 404);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string $stripeSubscriptionId
+     * @return ResourceObject
+     * @throws RecordNotFoundException
+     */
+    public function byStripeSubscriptionId(
+        string $stripeSubscriptionId
+    ): ResourceObject
+    {
+        /** @see StripeSubscriptionsTable::byStripeSubscriptionId() */
+        $result = current($this->builder->build(
+            resourceTransformerClass: StripeSubscriptionBuilder::class,
+            function: new DataFunction(
+                type: DataFunctionInterface::TYPE_TABLE,
+                className: StripeSubscriptionsTable::class,
+                functionName: 'byStripeSubscriptionId',
+                parameters: ['stripeSubscriptionId' => $stripeSubscriptionId]
+            )
+        ));
+
+        if ($result === false) {
+            throw new RecordNotFoundException(message: 'Stripe subscription not found', code: 404);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param string $stripePaymentIntentId
+     * @return ResourceObject
+     * @throws RecordNotFoundException
+     */
+    public function byStripeLastPaymentIntentId(
+        string $stripePaymentIntentId
+    ): ResourceObject
+    {
+        /** @see StripeSubscriptionsTable::byStripeLastPaymentIntentId() */
+        $result = current($this->builder->build(
+            resourceTransformerClass: StripeSubscriptionBuilder::class,
+            function: new DataFunction(
+                type: DataFunctionInterface::TYPE_TABLE,
+                className: StripeSubscriptionsTable::class,
+                functionName: 'byStripeLastPaymentIntentId',
+                parameters: ['stripePaymentIntentId' => $stripePaymentIntentId]
+            )
+        ));
+
+        if ($result === false) {
+            throw new RecordNotFoundException(message: 'Stripe subscription not found by Stripe payment intent id', code: 404);
         }
 
         return $result;
