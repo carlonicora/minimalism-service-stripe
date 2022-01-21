@@ -50,6 +50,7 @@ class StripePaymentIntentIO extends AbstractLoader
 
     /**
      * @param string $paymentIntentId
+     * @param string $stripeInvoiceId
      * @param int $payerId
      * @param string $payerEmail
      * @param int $receiperId
@@ -63,6 +64,7 @@ class StripePaymentIntentIO extends AbstractLoader
      */
     public function create(
         string              $paymentIntentId,
+        string              $stripeInvoiceId,
         int                 $payerId,
         string              $payerEmail,
         int                 $receiperId,
@@ -76,6 +78,7 @@ class StripePaymentIntentIO extends AbstractLoader
     {
         $payment = [
             'stripePaymentIntentId' => $paymentIntentId,
+            'stripeInvoiceId' => $stripeInvoiceId,
             'payerId' => $payerId,
             'payerEmail' => $payerEmail,
             'receiperId' => $receiperId,
@@ -84,7 +87,7 @@ class StripePaymentIntentIO extends AbstractLoader
             'amount' => $amount,
             'phlowFeeAmount' => $phlowFeeAmount,
             'currency' => $currency,
-            'status' => $status->value
+            'status' => $status->value,
         ];
 
         return $this->data->insert(

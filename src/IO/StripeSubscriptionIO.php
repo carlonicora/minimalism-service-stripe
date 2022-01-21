@@ -85,6 +85,7 @@ class StripeSubscriptionIO extends AbstractLoader
      * @param int $receiperId
      * @param string $receiperEmail
      * @param string $stripeSubscriptionId
+     * @param string $stripeLastInvoiceId
      * @param string $stripeLastPaymentIntentId
      * @param string $stripePriceId
      * @param int $productId
@@ -101,6 +102,7 @@ class StripeSubscriptionIO extends AbstractLoader
         int                   $receiperId,
         string                $receiperEmail,
         string                $stripeSubscriptionId,
+        string                $stripeLastInvoiceId,
         string                $stripeLastPaymentIntentId,
         string                $stripePriceId,
         int                   $productId,
@@ -113,6 +115,7 @@ class StripeSubscriptionIO extends AbstractLoader
     {
         $records = [
             'stripeSubscriptionId' => $stripeSubscriptionId,
+            'stripeLastInvoiceId' => $stripeLastInvoiceId,
             'stripeLastPaymentIntentId' => $stripeLastPaymentIntentId,
             'stripePriceId' => $stripePriceId,
             'receiperId' => $receiperId,

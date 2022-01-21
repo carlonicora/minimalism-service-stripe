@@ -6,21 +6,19 @@ use CarloNicora\Minimalism\Services\MySQL\Abstracts\AbstractMySqlTable;
 use CarloNicora\Minimalism\Services\MySQL\Interfaces\FieldInterface;
 use Exception;
 
-class StripeSubscriptionsTable extends AbstractMySqlTable
+class StripeInvoicesTable extends AbstractMySqlTable
 {
     /** @var string */
-    protected static string $tableName = 'stripeSubscriptions';
+    protected static string $tableName = 'stripeInvoices';
 
     /** @var array */
     protected static array $fields = [
-        'subscriptionId' => FieldInterface::INTEGER
+        'invoiceId' => FieldInterface::INTEGER
             + FieldInterface::PRIMARY_KEY
             + FieldInterface::AUTO_INCREMENT,
-        'stripeSubscriptionId' => FieldInterface::STRING,
-        'stripeLastInvoiceId' => FieldInterface::STRING,
-        'stripeLastPaymentIntentId' => FieldInterface::STRING,
-        'stripePriceId' => FieldInterface::STRING,
-        'productId' => FieldInterface::INTEGER,
+        'stripeInvoiceId' => FieldInterface::STRING,
+        'stripeCustomerId' => FieldInterface::STRING,
+        'subscriptionId' => FieldInterface::INTEGER,
         'payerId' => FieldInterface::INTEGER,
         'payerEmail' => FieldInterface::STRING,
         'receiperId' => FieldInterface::INTEGER,
@@ -69,5 +67,4 @@ class StripeSubscriptionsTable extends AbstractMySqlTable
 
         return $this->functions->runRead();
     }
-
 }

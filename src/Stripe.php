@@ -251,6 +251,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
             /** @noinspection UnusedFunctionResultInspection */
             $paymentIO->create(
                 paymentIntentId: $stripePaymentIntent->id,
+                stripeInvoiceId: $stripePaymentIntent->invoice->id,
                 payerId: $payerId,
                 payerEmail: $payerEmail,
                 receiperId: $receiperId,
@@ -388,6 +389,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
                 receiperId: $receiperId,
                 receiperEmail: $receiper['email'],
                 stripeSubscriptionId: $stripeSubscription->id,
+                stripeLastInvoiceId:  $stripeSubscription->latest_invoice->id,
                 stripeLastPaymentIntentId: $stripeSubscription->latest_invoice->payment_intent->id,
                 stripePriceId: $price->id,
                 productId: $product['productId'],

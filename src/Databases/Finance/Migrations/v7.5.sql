@@ -2,6 +2,7 @@ create table stripeSubscriptions
 (
     subscriptionId            bigint unsigned primary key auto_increment,
     stripeSubscriptionId      char(28)         not null,
+    stripeLastInvoiceId       char(27)         not null,
     stripeLastPaymentIntentId char(27)         not null,
     stripePriceId             char(30)         not null,
     productId                 bigint unsigned  not null,
@@ -60,3 +61,28 @@ create unique index stripeProducts_authorId_uindex
 
 create unique index stripeProducts_stripeProductId_uindex
     on stripeProducts (stripeProductId);
+
+create table stripeInvoices
+(
+    invoiceId             bigint unsigned auto_increment,
+    stripeInvoiceId       char(27)                                                not null,
+    stripeCustomerId      char(18)                                                not null,
+    subscriptionId        bigint unsigned                                         null,
+    payerId               bigint unsigned                                         not null,
+    payerEmail            varchar(255)                                            not null,
+    receiperId            bigint unsigned                                         not null,
+    receiperEmail         varchar(255)                                            not null,
+    frequency             enum ('monthly')                                        not null,
+    amount                int unsigned                                            not null,
+    phlowFeePercent       tinyint unsigned                                        not null,
+    currency              enum ('eur', 'usd', 'bgp')                              not null,
+    status                enum ('draft', 'open', 'paid', 'void', 'uncollectible') not null,
+    createdAt             datetime                                                not null,
+    updatedAt             datetime                                                null,
+    constraint stripeInvoices_pk
+        primary key (invoiceId)
+);
+
+create unique index stripeInvoices_invoiceId_uindex
+    on stripeInvoices (invoiceId);
+
