@@ -59,6 +59,27 @@ class StripeSubscriptionIO extends AbstractLoader
     }
 
     /**
+     * @param string $stripeSubscriptionId
+     * @return array
+     * @throws RecordNotFoundException
+     */
+    public function byStripeSubscriptionId(
+        string $stripeSubscriptionId
+    ): array
+    {
+        /** @see StripeSubscriptionsTable::byStripeSubscriptionId() */
+        $result = $this->data->read(
+            tableInterfaceClassName: StripeSubscriptionsTable::class,
+            functionName: 'byStripeSubscriptionId',
+            parameters: [
+                'stripeSubscriptionId' => $stripeSubscriptionId,
+            ],
+        );
+
+        return $this->returnSingleValue($result, recordType: 'Stripe subscription');
+    }
+
+    /**
      * @param int $payerId
      * @param string $payerEmail
      * @param int $receiperId

@@ -53,7 +53,7 @@ use Exception;
  *     schema="stripeSubscriptionLinks",
  *     title="Stripe payment intent links",
  *     description="Stripe payment intent resource links",
- *     @OA\Property(property="self", type="string", format="uri", nullable=false, minLength="1", maxLength="100", example="https://api.phlow.com/v2.5/stripe/paymentIntents/pi_3JwjWIJVYb6RvKNf0QzDSKYp")
+ *     @OA\Property(property="self", type="string", format="uri", nullable=false, minLength="1", maxLength="100", example="https://api.phlow.com/v2.5/stripe/subscriptions/pi_3JwjWIJVYb6RvKNf0QzDSKYp")
  * )
  *
  * @OA\Schema(

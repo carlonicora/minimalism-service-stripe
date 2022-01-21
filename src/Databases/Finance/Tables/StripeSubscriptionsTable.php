@@ -69,19 +69,4 @@ class StripeSubscriptionsTable extends AbstractMySqlTable
         return $this->functions->runRead();
     }
 
-    /**
-     * @param string $stripePaymentIntentId
-     * @return array
-     * @throws Exception
-     */
-    public function byStripeLastPaymentIntentId(
-        string $stripePaymentIntentId,
-    ): array
-    {
-        $this->sql        = 'SELECT * FROM ' . static::getTableName()
-            . ' WHERE stripeLastPaymentIntentId = ?';
-        $this->parameters = ['i', $stripePaymentIntentId];
-
-        return $this->functions->runRead();
-    }
 }

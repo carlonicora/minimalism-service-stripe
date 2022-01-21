@@ -67,30 +67,4 @@ class StripeSubscriptionsResourceFactory extends AbstractLoader
         return $result;
     }
 
-    /**
-     * @param string $stripePaymentIntentId
-     * @return ResourceObject
-     * @throws RecordNotFoundException
-     */
-    public function byStripeLastPaymentIntentId(
-        string $stripePaymentIntentId
-    ): ResourceObject
-    {
-        /** @see StripeSubscriptionsTable::byStripeLastPaymentIntentId() */
-        $result = current($this->builder->build(
-            resourceTransformerClass: StripeSubscriptionBuilder::class,
-            function: new DataFunction(
-                type: DataFunctionInterface::TYPE_TABLE,
-                className: StripeSubscriptionsTable::class,
-                functionName: 'byStripeLastPaymentIntentId',
-                parameters: ['stripePaymentIntentId' => $stripePaymentIntentId]
-            )
-        ));
-
-        if ($result === false) {
-            throw new RecordNotFoundException(message: 'Stripe subscription not found by Stripe payment intent id', code: 404);
-        }
-
-        return $result;
-    }
 }
