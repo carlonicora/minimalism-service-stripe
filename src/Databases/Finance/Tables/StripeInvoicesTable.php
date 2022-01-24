@@ -53,18 +53,36 @@ class StripeInvoicesTable extends AbstractMySqlTable
     }
 
     /**
-     * @param string $stripeSubscriptionId
+     * @param string $stripeInvoiceId
      * @return array
      * @throws Exception
      */
-    public function byStripeSubscriptionId(
-        string $stripeSubscriptionId
+    public function byStripeInvoiceId(
+        string $stripeInvoiceId
     ): array
     {
         $this->sql        = 'SELECT * FROM ' . static::getTableName()
-            . ' WHERE stripeSubscriptionId = ?';
-        $this->parameters = ['i', $stripeSubscriptionId];
+            . ' WHERE stripeInvoiceId = ?';
+        $this->parameters = ['s', $stripeInvoiceId];
 
         return $this->functions->runRead();
+    }
+
+    /**
+     * @param int $invoiceId
+     * @param string $status
+     * @return void
+     * @throws Exception
+     */
+    public function updateStatus(
+        int $invoiceId,
+        string $status
+    ): void
+    {
+        $this->sql = 'UPDATE ' . self::getTableName() . ' SET status=? WHERE invoiceId=?;';
+
+        $this->parameters = ['si', $status, $invoiceId];
+
+        $this->functions->runSql();
     }
 }

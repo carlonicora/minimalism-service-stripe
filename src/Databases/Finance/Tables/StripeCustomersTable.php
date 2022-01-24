@@ -23,17 +23,33 @@ class StripeCustomersTable extends AbstractMySqlTable
     ];
 
     /**
-     * @param string $customerId
+     * @param int $customerId
      * @return array
      * @throws Exception
      */
     public function byCustomerId(
-        string $customerId,
+        int $customerId,
+    ): array
+    {
+        $this->sql        = 'SELECT * FROM ' . static::getTableName()
+            . ' WHERE customerId = ?';
+        $this->parameters = ['i', $customerId];
+
+        return $this->functions->runRead();
+    }
+
+    /**
+     * @param string $stripeCustomerId
+     * @return array
+     * @throws Exception
+     */
+    public function byStripeCustomerId(
+        string $stripeCustomerId,
     ): array
     {
         $this->sql        = 'SELECT * FROM ' . static::getTableName()
             . ' WHERE stripeCustomerId = ?';
-        $this->parameters = ['s', $customerId];
+        $this->parameters = ['s', $stripeCustomerId];
 
         return $this->functions->runRead();
     }

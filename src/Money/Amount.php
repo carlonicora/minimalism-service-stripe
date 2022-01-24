@@ -26,6 +26,23 @@ class Amount
     /**
      * @param int $amountInCents
      * @param string $currencyString
+     * @return static
+     */
+    public static function construct(
+        int $amountInCents,
+        string $currencyString
+    ): self
+    {
+        // TODO rename this method
+        $currency = Currency::from($currencyString);
+        $integer  = intdiv(num1: $amountInCents, num2: $currency->multiplier());
+
+        return new Amount(integer: $integer, cents: $amountInCents - $integer * $currency->multiplier(), currency: $currency);
+    }
+
+    /**
+     * @param int $amountInCents
+     * @param string $currencyString
      * @return array
      */
     public static function fromCents(

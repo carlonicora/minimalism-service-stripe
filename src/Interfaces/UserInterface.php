@@ -6,12 +6,6 @@ interface UserInterface
 {
 
     /**
-     * @param int $userId
-     * @return void
-     */
-    public function load(int $userId): void;
-
-    /**
      * @return string
      */
     public function getEmail(): string;

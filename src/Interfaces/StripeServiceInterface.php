@@ -109,10 +109,10 @@ interface StripeServiceInterface extends ServiceInterface
     ): array;
 
     /**
-     * @param UserInterface $userService
+     * @param UserLoaderInterface $userService
      * @return void
      */
     public function setUserService(
-        UserInterface $userService
+        UserLoaderInterface $userService
     ): void;
 }

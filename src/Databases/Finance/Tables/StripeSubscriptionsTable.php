@@ -65,7 +65,7 @@ class StripeSubscriptionsTable extends AbstractMySqlTable
     {
         $this->sql        = 'SELECT * FROM ' . static::getTableName()
             . ' WHERE stripeSubscriptionId = ?';
-        $this->parameters = ['i', $stripeSubscriptionId];
+        $this->parameters = ['s', $stripeSubscriptionId];
 
         return $this->functions->runRead();
     }

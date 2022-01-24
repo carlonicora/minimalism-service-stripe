@@ -3,35 +3,28 @@
 namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks\Abstracts;
 
 use CarloNicora\Minimalism\Abstracts\AbstractModel;
-use CarloNicora\Minimalism\Services\Stripe\Enums\AccountStatus;
-use CarloNicora\Minimalism\Services\Stripe\IO\StripeEventIO;
-use JsonException;
 use LogicException;
 use RuntimeException;
-use Stripe\Account;
 use Stripe\Event;
 use Stripe\Exception\SignatureVerificationException;
-use Stripe\PaymentIntent;
-use Stripe\StripeObject;
 use Stripe\Webhook;
 use UnexpectedValueException;
 
 class AbstractWebhook extends AbstractModel
 {
 
-    /** @var Event[] */
+    /** @var string[] */
     protected const SUPPORTED_EVENT_TYPES = [];
 
     /**
+     * @param string $objectClassName
      * @param string $webhookSecret
-     * @param StripeEventIO $eventIO
      * @return Event
-     * @throws JsonException
      */
-    protected static function processEvent(
-        string        $webhookSecret,
-        StripeEventIO $eventIO,
-    ): StripeObject
+    protected static function validateEvent(
+        string $objectClassName,
+        string $webhookSecret
+    ): Event
     {
         if (empty(static::SUPPORTED_EVENT_TYPES)) {
             throw new LogicException(message: 'SUPPORTED_EVENT_TYPES class property must be defined in ' . static::class);
@@ -50,35 +43,16 @@ class AbstractWebhook extends AbstractModel
             throw new RuntimeException(message: 'Event ' . $event->type . ' can not be processed in the webhook ' . static::class, code: 422);
         }
 
-        if (! empty($eventIO->byId($event->id))) {
-            throw new RuntimeException(message: 'A dublicate webhook was ignored', code: 200);
-        }
-
         $object = $event->data->object ?? null;
         if (! $object) {
             throw new RuntimeException(message: 'Malformed Stripe event doesn\'t contain a related object', code: 500);
         }
 
-        $details = match (get_class($object)) {
-            Account::class       => ['status' => AccountStatus::calculate($object)->value],
-            PaymentIntent::class => [
-                'last_payment_error' => $object->last_payment_error,
-                'canceled_at' => $object->canceled_at,
-                'cancellation_reason' => $object->cancellation_reason
-            ],
-            default              => null
-        };
+        if ($objectClassName !== get_class($object)) {
+            throw new RuntimeException(message: 'Not expected event related object class', code: 500);
+        }
 
-        /** @noinspection UnusedFunctionResultInspection */
-        $eventIO->create(
-            eventId: $event->id,
-            type: $event->type,
-            createdAt: date(format: 'Y-m-d H:i:s', timestamp: $event->created),
-            relatedObjectId: $object->id,
-            details: $details ? json_encode($details, flags: JSON_THROW_ON_ERROR) : null
-        );
-
-        return $object;
+        return $event;
     }
 
 }

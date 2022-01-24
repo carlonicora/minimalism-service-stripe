@@ -4,10 +4,6 @@ namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks;
 
 use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
-use CarloNicora\Minimalism\Services\Stripe\Enums\PaymentIntentStatus;
-use CarloNicora\Minimalism\Services\Stripe\Factories\Resources\StripePaymentIntentsResourceFactory;
-use CarloNicora\Minimalism\Services\Stripe\IO\StripePaymentIntentIO;
-use CarloNicora\Minimalism\Services\Stripe\IO\StripeEventIO;
 use CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks\Abstracts\AbstractWebhook;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use Exception;
@@ -30,14 +26,10 @@ class Payments extends AbstractWebhook
 
     /**
      * @OA\Post(
-     *     path="/webhooks/payments",
+     *     path="/stripe/webhooks/payments",
      *     tags={"stripe"},
      *     summary="Webhook to manage Stripe payments",
      *     operationId="webhookStripePayments",
-     *     @OA\Response(
-     *         response=201,
-     *         @OA\JsonContent(ref="#/components/schemas/stripePaymentIntent")
-     *     ),
      *     @OA\Response(response=422, ref="#/components/responses/422"),
      *     @OA\Response(response=401, ref="#/components/responses/401"),
      *     @OA\Response(response=403, ref="#/components/responses/403"),
@@ -47,37 +39,21 @@ class Payments extends AbstractWebhook
      * )
      *
      * @param Stripe $stripe
-     * @param StripeEventIO $eventIO
-     * @param StripePaymentIntentsResourceFactory $paymentResourceFactory
-     * @param StripePaymentIntentIO $paymentIntentIO
      * @return HttpCode
      * @throws JsonException
      * @throws RecordNotFoundException
      * @throws Exception
      */
     public function post(
-        Stripe                              $stripe,
-        StripeEventIO                       $eventIO,
-        StripePaymentIntentsResourceFactory $paymentResourceFactory,
-        StripePaymentIntentIO $paymentIntentIO
+        Stripe $stripe
     ): HttpCode
     {
-        /** @var PaymentIntent $stripePaymentIntent */
-        $stripePaymentIntent = self::processEvent(
-            $stripe->getPaymentsWebhookSecret(),
-            $eventIO
+        $stripeEvent = self::validateEvent(
+            objectClassName: PaymentIntent::class,
+            webhookSecret: $stripe->getPaymentsWebhookSecret()
         );
 
-        $localPayment = $paymentResourceFactory->byStripePaymentIntentId($stripePaymentIntent->id);
-
-        if ($localPayment->attributes->get('status') !== $stripePaymentIntent->status) {
-            $paymentIntentIO->updateStatus(
-                paymentIntentId: $stripePaymentIntent->id,
-                status: PaymentIntentStatus::from($stripePaymentIntent->status)
-            );
-        }
-
-        $this->document->addResource($localPayment);
+        $stripe->processPaymentIntentWebhook($stripeEvent);
 
         return HttpCode::Created;
     }
