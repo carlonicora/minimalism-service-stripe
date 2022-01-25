@@ -37,8 +37,8 @@ use Exception;
  *     @OA\Property(property="stripeSubscriptionId", type="string", format="", nullable=false, minLength="1", maxLength="100", example="pi_asdfas1234234"),
  *     @OA\Property(property="stripePriceId", type="string", format="", nullable=false, minLength="1", maxLength="100", example="price_1KIx26JVYb6RvKNfnqx0nFMz"),
  *     @OA\Property(property="clientSecret", type="string", format="", nullable=false, minLength="1", maxLength="100", example="client_secret_hash"),
- *     @OA\Property(property="receiperStripeAccountId", type="string", format="", nullable=false, minLength="1", maxLength="100", example="acct_1JikcyJVYb6RvKNf"),
- *     @OA\Property(property="receiper",
+ *     @OA\Property(property="recieperStripeAccountId", type="string", format="", nullable=false, minLength="1", maxLength="100", example="acct_1JikcyJVYb6RvKNf"),
+ *     @OA\Property(property="recieper",
  *         @OA\Property(property="amount", type="number", format="int32", nullable=false, minimum="0", maximum="1000", example="123"),
  *         @OA\Property(property="cents", type="number", format="int32", nullable=true, minimum="0", maximum="99", example="99"),
  *         @OA\Property(property="currency", type="string", format="", nullable=false, minLength="3", maxLength="3", example="gbp")
@@ -60,7 +60,7 @@ use Exception;
  *     schema="stripeSubscriptionRelationships",
  *     title="Stripe payment intent relationships",
  *     description="Stripe payment intent resource relationships",
- *     @OA\Property(property="receiper", ref="#/components/schemas/user"),
+ *     @OA\Property(property="recieper", ref="#/components/schemas/user"),
  *     @OA\Property(property="payer", ref="#/components/schemas/user")
  * )
  */
@@ -85,10 +85,10 @@ class StripeSubscriptionBuilder extends AbstractResourceBuilder
         $this->response->attributes->add(name: 'stripePriceId', value: $data['stripePriceId']);
         // client secret should be set later in the code
         $this->response->attributes->add(name: 'clientSecret', value: null);
-        // receiper stripe account id should be set later in the code
-        $this->response->attributes->add(name: 'receiperStripeAccountId', value: null);
+        // recieper stripe account id should be set later in the code
+        $this->response->attributes->add(name: 'recieperStripeAccountId', value: null);
         $this->response->attributes->add(name: 'frequency', value: $data['frequency'] ?? null);
-        $this->response->attributes->add(name: 'receiper', value: ['amount' => $amountInt, 'cents' => $amountCents, 'currency' => $data['currency']]);
+        $this->response->attributes->add(name: 'recieper', value: ['amount' => $amountInt, 'cents' => $amountCents, 'currency' => $data['currency']]);
         $this->response->attributes->add(name: 'phlowFeePercent', value: $data['phlowFeePercent']);
         $this->response->attributes->add(name: 'status', value: $data['status']);
         $this->response->attributes->add(name: 'createdAt', value: $data['createdAt']);
@@ -134,13 +134,13 @@ class StripeSubscriptionBuilder extends AbstractResourceBuilder
 
         /** @see UserIO::byUserId() */
         $response[] = new RelationshipBuilder(
-            name: 'receiper',
+            name: 'recieper',
             builderClassName: UserBuilder::class,
             function: new DataFunction(
                 type: DataFunctionInterface::TYPE_LOADER,
                 className: UserIO::class,
                 functionName: 'byUserId',
-                parameters: ['receiperId']
+                parameters: ['recieperId']
             )
         );
 

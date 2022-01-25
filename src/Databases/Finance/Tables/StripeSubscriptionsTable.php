@@ -23,8 +23,8 @@ class StripeSubscriptionsTable extends AbstractMySqlTable
         'productId' => FieldInterface::INTEGER,
         'payerId' => FieldInterface::INTEGER,
         'payerEmail' => FieldInterface::STRING,
-        'receiperId' => FieldInterface::INTEGER,
-        'receiperEmail' => FieldInterface::STRING,
+        'recieperId' => FieldInterface::INTEGER,
+        'recieperEmail' => FieldInterface::STRING,
         'frequency' => FieldInterface::STRING,
         'amount' => FieldInterface::INTEGER,
         'phlowFeePercent' => FieldInterface::INTEGER,
@@ -37,19 +37,19 @@ class StripeSubscriptionsTable extends AbstractMySqlTable
     ];
 
     /**
-     * @param int $receiperId
+     * @param int $recieperId
      * @param int $payerId
      * @return array
      * @throws Exception
      */
-    public function byReceiperAndPayerIds(
-        int $receiperId,
+    public function byRecieperAndPayerIds(
+        int $recieperId,
         int $payerId
     ): array
     {
         $this->sql        = 'SELECT * FROM ' . static::getTableName()
-            . ' WHERE receiperId = ? AND payerId = ?';
-        $this->parameters = ['ii', $receiperId, $payerId];
+            . ' WHERE recieperId = ? AND payerId = ?';
+        $this->parameters = ['ii', $recieperId, $payerId];
 
         return $this->functions->runRead();
     }

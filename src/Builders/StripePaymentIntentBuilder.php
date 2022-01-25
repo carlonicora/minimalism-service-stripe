@@ -63,7 +63,7 @@ use Exception;
  *     schema="stripePaymentIntentRelationships",
  *     title="Stripe payment intent relationships",
  *     description="Stripe payment intent resource relationships",
- *     @OA\Property(property="receiper", ref="#/components/schemas/user"),
+ *     @OA\Property(property="recieper", ref="#/components/schemas/user"),
  *     @OA\Property(property="payer", ref="#/components/schemas/user")
  * )
  */
@@ -133,13 +133,13 @@ class StripePaymentIntentBuilder extends AbstractResourceBuilder
 
         /** @see UserIO::byUserId() */
         $response[] = new RelationshipBuilder(
-            name: 'receiper',
+            name: 'recieper',
             builderClassName: UserBuilder::class,
             function: new DataFunction(
                 type: DataFunctionInterface::TYPE_LOADER,
                 className: UserIO::class,
                 functionName: 'byUserId',
-                parameters: ['receiperId']
+                parameters: ['recieperId']
             )
         );
 

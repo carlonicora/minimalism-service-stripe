@@ -41,7 +41,7 @@ interface StripeServiceInterface extends ServiceInterface
 
     /**
      * @param int $payerId
-     * @param int $receiperId
+     * @param int $recieperId
      * @param Amount $amount
      * @param Amount $phlowFee
      * @param string $payerEmail
@@ -49,7 +49,7 @@ interface StripeServiceInterface extends ServiceInterface
      */
     public function paymentIntent(
         int    $payerId,
-        int    $receiperId,
+        int    $recieperId,
         Amount $amount,
         Amount $phlowFee,
         string $payerEmail,
@@ -73,7 +73,7 @@ interface StripeServiceInterface extends ServiceInterface
 
     /**
      * @param int $payerId
-     * @param int $receiperId
+     * @param int $recieperId
      * @param Amount $amount
      * @param int $phlowFeePercent
      * @param SubscriptionFrequency $frequency
@@ -81,31 +81,31 @@ interface StripeServiceInterface extends ServiceInterface
      */
     public function subscribe(
         int                   $payerId,
-        int                   $receiperId,
+        int                   $recieperId,
         Amount                $amount,
         int                   $phlowFeePercent,
         SubscriptionFrequency $frequency = SubscriptionFrequency::Monthly
     ): Document;
 
     /**
-     * @param int $receiperId
+     * @param int $recieperId
      * @param int $payerId
      * @return void
      * @throws ApiErrorException
      */
     public function cancelSubscription(
-        int $receiperId,
+        int $recieperId,
         int $payerId,
     ): void;
 
     /**
-     * @param int $receiperId
-     * @param string $receiperStripeAccountId
+     * @param int $recieperId
+     * @param string $recieperStripeAccountId
      * @return array
      */
     public function getOrCreateProduct(
-        int    $receiperId,
-        string $receiperStripeAccountId
+        int    $recieperId,
+        string $recieperStripeAccountId
     ): array;
 
     /**

@@ -25,7 +25,7 @@ class Subscriptions extends AbstractModel
      *     @OA\Parameter(ref="#/components/parameters/user_id"),
      *     @OA\RequestBody(
      *         @OA\JsonContent(
-     *             @OA\Property(property="receiper",
+     *             @OA\Property(property="recieper",
      *                 @OA\Property(property="amount", type="number", format="int32", nullable=false, minimum="0", maximum="1000", example="123"),
      *                 @OA\Property(property="cents", type="number", format="int32", nullable=true, minimum="0", maximum="99", example="99"),
      *                 @OA\Property(property="currency", type="string", format="", nullable=false, minLength="3", maxLength="3", example="gbp")
@@ -64,7 +64,7 @@ class Subscriptions extends AbstractModel
 
         $this->document = $stripe->subscribe(
             payerId: $currentUser->getId(),
-            receiperId: $author->getValue(),
+            recieperId: $author->getValue(),
             amount: $amount,
             phlowFeePercent: $phlowFeePercent,
             frequency: $frequency
@@ -90,9 +90,9 @@ class Subscriptions extends AbstractModel
         }
 
         $amount = new Amount(
-            integer: $payload['receiper']['amount'],
-            cents: $payload['receiper']['cents'],
-            currency: Currency::from($payload['receiper']['currency'])
+            integer: $payload['recieper']['amount'],
+            cents: $payload['recieper']['cents'],
+            currency: Currency::from($payload['recieper']['currency'])
         );
 
         $frequency = SubscriptionFrequency::from($payload['frequency']);
@@ -136,7 +136,7 @@ class Subscriptions extends AbstractModel
         }
 
         $stripe->cancelSubscription(
-            receiperId: $author->getValue(),
+            recieperId: $author->getValue(),
             payerId: $currentUser->getId()
         );
 

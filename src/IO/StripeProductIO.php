@@ -10,20 +10,20 @@ class StripeProductIO extends AbstractLoader
 {
 
     /**
-     * @param int $receiperId
+     * @param int $recieperId
      * @return array
      * @throws RecordNotFoundException
      */
-    public function byReceiperId(
-        int $receiperId,
+    public function byRecieperId(
+        int $recieperId,
     ): array
     {
-        /** @see StripeProductsTable::byReceiperId() */
+        /** @see StripeProductsTable::byRecieperId() */
         $result = $this->data->read(
             tableInterfaceClassName: StripeProductsTable::class,
-            functionName: 'byReceiperId',
+            functionName: 'byRecieperId',
             parameters: [
-                'receiperId' => $receiperId,
+                'recieperId' => $recieperId,
             ],
         );
 
@@ -32,21 +32,21 @@ class StripeProductIO extends AbstractLoader
 
     /**
      * @param string $stripeProductId
-     * @param int $receiperId
+     * @param int $recieperId
      * @param string $name
      * @param string $description
      * @return array
      */
     public function create(
         string $stripeProductId,
-        int    $receiperId,
+        int    $recieperId,
         string $name,
         string $description
     ): array
     {
         $records = [
             'stripeProductId' => $stripeProductId,
-            'receiperId' => $receiperId,
+            'recieperId' => $recieperId,
             'name' => $name,
             'description' => $description,
             'createdAt' => date(format: 'Y-m-d H:i:s'),

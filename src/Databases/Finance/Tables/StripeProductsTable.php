@@ -17,7 +17,7 @@ class StripeProductsTable extends AbstractMySqlTable
             + FieldInterface::PRIMARY_KEY
             + FieldInterface::AUTO_INCREMENT,
         'stripeProductId' => FieldInterface::STRING,
-        'receiperId' => FieldInterface::INTEGER,
+        'recieperId' => FieldInterface::INTEGER,
         'name' => FieldInterface::STRING,
         'description' => FieldInterface::STRING,
         'createdAt' => FieldInterface::STRING
@@ -27,17 +27,17 @@ class StripeProductsTable extends AbstractMySqlTable
     ];
 
     /**
-     * @param int $receiperId
+     * @param int $recieperId
      * @return array
      * @throws Exception
      */
-    public function byReceiperId(
-        int $receiperId,
+    public function byRecieperId(
+        int $recieperId,
     ): array
     {
         $this->sql        = 'SELECT * FROM ' . static::getTableName()
-            . ' WHERE receiperId = ?';
-        $this->parameters = ['i', $receiperId];
+            . ' WHERE recieperId = ?';
+        $this->parameters = ['i', $recieperId];
 
         return $this->functions->runRead();
     }

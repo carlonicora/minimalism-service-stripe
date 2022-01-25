@@ -23,7 +23,7 @@ class PaymentIntents extends AbstractModel
      *     @OA\Parameter(ref="#/components/parameters/user_id"),
      *     @OA\RequestBody(
      *         @OA\JsonContent(
-     *             @OA\Property(property="receiper",
+     *             @OA\Property(property="recieper",
      *                 @OA\Property(property="amount", type="number", format="int32", nullable=false, minimum="0", maximum="1000", example="123"),
      *                 @OA\Property(property="cents", type="number", format="int32", nullable=true, minimum="0", maximum="99", example="99"),
      *                 @OA\Property(property="currency", type="string", format="", nullable=false, minLength="3", maxLength="3", example="gbp")
@@ -50,14 +50,14 @@ class PaymentIntents extends AbstractModel
      *
      * @param UserServiceInterface $currentUser
      * @param Stripe $stripe
-     * @param PositionedEncryptedParameter $receiper
+     * @param PositionedEncryptedParameter $recieper
      * @param array $payload
      * @return HttpCode
      */
     public function post(
         UserServiceInterface         $currentUser,
         Stripe                       $stripe,
-        PositionedEncryptedParameter $receiper,
+        PositionedEncryptedParameter $recieper,
         array                        $payload
     ): HttpCode
     {
@@ -69,11 +69,11 @@ class PaymentIntents extends AbstractModel
 
         $this->document = $stripe->paymentIntent(
             payerId: $currentUser->getId(),
-            receiperId: $receiper->getValue(),
+            recieperId: $recieper->getValue(),
             amount: new Amount(
-                integer: $payload['receiper']['amount'],
-                cents: $payload['receiper']['cents'],
-                currency: Currency::from($payload['receiper']['currency'])
+                integer: $payload['recieper']['amount'],
+                cents: $payload['recieper']['cents'],
+                currency: Currency::from($payload['recieper']['currency'])
             ),
             phlowFee: new Amount(
                 integer: $payload['phlowFee']['amount'],

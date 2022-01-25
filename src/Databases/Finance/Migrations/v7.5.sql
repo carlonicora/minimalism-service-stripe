@@ -8,8 +8,8 @@ create table stripeSubscriptions
     productId                 bigint unsigned  not null,
     payerId                   bigint unsigned  not null,
     payerEmail                varchar(255)     not null,
-    receiperId                bigint unsigned  not null,
-    receiperEmail             varchar(255)     not null,
+    recieperId                bigint unsigned  not null,
+    recieperEmail             varchar(255)     not null,
     frequency                 enum ('monthly') not null,
     amount                    int unsigned     not null,
     phlowFeePercent           int unsigned     not null,
@@ -22,8 +22,8 @@ create table stripeSubscriptions
 create unique index stripeSubscriptions_subscriptionId_uindex
     on stripeSubscriptions (subscriptionId);
 
-create unique index stripeSubscriptions_receiperId_payerId_uindex
-    on stripeSubscriptions (receiperId, payerId);
+create unique index stripeSubscriptions_recieperId_payerId_uindex
+    on stripeSubscriptions (recieperId, payerId);
 
 create table stripeCustomers
 (
@@ -40,14 +40,11 @@ create unique index stripeCustomers_userId_uindex
 create unique index stripeCustomers_stripeCustomerId_uindex
     on stripeCustomers (stripeCustomerId);
 
-alter table stripePaymentIntents
-    add receiperEmail varchar(255) not null after receiperAccountId;
-
 create table stripeProducts
 (
     productId       bigint unsigned auto_increment,
     stripeProductId char(19)        not null,
-    receiperId      bigint unsigned not null,
+    recieperId      bigint unsigned not null,
     name            varchar(255)    not null,
     description     varchar(255)    null,
     createdAt       timestamp       not null,
@@ -56,8 +53,8 @@ create table stripeProducts
         primary key (productId)
 );
 
-create unique index stripeProducts_authorId_uindex
-    on stripeProducts (authorId);
+create unique index stripeProducts_recieperId_uindex
+    on stripeProducts (recieperId);
 
 create unique index stripeProducts_stripeProductId_uindex
     on stripeProducts (stripeProductId);
@@ -70,8 +67,8 @@ create table stripeInvoices
     subscriptionId        bigint unsigned                                         null,
     payerId               bigint unsigned                                         not null,
     payerEmail            varchar(255)                                            not null,
-    receiperId            bigint unsigned                                         not null,
-    receiperEmail         varchar(255)                                            not null,
+    recieperId            bigint unsigned                                         not null,
+    recieperEmail         varchar(255)                                            not null,
     frequency             enum ('monthly')                                        not null,
     amount                int unsigned                                            not null,
     phlowFeePercent       tinyint unsigned                                        not null,
@@ -86,3 +83,11 @@ create table stripeInvoices
 create unique index stripeInvoices_invoiceId_uindex
     on stripeInvoices (invoiceId);
 
+alter table stripePaymentIntents
+    change receiperId recieperId bigint unsigned not null;
+
+alter table stripePaymentIntents
+    change receiperAccountId recieperAccountId char(21) not null;
+
+alter table stripePaymentIntents
+    add recieperEmail varchar(255) not null after recieperAccountId;

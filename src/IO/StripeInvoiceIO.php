@@ -38,8 +38,8 @@ class StripeInvoiceIO extends AbstractLoader
      * @param string $stripeCustomerId
      * @param int $payerId
      * @param string $payerEmail
-     * @param int $receiperId
-     * @param string $receiperEmail
+     * @param int $recieperId
+     * @param string $recieperEmail
      * @param int $amount
      * @param int $phlowFeePercent
      * @param Currency $currency
@@ -53,8 +53,8 @@ class StripeInvoiceIO extends AbstractLoader
         string                $stripeCustomerId,
         int                   $payerId,
         string                $payerEmail,
-        int                   $receiperId,
-        string                $receiperEmail,
+        int                   $recieperId,
+        string                $recieperEmail,
         int                   $amount,
         int                   $phlowFeePercent,
         Currency              $currency,
@@ -69,8 +69,8 @@ class StripeInvoiceIO extends AbstractLoader
             'subscriptionId' => $subscriptionId,
             'payerId' => $payerId,
             'payerEmail' => $payerEmail,
-            'receiperId' => $receiperId,
-            'receiperEmail' => $receiperEmail,
+            'recieperId' => $recieperId,
+            'recieperEmail' => $recieperEmail,
             'amount' => $amount,
             'phlowFeePercent' => $phlowFeePercent,
             'currency' => $currency->value,

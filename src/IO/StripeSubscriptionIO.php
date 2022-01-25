@@ -35,22 +35,22 @@ class StripeSubscriptionIO extends AbstractLoader
     }
 
     /**
-     * @param int $receiperId
+     * @param int $recieperId
      * @param int $payerId
      * @return array
      * @throws RecordNotFoundException
      */
-    public function byReceiperAndPayerIds(
-        int $receiperId,
+    public function byRecieperAndPayerIds(
+        int $recieperId,
         int $payerId
     ): array
     {
-        /** @see StripeSubscriptionsTable::byReceiperAndPayerIds() */
+        /** @see StripeSubscriptionsTable::byRecieperAndPayerIds() */
         $result = $this->data->read(
             tableInterfaceClassName: StripeSubscriptionsTable::class,
-            functionName: 'byReceiperAndPayerIds',
+            functionName: 'byRecieperAndPayerIds',
             parameters: [
-                'receiperId' => $receiperId,
+                'recieperId' => $recieperId,
                 'payerId' => $payerId
             ],
         );
@@ -82,8 +82,8 @@ class StripeSubscriptionIO extends AbstractLoader
     /**
      * @param int $payerId
      * @param string $payerEmail
-     * @param int $receiperId
-     * @param string $receiperEmail
+     * @param int $recieperId
+     * @param string $recieperEmail
      * @param string $stripeSubscriptionId
      * @param string $stripeLastInvoiceId
      * @param string $stripeLastPaymentIntentId
@@ -99,8 +99,8 @@ class StripeSubscriptionIO extends AbstractLoader
     public function create(
         int                   $payerId,
         string                $payerEmail,
-        int                   $receiperId,
-        string                $receiperEmail,
+        int                   $recieperId,
+        string                $recieperEmail,
         string                $stripeSubscriptionId,
         string                $stripeLastInvoiceId,
         string                $stripeLastPaymentIntentId,
@@ -118,8 +118,8 @@ class StripeSubscriptionIO extends AbstractLoader
             'stripeLastInvoiceId' => $stripeLastInvoiceId,
             'stripeLastPaymentIntentId' => $stripeLastPaymentIntentId,
             'stripePriceId' => $stripePriceId,
-            'receiperId' => $receiperId,
-            'receiperEmail' => $receiperEmail,
+            'recieperId' => $recieperId,
+            'recieperEmail' => $recieperEmail,
             'productId' => $productId,
             'payerId' => $payerId,
             'payerEmail' => $payerEmail,

@@ -54,9 +54,9 @@ class StripePaymentIntentIO extends AbstractLoader
      * @param string $stripeInvoiceId
      * @param int $payerId
      * @param string $payerEmail
-     * @param int $receiperId
-     * @param string $receiperAccountId
-     * @param string $receiperEmail
+     * @param int $recieperId
+     * @param string $recieperAccountId
+     * @param string $recieperEmail
      * @param int $amount
      * @param int $phlowFeeAmount
      * @param Currency $currency
@@ -68,9 +68,9 @@ class StripePaymentIntentIO extends AbstractLoader
         string              $stripeInvoiceId,
         int                 $payerId,
         string              $payerEmail,
-        int                 $receiperId,
-        string              $receiperAccountId,
-        string              $receiperEmail,
+        int                 $recieperId,
+        string              $recieperAccountId,
+        string              $recieperEmail,
         int                 $amount,
         int                 $phlowFeeAmount,
         Currency            $currency,
@@ -82,9 +82,9 @@ class StripePaymentIntentIO extends AbstractLoader
             'stripeInvoiceId' => $stripeInvoiceId,
             'payerId' => $payerId,
             'payerEmail' => $payerEmail,
-            'receiperId' => $receiperId,
-            'receiperAccountId' => $receiperAccountId,
-            'receiperEmail' => $receiperEmail,
+            'recieperId' => $recieperId,
+            'recieperAccountId' => $recieperAccountId,
+            'recieperEmail' => $recieperEmail,
             'amount' => $amount,
             'phlowFeeAmount' => $phlowFeeAmount,
             'currency' => $currency->value,
