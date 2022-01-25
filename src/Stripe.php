@@ -353,6 +353,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
      * @param int $phlowFeePercent
      * @param SubscriptionFrequency $frequency
      * @return Document
+     * @throws Exception
      */
     public function subscribe(
         int                   $payerId,
@@ -364,9 +365,11 @@ class Stripe extends AbstractService implements StripeServiceInterface
     {
         $result = new Document();
 
+        $accountsDataReader = $this->objectFactory->create(className: StripeAccountIO::class);
+        $recieper           = $accountsDataReader->byUserId($recieperId);
+        $payer              = $accountsDataReader->byUserId($payerId);
+
         try {
-            $accountsDataReader      = $this->objectFactory->create(className: StripeAccountIO::class);
-            $recieper                = $accountsDataReader->byUserId($recieperId);
             $recieperStripeAccountId = $recieper['stripeAccountId'];
 
             $product = $this->getOrCreateProduct($recieperId, $recieperStripeAccountId);
@@ -394,7 +397,6 @@ class Stripe extends AbstractService implements StripeServiceInterface
                 ], ['stripe_account' => $recieperStripeAccountId]
             );
 
-            $payer = $accountsDataReader->byUserId($payerId);
 
             $subscriptionIO = $this->objectFactory->create(className: StripeSubscriptionIO::class);
             $subscription   = $subscriptionIO->create(
@@ -403,7 +405,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
                 recieperId: $recieperId,
                 recieperEmail: $recieper['email'],
                 stripeSubscriptionId: $stripeSubscription->id,
-                stripeLastInvoiceId:  $stripeSubscription->latest_invoice->id,
+                stripeLastInvoiceId: $stripeSubscription->latest_invoice->id,
                 stripeLastPaymentIntentId: $stripeSubscription->latest_invoice->payment_intent->id,
                 stripePriceId: $price->id,
                 productId: $product['productId'],
@@ -413,9 +415,6 @@ class Stripe extends AbstractService implements StripeServiceInterface
                 currency: $amount->currency(),
                 frequency: $frequency
             );
-
-            // TODO save stripe payment intent in the local table
-            // TODO save invoices in the local table
 
             $subscriptionResourceFactory = $this->objectFactory->create(className: StripeSubscriptionsResourceFactory::class);
             $localSubscriptionResource   = $subscriptionResourceFactory->byId($subscription['subscriptionId']);
