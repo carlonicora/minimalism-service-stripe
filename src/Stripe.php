@@ -367,7 +367,21 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
         $accountsDataReader = $this->objectFactory->create(className: StripeAccountIO::class);
         $recieper           = $accountsDataReader->byUserId($recieperId);
-        $payer              = $accountsDataReader->byUserId($payerId);
+
+        $payer = $this->userLoader->load($payerId);
+
+        $subscriptionIO = $this->objectFactory->create(className: StripeSubscriptionIO::class);
+        try {
+            /** @noinspection UnusedFunctionResultInspection */
+            $subscriptionIO->byRecieperAndPayerIds(
+                recieperId: $recieperId,
+                payerId: $payerId
+            );
+
+            throw new RuntimeException(message: 'It is forbidden to create second subscriptions. Please, cancel an existing subscription.', code: 403);
+        } catch (RecordNotFoundException) {
+            // 'Subscription does not exists yet' test passed successfully
+        }
 
         try {
             $recieperStripeAccountId = $recieper['stripeAccountId'];
@@ -397,11 +411,9 @@ class Stripe extends AbstractService implements StripeServiceInterface
                 ], ['stripe_account' => $recieperStripeAccountId]
             );
 
-
-            $subscriptionIO = $this->objectFactory->create(className: StripeSubscriptionIO::class);
-            $subscription   = $subscriptionIO->create(
+            $subscription = $subscriptionIO->create(
                 payerId: $payerId,
-                payerEmail: $payer['email'],
+                payerEmail: $payer->getEmail(),
                 recieperId: $recieperId,
                 recieperEmail: $recieper['email'],
                 stripeSubscriptionId: $stripeSubscription->id,

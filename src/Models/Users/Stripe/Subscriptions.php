@@ -10,6 +10,7 @@ use CarloNicora\Minimalism\Services\Stripe\Enums\Currency;
 use CarloNicora\Minimalism\Services\Stripe\Enums\SubscriptionFrequency;
 use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
+use Exception;
 use RuntimeException;
 use Stripe\Exception\ApiErrorException;
 
@@ -52,6 +53,7 @@ class Subscriptions extends AbstractModel
      * @param PositionedEncryptedParameter $author
      * @param array $payload
      * @return HttpCode
+     * @throws Exception
      */
     public function post(
         Stripe                       $stripe,
