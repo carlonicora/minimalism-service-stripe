@@ -91,13 +91,18 @@ class Subscriptions extends AbstractModel
             throw new RuntimeException(message: 'Access not allowed to guests', code: 403);
         }
 
+        if (empty($payload['recieper']) || empty($payload['recieper']['amount']) || empty($payload['recieper']['currency']) ||
+            empty($payload['phlowFeePercent']) ||
+            empty($payload['frequency']) || null === ($frequency = SubscriptionFrequency::from($payload['frequency']))
+        ) {
+            throw new RuntimeException(message: 'Incorrect payload', code: 412);
+        }
+
         $amount = new Amount(
             integer: $payload['recieper']['amount'],
             cents: $payload['recieper']['cents'],
             currency: Currency::from($payload['recieper']['currency'])
         );
-
-        $frequency = SubscriptionFrequency::from($payload['frequency']);
 
         return [$amount, $payload['phlowFeePercent'], $frequency];
     }
