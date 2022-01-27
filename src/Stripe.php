@@ -374,8 +374,15 @@ class Stripe extends AbstractService implements StripeServiceInterface
     {
         $result = new Document();
 
-        $accountsDataReader = $this->objectFactory->create(className: StripeAccountIO::class);
-        $recieper           = $accountsDataReader->byUserId($recieperId);
+        $accountsDataReader   = $this->objectFactory->create(className: StripeAccountIO::class);
+        $recieperLocalAccount = $accountsDataReader->byUserId($recieperId);
+        if (
+            $recieperLocalAccount['status'] !== AccountStatus::Comlete->value &&
+            $recieperLocalAccount['status'] !== AccountStatus::Pending->value &&
+            $recieperLocalAccount['status'] !== AccountStatus::RestrictedSoon->value
+        ) {
+            throw new RuntimeException(message: 'Account status of an artist does not allow subscriptions', code: 403);
+        }
 
         $payer = $this->userLoader->load($payerId);
 
@@ -392,7 +399,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
         }
 
         try {
-            $recieperStripeAccountId = $recieper['stripeAccountId'];
+            $recieperStripeAccountId = $recieperLocalAccount['stripeAccountId'];
 
             $product = $this->getOrCreateProduct($recieperId, $recieperStripeAccountId);
 
@@ -423,7 +430,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
                 payerId: $payerId,
                 payerEmail: $payer->getEmail(),
                 recieperId: $recieperId,
-                recieperEmail: $recieper['email'],
+                recieperEmail: $recieperLocalAccount['email'],
                 stripeSubscriptionId: $stripeSubscription->id,
                 stripeLastInvoiceId: $stripeSubscription->latest_invoice->id,
                 stripeLastPaymentIntentId: $stripeSubscription->latest_invoice->payment_intent->id,
