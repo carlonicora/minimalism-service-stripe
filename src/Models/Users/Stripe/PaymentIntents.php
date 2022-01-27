@@ -63,29 +63,54 @@ class PaymentIntents extends AbstractModel
         array                        $payload
     ): HttpCode
     {
-        $currentUser->load();
-
-        if ($currentUser->isVisitor()) {
-            throw new RuntimeException(message: 'Access not allowed to guests', code: 403);
-        }
+        [$amount, $phlowFee] = self::processPayload($currentUser, $payload);
 
         $this->document = $stripe->paymentIntent(
             payerId: $currentUser->getId(),
             recieperId: $recieper->getValue(),
-            amount: new Amount(
-                integer: $payload['recieper']['amount'],
-                cents: $payload['recieper']['cents'],
-                currency: Currency::from($payload['recieper']['currency'])
-            ),
-            phlowFee: new Amount(
-                integer: $payload['phlowFee']['amount'],
-                cents: $payload['phlowFee']['cents'],
-                currency: Currency::from($payload['phlowFee']['currency']),
-            ),
+            amount: $amount,
+            phlowFee: $phlowFee,
             payerEmail: $currentUser->getEmail(),
         );
 
         $errorCode = current($this->document->errors)?->status;
-        return $errorCode? HttpCode::from($errorCode) : HttpCode::Created;
+        return $errorCode ? HttpCode::from($errorCode) : HttpCode::Created;
+    }
+
+
+    /**
+     * @param UserServiceInterface $currentUser
+     * @param array $payload
+     * @return array
+     */
+    private static function processPayload(
+        UserServiceInterface $currentUser,
+        array                $payload
+    ): array
+    {
+        $currentUser->load();
+        if ($currentUser->isVisitor()) {
+            throw new RuntimeException(message: 'Access not allowed to guests', code: 403);
+        }
+
+        if (empty($payload['recieper']) || empty($payload['recieper']['amount']) || empty($payload['recieper']['cents']) || empty($payload['recieper']['currency']) ||
+            empty($payload['phlowFee']) || empty($payload['phlowFee']['amount']) || empty($payload['phlowFee']['cents']) || empty($payload['phlowFee']['currency'])
+        ) {
+            throw new RuntimeException(message: 'Incorrect payload', code: 412);
+        }
+
+        $amount = new Amount(
+            integer: $payload['recieper']['amount'],
+            cents: $payload['recieper']['cents'],
+            currency: Currency::from($payload['recieper']['currency'])
+        );
+
+        $phlowFee = new Amount(
+            integer: $payload['phlowFee']['amount'],
+            cents: $payload['phlowFee']['cents'],
+            currency: Currency::from($payload['phlowFee']['currency']),
+        );
+
+        return [$amount, $phlowFee];
     }
 }
