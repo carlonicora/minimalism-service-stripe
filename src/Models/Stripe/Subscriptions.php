@@ -58,11 +58,15 @@ class Subscriptions extends AbstractModel
         PositionedParameter $stripeSubscription
     ): HttpCode
     {
+        $userService->load();
+        if ($userService->isVisitor()) {
+            throw new RuntimeException(message: 'Access denied for visitors', code: 403);
+        }
+
         $subscriptionIO = $this->objectFactory->create(className: StripeSubscriptionIO::class);
         $subscriptionData = $subscriptionIO->byStripeSubscriptionId($stripeSubscription->getValue());
 
-        $userService->load();
-        if ($userService->isVisitor() || $userService->getId() !== $subscriptionData['payerId']) {
+        if ($userService->getId() !== $subscriptionData['payerId']) {
             throw new RuntimeException(message: 'Stripe subscription does not belong to the current user', code: 403);
         }
 

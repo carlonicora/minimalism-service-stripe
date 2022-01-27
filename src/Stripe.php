@@ -219,6 +219,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
      * @param Amount $phlowFee
      * @param string $payerEmail
      * @return Document
+     * @throws Exception
      */
     public function paymentIntent(
         int    $payerId,
@@ -230,10 +231,18 @@ class Stripe extends AbstractService implements StripeServiceInterface
     {
         $result = new Document();
 
-        try {
-            $accountDataReader    = $this->objectFactory->create(className: StripeAccountIO::class);
-            $recieperLocalAccount = $accountDataReader->byUserId($recieperId);
+        $accountDataReader    = $this->objectFactory->create(className: StripeAccountIO::class);
+        $recieperLocalAccount = $accountDataReader->byUserId($recieperId);
 
+        if (
+            $recieperLocalAccount['status'] !== AccountStatus::Comlete->value &&
+            $recieperLocalAccount['status'] !== AccountStatus::Pending->value &&
+            $recieperLocalAccount['status'] !== AccountStatus::RestrictedSoon->value
+        ) {
+            throw new RuntimeException(message: 'Account status of an artist does not allow payments', code: 403);
+        }
+
+        try {
             $paymentMethods = [];
             foreach ($amount->currency()->paymentMethods() as $method) {
                 $paymentMethods [] = $method->value;
@@ -372,8 +381,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
         $subscriptionIO = $this->objectFactory->create(className: StripeSubscriptionIO::class);
         try {
-            /** @noinspection UnusedFunctionResultInspection */
-            $subscriptionIO->byRecieperAndPayerIds(
+            $existingSubscription = $subscriptionIO->byRecieperAndPayerIds(
                 recieperId: $recieperId,
                 payerId: $payerId
             );
@@ -818,18 +826,42 @@ class Stripe extends AbstractService implements StripeServiceInterface
         }
 
         $details = match ($objectClassName) {
-            Account::class       => ['status' => AccountStatus::calculate($object)->value],
+            Account::class       => [
+                'status' => AccountStatus::calculate($object)->value,
+                'chargesEnabled' => $object->charges_enabled,
+                'payoutsEnabled' => $object->payouts_enabled,
+            ],
             PaymentIntent::class => [
                 'last_payment_error' => $object->last_payment_error,
                 'canceled_at' => $object->canceled_at,
                 'cancellation_reason' => $object->cancellation_reason
             ],
             Subscription::class  => [
-                'status' => SubscriptionStatus::from($object->status),
-                // TODO save more details to event if required
+                'status' => $object->status,
+                'lastPaymentIntentId' => $object->latest_invoice->payment_intent->id,
+                'lastInvoiceId' => $object->latest_invoice->id,
+                'current_period_end' => $object->current_period_end,
+                'current_period_start' => $object->current_period_start,
+                'canceled_at' => $object->canceled_at,
+                'ended_at' => $object->ended_at
             ],
-            // TODO what is important in invoce
-            Invoice::class => [],
+            Invoice::class => [
+                'status' => $object->status,
+                'charge' => $object->charge,
+                'paymentIntentId' => $object->payment_intent->id,
+                'attempted' => $object->attempted,
+                'billingReason' => $object->billing_reason,
+                'attemptCount' => $object->attempt_count,
+                'amountPaid' => $object->amount_paid,
+                'amountRemaining' => $object->amount_remaining,
+                'applicationFeeAmount' => $object->application_fee_amount,
+                'lastFinalizationError' => $object->last_finalization_error,
+                'nextPaymentAttempt' => $object->next_payment_attempt,
+                'onBehalfOf' => $object->on_behalf_of,
+                'paid' => $object->paid,
+                'paidOutOfBand' => $object->paid_out_of_band,
+                'thresholdReason' => $object->threshold_reason,
+            ],
             default              => null
         };
 

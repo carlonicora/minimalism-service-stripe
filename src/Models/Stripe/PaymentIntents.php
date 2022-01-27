@@ -60,9 +60,12 @@ class PaymentIntents extends AbstractModel
         PositionedParameter                 $intent
     ): HttpCode
     {
-        $paymentIntentData = $paymentIntentIO->byStripePaymentIntentId($intent->getValue());
-
         $userService->load();
+        if ($userService->isVisitor()) {
+            throw new RuntimeException(message: 'Access denied for visitors', code: 403);
+        }
+
+        $paymentIntentData = $paymentIntentIO->byStripePaymentIntentId($intent->getValue());
         if ($userService->getId() !== $paymentIntentData['payerId']) {
             throw new RuntimeException(message: 'Payment intent does not belong to the current user', code: 403);
         }

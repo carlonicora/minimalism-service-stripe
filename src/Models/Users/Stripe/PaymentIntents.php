@@ -9,6 +9,7 @@ use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserServiceInterface;
 use CarloNicora\Minimalism\Services\Stripe\Enums\Currency;
 use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
+use Exception;
 use RuntimeException;
 
 class PaymentIntents extends AbstractModel
@@ -53,6 +54,7 @@ class PaymentIntents extends AbstractModel
      * @param PositionedEncryptedParameter $recieper
      * @param array $payload
      * @return HttpCode
+     * @throws Exception
      */
     public function post(
         UserServiceInterface         $currentUser,
