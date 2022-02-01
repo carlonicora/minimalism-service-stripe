@@ -4,11 +4,9 @@ namespace CarloNicora\Minimalism\Services\Stripe\IO;
 
 use CarloNicora\Minimalism\Services\DataMapper\Abstracts\AbstractLoader;
 use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
-use CarloNicora\Minimalism\Services\Stripe\Databases\Finance\Tables\StripePaymentIntentsTable;
 use CarloNicora\Minimalism\Services\Stripe\Databases\Finance\Tables\StripeSubscriptionsTable;
 use CarloNicora\Minimalism\Services\Stripe\Enums\Currency;
 use CarloNicora\Minimalism\Services\Stripe\Enums\SubscriptionFrequency;
-use CarloNicora\Minimalism\Services\Stripe\Enums\SubscriptionStatus;
 
 class StripeSubscriptionIO extends AbstractLoader
 {
@@ -138,23 +136,29 @@ class StripeSubscriptionIO extends AbstractLoader
     }
 
     /**
-     * @param int $subscriptionId
-     * @param SubscriptionStatus $status
+     * @param string $stripeSubscriptionId
+     * @param string $status
+     * @param string $stripeLastInvoiceId
+     * @param int $currentPeriodEnd
      * @return void
      */
-    public function updateStatus(
-        int                $subscriptionId,
-        SubscriptionStatus $status
+    public function updateDetails(
+        string $stripeSubscriptionId,
+        string $status,
+        string $stripeLastInvoiceId,
+        int    $currentPeriodEnd
     ): void
     {
-        /** @see StripePaymentIntentsTable::updateStatus() */
+        /** @see StripeSubscriptionsTable::updateDetails() */
         /** @noinspection UnusedFunctionResultInspection */
         $this->data->run(
-            tableInterfaceClassName: StripePaymentIntentsTable::class,
-            functionName: 'updateStatus',
+            tableInterfaceClassName: StripeSubscriptionsTable::class,
+            functionName: 'updateDetails',
             parameters: [
-                'subscriptionId' => $subscriptionId,
-                'status' => $status->value,
+                'stripeSubscriptionId' => $stripeSubscriptionId,
+                'status' => $status,
+                'lastInvoiceId' => $stripeLastInvoiceId,
+                'currentPeriodEnd' => date(format: 'Y-m-d H:i:s', timestamp: $currentPeriodEnd)
             ],
         );
     }

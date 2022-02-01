@@ -15,6 +15,7 @@ create table stripeSubscriptions
     phlowFeePercent           int unsigned     not null,
     currency                  char(3)          not null,
     status                    varchar(64)      not null,
+    currentPeriodEnd          timestamp        not null,
     createdAt                 timestamp        not null,
     updatedAt                 timestamp        null
 );

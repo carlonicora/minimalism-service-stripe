@@ -30,6 +30,7 @@ class StripeSubscriptionsTable extends AbstractMySqlTable
         'phlowFeePercent' => FieldInterface::INTEGER,
         'currency' => FieldInterface::STRING,
         'status' => FieldInterface::STRING,
+        'currentPeriodEnd' => FieldInterface::STRING,
         'createdAt' => FieldInterface::STRING
             + FieldInterface::TIME_CREATE,
         'updatedAt' => FieldInterface::STRING
@@ -68,6 +69,29 @@ class StripeSubscriptionsTable extends AbstractMySqlTable
         $this->parameters = ['s', $stripeSubscriptionId];
 
         return $this->functions->runRead();
+    }
+
+
+    /**
+     * @param string $stripeSubscriptionId
+     * @param string $status
+     * @param string $lastInvoiceId
+     * @param string $currentPeriodEnd
+     * @return void
+     * @throws Exception
+     */
+    public function updateDetails(
+        string $stripeSubscriptionId,
+        string $status,
+        string $lastInvoiceId,
+        string $currentPeriodEnd
+    ): void
+    {
+        $this->sql = 'UPDATE ' . self::getTableName() . ' SET status=?, stripeLastInvoiceId=?, currentPeriodEnd=? WHERE stripeSubscriptionId=?;';
+
+        $this->parameters = ['ssss', $status, $lastInvoiceId, $currentPeriodEnd, $stripeSubscriptionId];
+
+        $this->functions->runSql();
     }
 
 }

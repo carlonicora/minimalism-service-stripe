@@ -45,6 +45,7 @@ use Exception;
  *     ),
  *     @OA\Property(property="phlowFeePercent", type="number", format="int32", nullable=false, minimum="0", maximum="100", example="15"),
  *     @OA\Property(property="status", type="number", format="int32", nullable=false, minimum="0", maximum="3", example="1"),
+ *     @OA\Property(property="currentPeriodEnd", type="string", format="date-time", nullable=false, example="2021-01-01 23:59:59"),
  *     @OA\Property(property="createdAt", type="string", format="date-time", nullable=false, example="2021-01-01 23:59:59"),
  *     @OA\Property(property="updatedAt", type="string", format="date-time", nullable=true, example="2021-01-01 23:59:59")
  * )
@@ -91,6 +92,7 @@ class StripeSubscriptionBuilder extends AbstractResourceBuilder
         $this->response->attributes->add(name: 'recieper', value: ['amount' => $amountInt, 'cents' => $amountCents, 'currency' => $data['currency']]);
         $this->response->attributes->add(name: 'phlowFeePercent', value: $data['phlowFeePercent']);
         $this->response->attributes->add(name: 'status', value: $data['status']);
+        $this->response->attributes->add(name: 'currentPeriodEnd', value: $data['currentPeriodEnd']);
         $this->response->attributes->add(name: 'createdAt', value: $data['createdAt']);
         $this->response->attributes->add(name: 'updatedAt', value: $data['updatedAt']);
     }

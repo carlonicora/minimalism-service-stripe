@@ -14,7 +14,6 @@ use CarloNicora\Minimalism\Services\Stripe\Enums\Currency;
 use CarloNicora\Minimalism\Services\Stripe\Enums\InvoiceStatus;
 use CarloNicora\Minimalism\Services\Stripe\Enums\PaymentIntentStatus;
 use CarloNicora\Minimalism\Services\Stripe\Enums\SubscriptionFrequency;
-use CarloNicora\Minimalism\Services\Stripe\Enums\SubscriptionStatus;
 use CarloNicora\Minimalism\Services\Stripe\Factories\Resources\StripePaymentIntentsResourceFactory;
 use CarloNicora\Minimalism\Services\Stripe\Factories\Resources\StripeSubscriptionsResourceFactory;
 use CarloNicora\Minimalism\Services\Stripe\Interfaces\StripeServiceInterface;
@@ -756,10 +755,15 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $subscriptionIO = $this->objectFactory->create(className: StripeSubscriptionIO::class);
         $localSubscription = $subscriptionIO->byStripeSubscriptionId($stripeSubscription->id);
 
-        if ($localSubscription['status'] !== $stripeSubscription->status) {
-            $subscriptionIO->updateStatus(
-                subscriptionId: $stripeSubscription->id,
-                status: SubscriptionStatus::from($stripeSubscription->status)
+        if ($localSubscription['status'] !== $stripeSubscription->status ||
+            $localSubscription['stripeLastInvoiceId'] !== $stripeSubscription->latest_invoice ||
+            $localSubscription['currentPeriodEnd'] !== $stripeSubscription->current_period_end
+        ) {
+            $subscriptionIO->updateDetails(
+                stripeSubscriptionId: $stripeSubscription->id,
+                status: $stripeSubscription->status,
+                stripeLastInvoiceId: $stripeSubscription->latest_invoice,
+                currentPeriodEnd: (int)$stripeSubscription->current_period_end
             );
         }
     }
