@@ -69,7 +69,7 @@ class StripeSubscriptionBuilder extends AbstractResourceBuilder
 {
 
     /** @var string */
-    protected string $type = 'stripeSubscriptions';
+    protected string $type = 'stripeSubscription';
 
     /**
      * @param array $data
