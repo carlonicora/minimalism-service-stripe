@@ -681,6 +681,29 @@ class Stripe extends AbstractService implements StripeServiceInterface
     }
 
     /**
+     * @param int $reciperId
+     * @param int $payerId
+     * @return Document
+     * @throws RecordNotFoundException
+     * @throws Exception
+     */
+    public function getSubscription(
+        int $reciperId,
+        int $payerId
+    ): Document
+    {
+        $document = new Document();
+
+        $subscriptionFactory = $this->objectFactory->create(className: StripeSubscriptionsResourceFactory::class);
+        $document->addResource($subscriptionFactory->byRecieperAndPayerIds(
+            recieperId: $reciperId,
+            payerId: $payerId
+        ));
+
+        return $document;
+    }
+
+    /**
      * @param Event $stripeEvent
      * @return void
      * @throws JsonException

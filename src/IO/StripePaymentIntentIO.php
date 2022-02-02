@@ -31,19 +31,19 @@ class StripePaymentIntentIO extends AbstractLoader
     }
 
     /**
-     * @param string $paymentIntentId
+     * @param string $stripePaymentIntentId
      * @return array
      * @throws RecordNotFoundException
      */
     public function byStripePaymentIntentId(
-        string $paymentIntentId
+        string $stripePaymentIntentId
     ): array
     {
         /** @see StripePaymentIntentsTable::byStripePaymentIntentId() */
         $result = $this->data->read(
             tableInterfaceClassName: StripePaymentIntentsTable::class,
             functionName: 'byStripePaymentIntentId',
-            parameters: ['paymentIntentId' => $paymentIntentId]
+            parameters: ['stripePaymentIntentId' => $stripePaymentIntentId]
         );
 
         return $this->returnSingleValue($result, recordType: 'Stripe payment intent');

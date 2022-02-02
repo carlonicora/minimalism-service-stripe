@@ -34,17 +34,17 @@ class StripePaymentIntentsTable extends AbstractMySqlTable
     ];
 
     /**
-     * @param string $paymentIntentId
+     * @param string $stripePaymentIntentId
      * @return array
      * @throws Exception
      */
     public function byStripePaymentIntentId(
-        string $paymentIntentId
+        string $stripePaymentIntentId
     ): array
     {
         $this->sql        = 'SELECT * FROM ' . static::getTableName()
             . ' WHERE stripePaymentIntentid = ? ';
-        $this->parameters = ['s', $paymentIntentId];
+        $this->parameters = ['s', $stripePaymentIntentId];
 
         return $this->functions->runRead();
     }

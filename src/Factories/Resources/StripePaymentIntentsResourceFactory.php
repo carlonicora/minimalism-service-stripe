@@ -8,28 +8,28 @@ use CarloNicora\Minimalism\Interfaces\Data\Objects\DataFunction;
 use CarloNicora\Minimalism\Services\DataMapper\Abstracts\AbstractLoader;
 use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\Stripe\Builders\StripePaymentIntentBuilder;
-use CarloNicora\Minimalism\Services\Stripe\Databases\Finance\Tables\StripePaymentIntentsTable;
+use CarloNicora\Minimalism\Services\Stripe\IO\StripePaymentIntentIO;
 
 class StripePaymentIntentsResourceFactory extends AbstractLoader
 {
 
     /**
-     * @param string $paymentIntentId
+     * @param string $stripePaymentIntentId
      * @return ResourceObject
      * @throws RecordNotFoundException
      */
     public function byStripePaymentIntentId(
-        string $paymentIntentId
+        string $stripePaymentIntentId
     ): ResourceObject
     {
-        /** @see StripePaymentIntentsTable::byStripePaymentIntentId() */
+        /** @see StripePaymentIntentIO::byStripePaymentIntentId() */
         $result = current($this->builder->build(
             resourceTransformerClass: StripePaymentIntentBuilder::class,
             function: new DataFunction(
                 type: DataFunctionInterface::TYPE_TABLE,
-                className: StripePaymentIntentsTable::class,
+                className: StripePaymentIntentIO::class,
                 functionName: 'byStripePaymentIntentId',
-                parameters: ['paymentIntentId' => $paymentIntentId]
+                parameters: ['stripePaymentIntentId' => $stripePaymentIntentId]
             )
         ));
 

@@ -8,7 +8,7 @@ use CarloNicora\Minimalism\Interfaces\Data\Objects\DataFunction;
 use CarloNicora\Minimalism\Services\DataMapper\Abstracts\AbstractLoader;
 use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\Stripe\Builders\StripeSubscriptionBuilder;
-use CarloNicora\Minimalism\Services\Stripe\Databases\Finance\Tables\StripeSubscriptionsTable;
+use CarloNicora\Minimalism\Services\Stripe\IO\StripeSubscriptionIO;
 
 class StripeSubscriptionsResourceFactory extends AbstractLoader
 {
@@ -22,14 +22,14 @@ class StripeSubscriptionsResourceFactory extends AbstractLoader
         int $subscriptionId
     ): ResourceObject
     {
-        /** @see StripeSubscriptionsTable::readById() */
+        /** @see StripeSubscriptionIO::byId() */
         $result = current($this->builder->build(
             resourceTransformerClass: StripeSubscriptionBuilder::class,
             function: new DataFunction(
                 type: DataFunctionInterface::TYPE_TABLE,
-                className: StripeSubscriptionsTable::class,
-                functionName: 'readById',
-                parameters: ['id' => $subscriptionId]
+                className: StripeSubscriptionIO::class,
+                functionName: 'byId',
+                parameters: ['subscriptionId' => $subscriptionId]
             )
         ));
 
@@ -49,12 +49,12 @@ class StripeSubscriptionsResourceFactory extends AbstractLoader
         string $stripeSubscriptionId
     ): ResourceObject
     {
-        /** @see StripeSubscriptionsTable::byStripeSubscriptionId() */
+        /** @see StripeSubscriptionIO::byStripeSubscriptionId() */
         $result = current($this->builder->build(
             resourceTransformerClass: StripeSubscriptionBuilder::class,
             function: new DataFunction(
                 type: DataFunctionInterface::TYPE_TABLE,
-                className: StripeSubscriptionsTable::class,
+                className: StripeSubscriptionIO::class,
                 functionName: 'byStripeSubscriptionId',
                 parameters: ['stripeSubscriptionId' => $stripeSubscriptionId]
             )
@@ -67,4 +67,30 @@ class StripeSubscriptionsResourceFactory extends AbstractLoader
         return $result;
     }
 
+    /**
+     * @param int $recieperId
+     * @param int $payerId
+     * @return ResourceObject
+     */
+    public function byRecieperAndPayerIds(
+        int $recieperId,
+        int $payerId
+    ): ResourceObject
+    {
+        /** @see StripeSubscriptionIO::byRecieperAndPayerIds() */
+        return current(
+            $this->builder->build(
+                resourceTransformerClass: StripeSubscriptionBuilder::class,
+                function: new DataFunction(
+                    type: DataFunctionInterface::TYPE_TABLE,
+                    className: StripeSubscriptionIO::class,
+                    functionName: 'byRecieperAndPayerIds',
+                    parameters: [
+                        'recieperId' => $recieperId,
+                        'payerId' => $payerId
+                    ]
+                )
+            )
+        );
+    }
 }
