@@ -26,7 +26,7 @@ class StripePaymentIntentsResourceFactory extends AbstractLoader
         $result = current($this->builder->build(
             resourceTransformerClass: StripePaymentIntentBuilder::class,
             function: new DataFunction(
-                type: DataFunctionInterface::TYPE_TABLE,
+                type: DataFunctionInterface::TYPE_LOADER,
                 className: StripePaymentIntentIO::class,
                 functionName: 'byStripePaymentIntentId',
                 parameters: ['stripePaymentIntentId' => $stripePaymentIntentId]

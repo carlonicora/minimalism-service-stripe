@@ -26,7 +26,7 @@ class StripeSubscriptionsResourceFactory extends AbstractLoader
         $result = current($this->builder->build(
             resourceTransformerClass: StripeSubscriptionBuilder::class,
             function: new DataFunction(
-                type: DataFunctionInterface::TYPE_TABLE,
+                type: DataFunctionInterface::TYPE_LOADER,
                 className: StripeSubscriptionIO::class,
                 functionName: 'byId',
                 parameters: ['subscriptionId' => $subscriptionId]
@@ -53,7 +53,7 @@ class StripeSubscriptionsResourceFactory extends AbstractLoader
         $result = current($this->builder->build(
             resourceTransformerClass: StripeSubscriptionBuilder::class,
             function: new DataFunction(
-                type: DataFunctionInterface::TYPE_TABLE,
+                type: DataFunctionInterface::TYPE_LOADER,
                 className: StripeSubscriptionIO::class,
                 functionName: 'byStripeSubscriptionId',
                 parameters: ['stripeSubscriptionId' => $stripeSubscriptionId]
@@ -82,7 +82,7 @@ class StripeSubscriptionsResourceFactory extends AbstractLoader
             $this->builder->build(
                 resourceTransformerClass: StripeSubscriptionBuilder::class,
                 function: new DataFunction(
-                    type: DataFunctionInterface::TYPE_TABLE,
+                    type: DataFunctionInterface::TYPE_LOADER,
                     className: StripeSubscriptionIO::class,
                     functionName: 'byRecieperAndPayerIds',
                     parameters: [
