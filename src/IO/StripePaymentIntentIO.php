@@ -7,6 +7,7 @@ use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundExceptio
 use CarloNicora\Minimalism\Services\Stripe\Databases\Finance\Tables\StripePaymentIntentsTable;
 use CarloNicora\Minimalism\Services\Stripe\Enums\Currency;
 use CarloNicora\Minimalism\Services\Stripe\Enums\PaymentIntentStatus;
+use Exception;
 
 class StripePaymentIntentIO extends AbstractLoader
 {
@@ -15,6 +16,7 @@ class StripePaymentIntentIO extends AbstractLoader
      * @param int $id
      * @return array
      * @throws RecordNotFoundException
+     * @throws Exception
      */
     public function byId(
         int $id
@@ -34,6 +36,7 @@ class StripePaymentIntentIO extends AbstractLoader
      * @param string $stripePaymentIntentId
      * @return array
      * @throws RecordNotFoundException
+     * @throws Exception
      */
     public function byStripePaymentIntentId(
         string $stripePaymentIntentId

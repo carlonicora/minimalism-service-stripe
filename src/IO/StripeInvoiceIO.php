@@ -8,6 +8,7 @@ use CarloNicora\Minimalism\Services\Stripe\Databases\Finance\Tables\StripeInvoic
 use CarloNicora\Minimalism\Services\Stripe\Enums\Currency;
 use CarloNicora\Minimalism\Services\Stripe\Enums\InvoiceStatus;
 use CarloNicora\Minimalism\Services\Stripe\Enums\SubscriptionFrequency;
+use Exception;
 
 class StripeInvoiceIO extends AbstractLoader
 {
@@ -16,6 +17,7 @@ class StripeInvoiceIO extends AbstractLoader
      * @param string $stripeInvoiceId
      * @return array
      * @throws RecordNotFoundException
+     * @throws Exception
      */
     public function byStripeInvoiceId(
         string $stripeInvoiceId

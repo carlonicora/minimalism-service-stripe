@@ -7,6 +7,7 @@ use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundExceptio
 use CarloNicora\Minimalism\Services\Stripe\Databases\Finance\Tables\StripeSubscriptionsTable;
 use CarloNicora\Minimalism\Services\Stripe\Enums\Currency;
 use CarloNicora\Minimalism\Services\Stripe\Enums\SubscriptionFrequency;
+use Exception;
 
 class StripeSubscriptionIO extends AbstractLoader
 {
@@ -15,6 +16,7 @@ class StripeSubscriptionIO extends AbstractLoader
      * @param int $subscriptionId
      * @return array
      * @throws RecordNotFoundException
+     * @throws Exception
      */
     public function byId(
         int $subscriptionId
@@ -37,6 +39,7 @@ class StripeSubscriptionIO extends AbstractLoader
      * @param int $payerId
      * @return array
      * @throws RecordNotFoundException
+     * @throws Exception
      */
     public function byRecieperAndPayerIds(
         int $recieperId,
@@ -60,6 +63,7 @@ class StripeSubscriptionIO extends AbstractLoader
      * @param string $stripeSubscriptionId
      * @return array
      * @throws RecordNotFoundException
+     * @throws Exception
      */
     public function byStripeSubscriptionId(
         string $stripeSubscriptionId

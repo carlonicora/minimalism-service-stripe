@@ -5,6 +5,7 @@ namespace CarloNicora\Minimalism\Services\Stripe\IO;
 use CarloNicora\Minimalism\Services\DataMapper\Abstracts\AbstractLoader;
 use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\Stripe\Databases\Finance\Tables\StripeCustomersTable;
+use Exception;
 
 class StripeCustomerIO extends AbstractLoader
 {
@@ -13,6 +14,7 @@ class StripeCustomerIO extends AbstractLoader
      * @param int $userId
      * @return array
      * @throws RecordNotFoundException
+     * @throws Exception
      */
     public function byUserId(
         int $userId
@@ -34,6 +36,7 @@ class StripeCustomerIO extends AbstractLoader
      * @param int $customerId
      * @return array
      * @throws RecordNotFoundException
+     * @throws Exception
      */
     public function byCustomerId(
         int $customerId
