@@ -53,7 +53,7 @@ class Payments extends AbstractWebhook
             webhookSecret: $stripe->getPaymentsWebhookSecret()
         );
 
-        $stripe->processPaymentIntentWebhook($stripeEvent);
+        $this->document = $stripe->processPaymentIntentWebhook($stripeEvent);
 
         return HttpCode::Created;
     }

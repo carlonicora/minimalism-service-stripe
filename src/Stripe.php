@@ -14,6 +14,7 @@ use CarloNicora\Minimalism\Services\Stripe\Enums\Currency;
 use CarloNicora\Minimalism\Services\Stripe\Enums\InvoiceStatus;
 use CarloNicora\Minimalism\Services\Stripe\Enums\PaymentIntentStatus;
 use CarloNicora\Minimalism\Services\Stripe\Enums\SubscriptionFrequency;
+use CarloNicora\Minimalism\Services\Stripe\Factories\Resources\StripeAccountsResourceFactory;
 use CarloNicora\Minimalism\Services\Stripe\Factories\Resources\StripePaymentIntentsResourceFactory;
 use CarloNicora\Minimalism\Services\Stripe\Factories\Resources\StripeSubscriptionsResourceFactory;
 use CarloNicora\Minimalism\Services\Stripe\Interfaces\StripeServiceInterface;
@@ -387,7 +388,8 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
         $subscriptionIO = $this->objectFactory->create(className: StripeSubscriptionIO::class);
         try {
-            $existingSubscription = $subscriptionIO->byRecieperAndPayerIds(
+            /** @noinspection UnusedFunctionResultInspection */
+            $subscriptionIO->byRecieperAndPayerIds(
                 recieperId: $recieperId,
                 payerId: $payerId
             );
@@ -705,14 +707,16 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
     /**
      * @param Event $stripeEvent
-     * @return void
+     * @return Document
      * @throws JsonException
      * @throws RecordNotFoundException
+     * @throws Exception
+     * @throws Exception
      * @throws Exception
      */
     public function processPaymentIntentWebhook(
         Event $stripeEvent
-    ): void
+    ): Document
     {
         $stripePaymentIntent = $this->processEvent(
             objectClassName: PaymentIntent::class,
@@ -757,6 +761,14 @@ class Stripe extends AbstractService implements StripeServiceInterface
                 status: PaymentIntentStatus::from($stripePaymentIntent->status)
             );
         }
+
+        $resourceFactory = $this->objectFactory->create(className: StripePaymentIntentsResourceFactory::class);
+        $paymentResource = $resourceFactory->byStripePaymentIntentId($stripePaymentIntent->id);
+
+        $result = new Document();
+        $result->addResource($paymentResource);
+
+        return $result;
     }
 
     /**
@@ -793,15 +805,16 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
     /**
      * @param Event $stripeEvent
-     * @return void
+     * @return Document
+     * @throws ApiErrorException
      * @throws JsonException
      * @throws RecordNotFoundException
-     * @throws ApiErrorException
+     * @throws Exception
      * @throws Exception
      */
     public function processAccountsWebhook(
         Event $stripeEvent
-    ): void
+    ): Document
     {
         $stripeAccount = $this->processEvent(
             objectClassName: Account::class,
@@ -832,6 +845,13 @@ class Stripe extends AbstractService implements StripeServiceInterface
                 );
             }
         }
+
+        $resourceFactory = $this->objectFactory->create(className: StripeAccountsResourceFactory::class);
+        $accountResource = $resourceFactory->byUserId($userId);
+
+        $result = new Document();
+        $result->addResource($accountResource);
+        return $result;
     }
 
     /**

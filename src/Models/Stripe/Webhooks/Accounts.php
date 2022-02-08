@@ -46,7 +46,7 @@ class Accounts extends AbstractWebhook
             webhookSecret: $stripe->getAccountWebhookSecret()
         );
 
-        $stripe->processAccountsWebhook($stripeEvent);
+        $this->document = $stripe->processAccountsWebhook($stripeEvent);
 
         return HttpCode::Created;
     }
