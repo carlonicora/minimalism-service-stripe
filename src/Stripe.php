@@ -155,7 +155,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
             return $account;
         } catch (MinimalismException $e) {
-            if ($e->getHttpCode() !== HttpCode::NotFound) {
+            if ($e->getStatus() !== HttpCode::NotFound) {
                 throw $e;
             }
 
@@ -342,7 +342,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
         try {
             return $customerIO->byUserId($userId);
         } catch (MinimalismException $e) {
-            if ($e->getHttpCode() !== HttpCode::NotFound) {
+            if ($e->getStatus() !== HttpCode::NotFound) {
                 throw $e;
             }
 
@@ -405,7 +405,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
             throw new RuntimeException(message: 'It is forbidden to create second subscriptions. Please, cancel an existing subscription.', code: 403);
         } catch (MinimalismException $e) {
-            if ($e->getHttpCode() !== HttpCode::NotFound) {
+            if ($e->getStatus() !== HttpCode::NotFound) {
                 throw $e;
             }
 
@@ -518,7 +518,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
         try {
             return $this->objectFactory->create(className: StripeProductIO::class)->byRecieperId($recieperId);
         } catch (MinimalismException $e) {
-            if ($e->getHttpCode() !== HttpCode::NotFound) {
+            if ($e->getStatus() !== HttpCode::NotFound) {
                 throw $e;
             }
 
@@ -750,7 +750,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
                 );
             }
         } catch (MinimalismException $e) {
-            if ($e->getHttpCode() !== HttpCode::NotFound) {
+            if ($e->getStatus() !== HttpCode::NotFound) {
                 throw $e;
             }
 
