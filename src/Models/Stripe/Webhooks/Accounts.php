@@ -3,7 +3,6 @@
 namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks;
 
 use CarloNicora\Minimalism\Enums\HttpCode;
-use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks\Abstracts\AbstractWebhook;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use JsonException;
@@ -34,7 +33,6 @@ class Accounts extends AbstractWebhook
      * @param Stripe $stripe
      * @return HttpCode
      * @throws JsonException
-     * @throws RecordNotFoundException
      * @throws ApiErrorException
      */
     public function post(

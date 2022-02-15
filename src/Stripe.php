@@ -5,8 +5,9 @@ namespace CarloNicora\Minimalism\Services\Stripe;
 use CarloNicora\JsonApi\Document;
 use CarloNicora\JsonApi\Objects\Error;
 use CarloNicora\Minimalism\Abstracts\AbstractService;
+use CarloNicora\Minimalism\Enums\HttpCode;
+use CarloNicora\Minimalism\Exceptions\MinimalismException;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Interfaces\EncrypterInterface;
-use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\Path;
 use CarloNicora\Minimalism\Services\Stripe\Builders\AccountLinkBuilder;
 use CarloNicora\Minimalism\Services\Stripe\Enums\AccountStatus;
@@ -153,7 +154,11 @@ class Stripe extends AbstractService implements StripeServiceInterface
             }
 
             return $account;
-        } catch (RecordNotFoundException) {
+        } catch (MinimalismException $e) {
+            if ($e->getHttpCode() !== HttpCode::NotFound) {
+                throw $e;
+            }
+
             if ($accountIO->byUserEmail($email)) {
                 throw new RuntimeException(message: 'A Stripe account with such an email is already connected', code: 422);
             }
@@ -336,7 +341,11 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $customerIO = $this->objectFactory->create(className: StripeCustomerIO::class);
         try {
             return $customerIO->byUserId($userId);
-        } catch (RecordNotFoundException) {
+        } catch (MinimalismException $e) {
+            if ($e->getHttpCode() !== HttpCode::NotFound) {
+                throw $e;
+            }
+
             $user = $this->userLoader->load($userId);
             $customer = $this->client->customers->create([
                 'email' => $user->getEmail(),
@@ -395,7 +404,11 @@ class Stripe extends AbstractService implements StripeServiceInterface
             );
 
             throw new RuntimeException(message: 'It is forbidden to create second subscriptions. Please, cancel an existing subscription.', code: 403);
-        } catch (RecordNotFoundException) {
+        } catch (MinimalismException $e) {
+            if ($e->getHttpCode() !== HttpCode::NotFound) {
+                throw $e;
+            }
+
             // 'Subscription does not exists yet' test passed successfully
         }
 
@@ -464,7 +477,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
             $error = $e->getMessage();
         }
 
-        if (isset($e) && ! empty($error)) {
+        if (! empty($error)) {
             if ($e instanceof ApiErrorException) {
                 $status = $e->getHttpStatus();
                 $title  = $e->getError()->message;
@@ -504,7 +517,11 @@ class Stripe extends AbstractService implements StripeServiceInterface
     {
         try {
             return $this->objectFactory->create(className: StripeProductIO::class)->byRecieperId($recieperId);
-        } catch (RecordNotFoundException) {
+        } catch (MinimalismException $e) {
+            if ($e->getHttpCode() !== HttpCode::NotFound) {
+                throw $e;
+            }
+
             $user = $this->userLoader->load($recieperId);
             return $this->createProduct(
                 recieperId: $recieperId,
@@ -672,7 +689,6 @@ class Stripe extends AbstractService implements StripeServiceInterface
     /**
      * @param int $userId
      * @return array
-     * @throws RecordNotFoundException
      * @throws Exception
      */
     public function getAccountStatuses(int $userId): array
@@ -686,7 +702,6 @@ class Stripe extends AbstractService implements StripeServiceInterface
      * @param int $reciperId
      * @param int $payerId
      * @return Document
-     * @throws RecordNotFoundException
      * @throws Exception
      */
     public function getSubscription(
@@ -709,7 +724,6 @@ class Stripe extends AbstractService implements StripeServiceInterface
      * @param Event $stripeEvent
      * @return Document
      * @throws JsonException
-     * @throws RecordNotFoundException
      * @throws Exception
      * @throws Exception
      * @throws Exception
@@ -735,7 +749,11 @@ class Stripe extends AbstractService implements StripeServiceInterface
                     status: PaymentIntentStatus::from($stripePaymentIntent->status)
                 );
             }
-        } catch (RecordNotFoundException) {
+        } catch (MinimalismException $e) {
+            if ($e->getHttpCode() !== HttpCode::NotFound) {
+                throw $e;
+            }
+
             // A recurring payment intent created by Stripe
             $payerId = $stripePaymentIntent->metadata->offsetGet('payerId');
             $payer = $this->userLoader->load($payerId);
@@ -774,7 +792,6 @@ class Stripe extends AbstractService implements StripeServiceInterface
     /**
      * @param Event $stripeEvent
      * @return void
-     * @throws RecordNotFoundException
      * @throws JsonException
      * @throws Exception
      */
@@ -808,8 +825,6 @@ class Stripe extends AbstractService implements StripeServiceInterface
      * @return Document
      * @throws ApiErrorException
      * @throws JsonException
-     * @throws RecordNotFoundException
-     * @throws Exception
      * @throws Exception
      */
     public function processAccountsWebhook(
@@ -951,7 +966,6 @@ class Stripe extends AbstractService implements StripeServiceInterface
      * @param Event $stripeEvent
      * @return void
      * @throws JsonException
-     * @throws RecordNotFoundException
      * @throws Exception
      */
     public function processInvoiceWebhook(

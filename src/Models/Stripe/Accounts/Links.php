@@ -7,7 +7,6 @@ use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Interfaces\DefaultServiceInterface;
 use CarloNicora\Minimalism\Interfaces\LoggerInterface;
 use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserServiceInterface;
-use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\Stripe\Interfaces\StripeServiceInterface;
 use CarloNicora\Minimalism\Services\Stripe\IO\StripeAccountIO;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
@@ -44,7 +43,6 @@ class Links extends AbstractModel
      * @param StripeAccountIO $accountIO
      * @return HttpCode
      * @throws ApiErrorException
-     * @throws RecordNotFoundException
      * @throws Exception
      */
     public function post(

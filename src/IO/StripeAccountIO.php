@@ -2,9 +2,9 @@
 
 namespace CarloNicora\Minimalism\Services\Stripe\IO;
 
+use CarloNicora\Minimalism\Exceptions\MinimalismException;
 use CarloNicora\Minimalism\Services\Cacher\Factories\CacheBuilderFactory;
 use CarloNicora\Minimalism\Services\DataMapper\Abstracts\AbstractLoader;
-use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\Stripe\Databases\Finance\Tables\StripeAccountsTable;
 use CarloNicora\Minimalism\Services\Stripe\Enums\AccountStatus;
 use Exception;
@@ -15,7 +15,7 @@ class StripeAccountIO extends AbstractLoader
     /**
      * @param int $userId
      * @return array
-     * @throws RecordNotFoundException
+     * @throws MinimalismException
      * @throws Exception
      */
     public function byUserId(
@@ -55,7 +55,6 @@ class StripeAccountIO extends AbstractLoader
     /**
      * @param string $stripeAccountId
      * @return array
-     * @throws RecordNotFoundException
      * @throws Exception
      */
     public function byStripeAccountId(

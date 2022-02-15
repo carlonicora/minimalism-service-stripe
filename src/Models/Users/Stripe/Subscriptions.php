@@ -6,7 +6,6 @@ use CarloNicora\Minimalism\Abstracts\AbstractModel;
 use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserServiceInterface;
-use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\Stripe\Enums\Currency;
 use CarloNicora\Minimalism\Services\Stripe\Enums\SubscriptionFrequency;
 use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
@@ -23,7 +22,7 @@ class Subscriptions extends AbstractModel
      * @param UserServiceInterface $currentUser
      * @param PositionedEncryptedParameter $recieper
      * @return HttpCode
-     * @throws RecordNotFoundException
+     * @throws Exception
      */
     public function get(
         Stripe $stripe,

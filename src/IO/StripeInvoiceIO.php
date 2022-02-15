@@ -3,7 +3,6 @@
 namespace CarloNicora\Minimalism\Services\Stripe\IO;
 
 use CarloNicora\Minimalism\Services\DataMapper\Abstracts\AbstractLoader;
-use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\Stripe\Databases\Finance\Tables\StripeInvoicesTable;
 use CarloNicora\Minimalism\Services\Stripe\Enums\Currency;
 use CarloNicora\Minimalism\Services\Stripe\Enums\InvoiceStatus;
@@ -16,7 +15,6 @@ class StripeInvoiceIO extends AbstractLoader
     /**
      * @param string $stripeInvoiceId
      * @return array
-     * @throws RecordNotFoundException
      * @throws Exception
      */
     public function byStripeInvoiceId(

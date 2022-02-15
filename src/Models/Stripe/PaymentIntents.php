@@ -6,9 +6,9 @@ use CarloNicora\Minimalism\Abstracts\AbstractModel;
 use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserServiceInterface;
 use CarloNicora\Minimalism\Parameters\PositionedParameter;
-use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
 use CarloNicora\Minimalism\Services\Stripe\Factories\Resources\StripePaymentIntentsResourceFactory;
 use CarloNicora\Minimalism\Services\Stripe\IO\StripePaymentIntentIO;
+use Exception;
 use RuntimeException;
 
 class PaymentIntents extends AbstractModel
@@ -51,7 +51,7 @@ class PaymentIntents extends AbstractModel
      * @param StripePaymentIntentsResourceFactory $intentsResourceFactory
      * @param PositionedParameter $intent
      * @return HttpCode
-     * @throws RecordNotFoundException
+     * @throws Exception
      */
     public function get(
         UserServiceInterface                $userService,
