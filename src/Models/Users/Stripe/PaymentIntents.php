@@ -93,8 +93,8 @@ class PaymentIntents extends AbstractModel
             throw new RuntimeException(message: 'Access not allowed to guests', code: 403);
         }
 
-        if (empty($payload['recieper']) || empty($payload['recieper']['amount']) || empty($payload['recieper']['cents']) || empty($payload['recieper']['currency']) ||
-            empty($payload['phlowFee']) || empty($payload['phlowFee']['amount']) || empty($payload['phlowFee']['cents']) || empty($payload['phlowFee']['currency'])
+        if (empty($payload['recieper']) || ! isset($payload['recieper']['amount']) || ! isset($payload['recieper']['cents']) || empty($payload['recieper']['currency']) ||
+            empty($payload['phlowFee']) || ! isset($payload['phlowFee']['amount']) || ! isset($payload['phlowFee']['cents']) || empty($payload['phlowFee']['currency'])
         ) {
             throw new RuntimeException(message: 'Incorrect payload', code: 412);
         }
