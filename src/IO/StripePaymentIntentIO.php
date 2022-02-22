@@ -74,7 +74,7 @@ class StripePaymentIntentIO extends AbstractLoader
         int                 $phlowFeeAmount,
         Currency            $currency,
         PaymentIntentStatus $status,
-        string              $stripeInvoiceId = null,
+        ?string             $stripeInvoiceId = null,
     ): array
     {
         $payment = [
