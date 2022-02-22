@@ -279,7 +279,6 @@ class Stripe extends AbstractService implements StripeServiceInterface
             /** @noinspection UnusedFunctionResultInspection */
             $paymentIO->create(
                 paymentIntentId: $stripePaymentIntent->id,
-                stripeInvoiceId: $stripePaymentIntent->invoice->id,
                 payerId: $payerId,
                 payerEmail: $payerEmail,
                 recieperId: $recieperId,
@@ -288,7 +287,8 @@ class Stripe extends AbstractService implements StripeServiceInterface
                 amount: $amount->inCents(),
                 phlowFeeAmount: $phlowFee->inCents(),
                 currency: $amount->currency(),
-                status: PaymentIntentStatus::from($stripePaymentIntent->status)
+                status: PaymentIntentStatus::from($stripePaymentIntent->status),
+                stripeInvoiceId: $stripePaymentIntent->invoice?->id
             );
 
             $paymentIntentResourceReader = $this->objectFactory->create(className: StripePaymentIntentsResourceFactory::class);
@@ -767,7 +767,6 @@ class Stripe extends AbstractService implements StripeServiceInterface
             /** @noinspection UnusedFunctionResultInspection */
             $paymentIntentIO->create(
                 paymentIntentId: $stripePaymentIntent->id,
-                stripeInvoiceId: $stripePaymentIntent->invoice->id,
                 payerId: $payerId,
                 payerEmail: $payer->getEmail(),
                 recieperId: $recieperId,
@@ -776,7 +775,8 @@ class Stripe extends AbstractService implements StripeServiceInterface
                 amount: $stripePaymentIntent->amount,
                 phlowFeeAmount: $stripePaymentIntent->application_fee_amount,
                 currency: Currency::from($stripePaymentIntent->currency),
-                status: PaymentIntentStatus::from($stripePaymentIntent->status)
+                status: PaymentIntentStatus::from($stripePaymentIntent->status),
+                stripeInvoiceId: $stripePaymentIntent->invoice?->id
             );
         }
 

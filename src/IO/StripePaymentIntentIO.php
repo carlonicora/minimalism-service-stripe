@@ -51,7 +51,6 @@ class StripePaymentIntentIO extends AbstractLoader
 
     /**
      * @param string $paymentIntentId
-     * @param string $stripeInvoiceId
      * @param int $payerId
      * @param string $payerEmail
      * @param int $recieperId
@@ -61,11 +60,11 @@ class StripePaymentIntentIO extends AbstractLoader
      * @param int $phlowFeeAmount
      * @param Currency $currency
      * @param PaymentIntentStatus $status
+     * @param string|null $stripeInvoiceId
      * @return array
      */
     public function create(
         string              $paymentIntentId,
-        string              $stripeInvoiceId,
         int                 $payerId,
         string              $payerEmail,
         int                 $recieperId,
@@ -74,7 +73,8 @@ class StripePaymentIntentIO extends AbstractLoader
         int                 $amount,
         int                 $phlowFeeAmount,
         Currency            $currency,
-        PaymentIntentStatus $status
+        PaymentIntentStatus $status,
+        string              $stripeInvoiceId = null,
     ): array
     {
         $payment = [
