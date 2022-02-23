@@ -556,7 +556,6 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $product = [
             'name' => $name,
             'description' => $description,
-            'url' => $user->getUrl(),
             'metadata' => [
                 'userId' => $recieperId,
                 'email' => $email
@@ -565,6 +564,10 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
         if ($avatar = $user->getAvatar()) {
             $product['images'] = [$avatar];
+        }
+
+        if ($url = $user->getUrl()) {
+            $product['url'] = $url;
         }
 
         $product = $this->client->products->create(
