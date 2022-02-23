@@ -553,17 +553,22 @@ class Stripe extends AbstractService implements StripeServiceInterface
     {
         $user = $this->userLoader->load($recieperId);
 
-        $product = $this->client->products->create(
-            [
-                'name' => $name,
-                'description' => $description,
-                'url' => $user->getUrl(),
-                'images' => [$user->getAvatar()],
-                'metadata' => [
-                    'userId' => $recieperId,
-                    'email' => $email
-                ],
+        $product = [
+            'name' => $name,
+            'description' => $description,
+            'url' => $user->getUrl(),
+            'metadata' => [
+                'userId' => $recieperId,
+                'email' => $email
             ],
+        ];
+
+        if ($avatar = $user->getAvatar()) {
+            $product['images'] = [$avatar];
+        }
+
+        $product = $this->client->products->create(
+            $product,
             ['stripe_account' => $recieperStripeAccountId]
         );
 
