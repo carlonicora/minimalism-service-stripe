@@ -712,10 +712,16 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $document = new Document();
 
         $subscriptionFactory = $this->objectFactory->create(className: StripeSubscriptionsResourceFactory::class);
-        $document->addResource($subscriptionFactory->byRecieperAndPayerIds(
-            recieperId: $reciperId,
-            payerId: $payerId
-        ));
+        try {
+            $document->addResource($subscriptionFactory->byRecieperAndPayerIds(
+                recieperId: $reciperId,
+                payerId: $payerId
+            ));
+        } catch (MinimalismException $e) {
+            if ($e->getStatus() !== HttpCode::NotFound) {
+                throw $e;
+            }
+        }
 
         return $document;
     }
