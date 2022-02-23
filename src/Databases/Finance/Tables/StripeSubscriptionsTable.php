@@ -56,6 +56,22 @@ class StripeSubscriptionsTable extends AbstractMySqlTable
     }
 
     /**
+     * @param int $payerId
+     * @return array
+     * @throws Exception
+     */
+    public function byPayerId(
+        int $payerId
+    ): array
+    {
+        $this->sql        = 'SELECT * FROM ' . static::getTableName()
+            . ' WHERE payerId = ?';
+        $this->parameters = ['i', $payerId];
+
+        return $this->functions->runRead();
+    }
+
+    /**
      * @param string $stripeSubscriptionId
      * @return array
      * @throws Exception
@@ -70,7 +86,6 @@ class StripeSubscriptionsTable extends AbstractMySqlTable
 
         return $this->functions->runRead();
     }
-
 
     /**
      * @param string $stripeSubscriptionId
