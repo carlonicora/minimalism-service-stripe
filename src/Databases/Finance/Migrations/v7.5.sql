@@ -15,7 +15,7 @@ create table stripeSubscriptions
     phlowFeePercent           int unsigned     not null,
     currency                  char(3)          not null,
     status                    varchar(64)      not null,
-    currentPeriodEnd          timestamp        not null,
+    currentPeriodEnd          timestamp        null,
     createdAt                 timestamp        not null,
     updatedAt                 timestamp        null
 );
@@ -92,3 +92,6 @@ alter table stripePaymentIntents
 
 alter table stripePaymentIntents
     add recieperEmail varchar(255) not null after recieperAccountId;
+
+alter table stripePaymentIntents
+    add stripeInvoiceId char(27) null after stripePaymentIntents;
