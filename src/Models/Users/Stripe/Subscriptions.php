@@ -8,6 +8,7 @@ use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\PositionedEncryptedPa
 use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserServiceInterface;
 use CarloNicora\Minimalism\Services\Stripe\Enums\Currency;
 use CarloNicora\Minimalism\Services\Stripe\Enums\SubscriptionFrequency;
+use CarloNicora\Minimalism\Services\Stripe\IO\UserIO;
 use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use Exception;
@@ -20,13 +21,15 @@ class Subscriptions extends AbstractModel
     /**
      * @param Stripe $stripe
      * @param UserServiceInterface $currentUser
+     * @param UserIO $userIO
      * @param PositionedEncryptedParameter $recieper
      * @return HttpCode
      * @throws Exception
      */
     public function get(
-        Stripe $stripe,
+        Stripe                       $stripe,
         UserServiceInterface         $currentUser,
+        UserIO                       $userIO,
         PositionedEncryptedParameter $recieper,
     ): HttpCode
     {
@@ -34,6 +37,8 @@ class Subscriptions extends AbstractModel
         if ($currentUser->isVisitor()) {
             throw new RuntimeException(message: 'Access not allowed to guests', code: 403);
         }
+
+        $userIO->byUserId($recieper->getValue());
 
         $this->document = $stripe->getSubscription(
             reciperId: $recieper->getValue(),
