@@ -28,7 +28,7 @@ class StripeEventIO extends AbstractLoader
      * @param string $eventId
      * @param string $type
      * @param string $createdAt
-     * @param string $relatedObjectId
+     * @param string|null $relatedObjectId
      * @param string|null $details
      * @return array
      */
@@ -36,7 +36,7 @@ class StripeEventIO extends AbstractLoader
         string $eventId,
         string $type,
         string $createdAt,
-        string $relatedObjectId,
+        string $relatedObjectId = null,
         string $details = null
     ): array
     {

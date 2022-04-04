@@ -929,9 +929,13 @@ class Stripe extends AbstractService implements StripeServiceInterface
                 'ended_at' => $object->ended_at
             ],
             Invoice::class => [
+                'customer' => $object->customer,
+                'customerEmail' => $object->customer_email,
                 'status' => $object->status,
                 'charge' => $object->charge,
-                'paymentIntentId' => $object->payment_intent->id,
+                'paymentIntentId' => $object->payment_intent?->id,
+                'subscription' => $object->subscription,
+                'total' => $object->total,
                 'attempted' => $object->attempted,
                 'billingReason' => $object->billing_reason,
                 'attemptCount' => $object->attempt_count,
