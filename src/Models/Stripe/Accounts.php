@@ -88,6 +88,6 @@ class Accounts extends AbstractModel
         }
 
         $errorCode = current($this->document->errors)?->status;
-        return $errorCode? HttpCode::from($errorCode) : HttpCode::Created;
+        return $errorCode ? HttpCode::from($errorCode) : HttpCode::Created;
     }
 }

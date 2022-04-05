@@ -2,7 +2,7 @@
 
 namespace CarloNicora\Minimalism\Services\Stripe\Money;
 
-use CarloNicora\Minimalism\Services\Stripe\Enums\Currency;
+use CarloNicora\Minimalism\Services\Stripe\Money\Enums\Currency;
 
 class Amount
 {

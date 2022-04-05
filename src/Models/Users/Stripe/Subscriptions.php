@@ -6,10 +6,9 @@ use CarloNicora\Minimalism\Abstracts\AbstractModel;
 use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserServiceInterface;
-use CarloNicora\Minimalism\Services\Stripe\Enums\Currency;
-use CarloNicora\Minimalism\Services\Stripe\Enums\SubscriptionFrequency;
-use CarloNicora\Minimalism\Services\Stripe\IO\UserIO;
+use CarloNicora\Minimalism\Services\Stripe\Data\Subscriptions\Enums\SubscriptionFrequency;
 use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
+use CarloNicora\Minimalism\Services\Stripe\Money\Enums\Currency;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use Exception;
 use RuntimeException;
@@ -21,7 +20,6 @@ class Subscriptions extends AbstractModel
     /**
      * @param Stripe $stripe
      * @param UserServiceInterface $currentUser
-     * @param UserIO $userIO
      * @param PositionedEncryptedParameter $recieper
      * @return HttpCode
      * @throws Exception
@@ -29,7 +27,6 @@ class Subscriptions extends AbstractModel
     public function get(
         Stripe                       $stripe,
         UserServiceInterface         $currentUser,
-        UserIO                       $userIO,
         PositionedEncryptedParameter $recieper,
     ): HttpCode
     {
@@ -37,8 +34,6 @@ class Subscriptions extends AbstractModel
         if ($currentUser->isVisitor()) {
             throw new RuntimeException(message: 'Access not allowed to guests', code: 403);
         }
-
-        $userIO->byUserId($recieper->getValue());
 
         $this->document = $stripe->getSubscription(
             reciperId: $recieper->getValue(),
@@ -104,7 +99,7 @@ class Subscriptions extends AbstractModel
         );
 
         $errorCode = current($this->document->errors)?->status;
-        return $errorCode? HttpCode::from($errorCode) : HttpCode::Created;
+        return $errorCode ? HttpCode::from($errorCode) : HttpCode::Created;
     }
 
     /**
@@ -122,9 +117,10 @@ class Subscriptions extends AbstractModel
             throw new RuntimeException(message: 'Access not allowed to guests', code: 403);
         }
 
-        if (empty($payload['recieper']) || empty($payload['recieper']['amount']) || empty($payload['recieper']['currency']) ||
-            empty($payload['phlowFeePercent']) ||
-            empty($payload['frequency']) || null === ($frequency = SubscriptionFrequency::from($payload['frequency']))
+        if (empty($payload['recieper']) || empty($payload['recieper']['amount']) || empty($payload['recieper']['currency'])
+            || empty($payload['phlowFeePercent'])
+            || empty($payload['frequency'])
+            || null === ($frequency = SubscriptionFrequency::from($payload['frequency']))
         ) {
             throw new RuntimeException(message: 'Incorrect payload', code: 412);
         }

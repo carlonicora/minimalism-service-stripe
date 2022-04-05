@@ -7,8 +7,8 @@ use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Interfaces\DefaultServiceInterface;
 use CarloNicora\Minimalism\Interfaces\LoggerInterface;
 use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserServiceInterface;
+use CarloNicora\Minimalism\Services\Stripe\Data\Accounts\IO\StripeAccountIO;
 use CarloNicora\Minimalism\Services\Stripe\Interfaces\StripeServiceInterface;
-use CarloNicora\Minimalism\Services\Stripe\IO\StripeAccountIO;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use Exception;
 use RuntimeException;
@@ -40,7 +40,6 @@ class Links extends AbstractModel
      * @param UserServiceInterface $currentUser
      * @param LoggerInterface $logger
      * @param Stripe $stripe
-     * @param StripeAccountIO $accountIO
      * @return HttpCode
      * @throws ApiErrorException
      * @throws Exception
@@ -50,7 +49,6 @@ class Links extends AbstractModel
         UserServiceInterface    $currentUser,
         LoggerInterface         $logger,
         Stripe                  $stripe,
-        StripeAccountIO         $accountIO
     ): HttpCode
     {
         $currentUser->load();
@@ -58,7 +56,8 @@ class Links extends AbstractModel
             throw new RuntimeException(message: 'Access not allowed to guests', code: 403);
         }
 
-        $account = $accountIO->byUserId($currentUser->getId());
+        $accountIO = $this->objectFactory->create(className: StripeAccountIO::class);
+        $account   = $accountIO->byUserId($currentUser->getId());
 
         try {
             $this->document = $stripe->createAccountOnboardingLink(
@@ -88,7 +87,7 @@ class Links extends AbstractModel
         }
 
         $errorCode = current($this->document->errors)?->status;
-        return $errorCode? HttpCode::from($errorCode) : HttpCode::Created;
+        return $errorCode ? HttpCode::from($errorCode) : HttpCode::Created;
     }
 
 }
