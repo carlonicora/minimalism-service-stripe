@@ -47,29 +47,4 @@ class StripePaymentIntentIO extends AbstractSqlIO
         );
     }
 
-    /**
-     * @param StripePaymentIntent $dataObject
-     * @return StripePaymentIntent
-     */
-    public function create(
-        StripePaymentIntent $dataObject
-    ): StripePaymentIntent
-    {
-        return $this->data->create(
-            queryFactory: $dataObject
-        );
-    }
-
-    /**
-     * @param StripePaymentIntent $dataObject
-     * @return void
-     */
-    public function update(
-        StripePaymentIntent $dataObject
-    ): void
-    {
-        $this->data->update(
-            queryFactory: $dataObject,
-        );
-    }
 }

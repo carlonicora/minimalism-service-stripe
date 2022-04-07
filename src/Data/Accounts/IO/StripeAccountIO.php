@@ -3,7 +3,9 @@
 namespace CarloNicora\Minimalism\Services\Stripe\Data\Accounts\IO;
 
 use CarloNicora\Minimalism\Exceptions\MinimalismException;
+use CarloNicora\Minimalism\Interfaces\Cache\Interfaces\CacheBuilderInterface;
 use CarloNicora\Minimalism\Interfaces\Sql\Abstracts\AbstractSqlIO;
+use CarloNicora\Minimalism\Interfaces\Sql\Interfaces\SqlDataObjectInterface;
 use CarloNicora\Minimalism\Services\Cacher\Factories\CacheBuilderFactory;
 use CarloNicora\Minimalism\Services\MySQL\Factories\SqlQueryFactory;
 use CarloNicora\Minimalism\Services\Stripe\Data\Accounts\Databases\StripeAccountsTable;
@@ -68,40 +70,45 @@ class StripeAccountIO extends AbstractSqlIO
     }
 
     /**
-     * @param StripeAccount $account
+     * @param StripeAccount|SqlDataObjectInterface $dataObject
+     * @param CacheBuilderInterface|null $cache
+     * @return SqlDataObjectInterface
      */
     public function create(
-        StripeAccount $account
-    ): void
+        StripeAccount|SqlDataObjectInterface $dataObject,
+        ?CacheBuilderInterface $cache = null
+    ): SqlDataObjectInterface
     {
-        $this->data->create(
-            queryFactory: $account,
+        return $this->data->create(
+            queryFactory: $dataObject,
             cacheBuilder: CacheBuilderFactory::create(
                 cacheName: 'stripeAccount',
-                identifier: $account->getId()
+                identifier: $dataObject->getId()
             )
         );
     }
 
     /**
-     * @param StripeAccount $account
+     * @param StripeAccount|SqlDataObjectInterface $dataObject
+     * @param CacheBuilderInterface|null $cache
      */
     public function update(
-        StripeAccount $account
+        StripeAccount|SqlDataObjectInterface $dataObject,
+        ?CacheBuilderInterface $cache = null
     ): void
     {
         $this->data->update(
-            queryFactory: $account,
+            queryFactory: $dataObject,
             cacheBuilder: CacheBuilderFactory::create(
                 cacheName: 'stripeAccount',
-                identifier: $account->getId()
+                identifier: $dataObject->getId()
             )
         );
 
         $this->cache->invalidate(
             CacheBuilderFactory::create(
                 cacheName: 'stripeAccount',
-                identifier: $account->getId()
+                identifier: $dataObject->getId()
             )
         );
     }

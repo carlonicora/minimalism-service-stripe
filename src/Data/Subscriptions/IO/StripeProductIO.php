@@ -28,17 +28,4 @@ class StripeProductIO extends AbstractSqlIO
         );
     }
 
-    /**
-     * @param StripeProduct $dataObject
-     * @return StripeProduct
-     */
-    public function create(
-        StripeProduct $dataObject
-    ): StripeProduct
-    {
-        return $this->data->create(
-            queryFactory: $dataObject
-        );
-    }
-
 }

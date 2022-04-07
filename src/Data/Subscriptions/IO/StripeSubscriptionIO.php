@@ -83,42 +83,4 @@ class StripeSubscriptionIO extends AbstractSqlIO
         );
     }
 
-    /**
-     * @param StripeSubscription $dataObject
-     * @return array
-     */
-    public function create(
-        StripeSubscription $dataObject
-    ): array
-    {
-        return $this->data->create(
-            queryFactory: $dataObject
-        );
-    }
-
-    /**
-     * @param StripeSubscription $dataObject
-     * @return void
-     */
-    public function update(
-        StripeSubscription $dataObject
-    ): void
-    {
-        $this->data->update(
-            queryFactory: $dataObject,
-        );
-    }
-
-    /**
-     * @param StripeSubscription $dataObject
-     * @return void
-     */
-    public function delete(
-        StripeSubscription $dataObject
-    ): void
-    {
-        $this->data->delete(
-            queryFactory: $dataObject,
-        );
-    }
 }

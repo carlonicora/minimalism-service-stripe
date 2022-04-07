@@ -7,8 +7,8 @@ use CarloNicora\JsonApi\Objects\ResourceObject;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Services\ResourceBuilder\Abstracts\AbstractResourceBuilder;
 use CarloNicora\Minimalism\Services\ResourceBuilder\Interfaces\ResourceableDataInterface;
-use CarloNicora\Minimalism\Services\Stripe\Data\Dictionary\StripeDictionary;
 use CarloNicora\Minimalism\Services\Stripe\Data\PaymentIntents\DataObjects\StripePaymentIntent;
+use CarloNicora\Minimalism\Services\Stripe\Dictionary\StripeDictionary;
 use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
 use CarloNicora\Minimalism\Services\Users\Data\Dictionary\UsersDictionary;
 use Exception;
@@ -116,7 +116,7 @@ class StripePaymentIntentBuilder extends AbstractResourceBuilder
 
         $response->links->add(new Link(
             name: 'self',
-            href: StripeDictionary::StripePaymentIntents->getEndpoint($data->getStripePaymentIntentId())
+            href: 'stripe/' . StripeDictionary::StripePaymentIntents->getEndpoint() . '/' . $data->getStripePaymentIntentId()
         ));
 
         $response->relationship(relationshipKey: 'payer')

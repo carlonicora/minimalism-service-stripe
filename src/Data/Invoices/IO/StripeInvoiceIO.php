@@ -47,30 +47,4 @@ class StripeInvoiceIO extends AbstractSqlIO
         );
     }
 
-    /**
-     * @param StripeInvoice $dataObject
-     * @return array
-     */
-    public function create(
-        StripeInvoice $dataObject
-    ): array
-    {
-        return $this->data->create(
-            queryFactory: $dataObject
-        );
-    }
-
-    /**
-     * @param StripeInvoice $dataObject
-     * @return void
-     */
-    public function update(
-        StripeInvoice $dataObject
-    ): void
-    {
-        $this->data->update(
-            queryFactory: $dataObject,
-        );
-    }
-
 }

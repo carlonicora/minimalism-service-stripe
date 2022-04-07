@@ -3,13 +3,22 @@
 namespace CarloNicora\Minimalism\Services\Stripe\Data\Accounts\Factories;
 
 use CarloNicora\JsonApi\Objects\ResourceObject;
+use CarloNicora\Minimalism\Services\ResourceBuilder\ResourceBuilder;
 use CarloNicora\Minimalism\Services\Stripe\Data\Accounts\Builders\StripeAccountBuilder;
 use CarloNicora\Minimalism\Services\Stripe\Data\Accounts\DataObjects\StripeAccount;
-use CarloNicora\Minimalism\Services\Users\Data\Abstracts\AbstractUserResourceFactory;
 use Exception;
 
-class StripeAccountsResourceFactory extends AbstractUserResourceFactory
+class StripeAccountsResourceFactory
 {
+    /**
+     * @param ResourceBuilder $builder
+     */
+    public function __construct(
+        protected ResourceBuilder $builder,
+    )
+    {
+
+    }
 
     /**
      * @param StripeAccount $dataObject
@@ -23,7 +32,6 @@ class StripeAccountsResourceFactory extends AbstractUserResourceFactory
         return $this->builder->buildResource(
             builderClass: StripeAccountBuilder::class,
             data: $dataObject,
-            // TODO cacheBuilder
         );
     }
 

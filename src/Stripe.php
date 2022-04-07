@@ -8,7 +8,7 @@ use CarloNicora\Minimalism\Abstracts\AbstractService;
 use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Exceptions\MinimalismException;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Interfaces\EncrypterInterface;
-use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserServiceInterface;
+use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserLoaderInterface;
 use CarloNicora\Minimalism\Services\Stripe\Data\Accounts\Builders\StripeAccountLinkBuilder;
 use CarloNicora\Minimalism\Services\Stripe\Data\Accounts\DataObjects\StripeAccount;
 use CarloNicora\Minimalism\Services\Stripe\Data\Accounts\DataObjects\StripeAccountLink;
@@ -68,7 +68,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
     /**
      * @param EncrypterInterface $encrypter
-     * @param UserServiceInterface $userService
+     * @param UserLoaderInterface $userService
      * @param string $MINIMALISM_SERVICE_STRIPE_API_KEY
      * @param string $MINIMALISM_SERVICE_STRIPE_CLIENT_ID
      * @param string $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_ACCOUNTS
@@ -78,7 +78,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
      */
     public function __construct(
         private EncrypterInterface   $encrypter,
-        private UserServiceInterface $userService,
+        private UserLoaderInterface  $userService,
         private string               $MINIMALISM_SERVICE_STRIPE_API_KEY,
         private string               $MINIMALISM_SERVICE_STRIPE_CLIENT_ID,
         private string               $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_ACCOUNTS,
@@ -269,8 +269,10 @@ class Stripe extends AbstractService implements StripeServiceInterface
                 ],
             );
 
-            // TODO improve users service
-            $user = $this->userService->load($recieperId);
+            $user = $this->userService->byId($recieperId);
+            if ($user === null) {
+                throw new MinimalismException(status: HttpCode::NotFound, message: 'User with such an id does not exists');
+            }
 
             $newLocalPaymentIntent = new StripePaymentIntent();
             $newLocalPaymentIntent->setStripePaymentIntentId($stripePaymentIntent->id);
@@ -342,7 +344,11 @@ class Stripe extends AbstractService implements StripeServiceInterface
                 throw $e;
             }
 
-            $user = $this->userService->load($userId);
+            $user = $this->userService->byId($userId);
+            if ($user === null) {
+                throw new MinimalismException(status: HttpCode::NotFound, message: 'User with such an id does not exists');
+            }
+
             $customer = $this->client->customers->create([
                 'email' => $user->getEmail(),
                 'name' => $user->getUserName(),
@@ -390,7 +396,10 @@ class Stripe extends AbstractService implements StripeServiceInterface
             throw new RuntimeException(message: 'Account status of an artist does not allow subscriptions', code: 403);
         }
 
-        $payer = $this->userService->load($payerId);
+        $payer = $this->userService->byId($payerId);
+        if ($payer === null) {
+            throw new MinimalismException(status: HttpCode::NotFound, message: 'Payer with such an id does not exists');
+        }
 
         $subscriptionIO = $this->objectFactory->create(className: StripeSubscriptionIO::class);
         try {
@@ -518,7 +527,11 @@ class Stripe extends AbstractService implements StripeServiceInterface
                 throw $e;
             }
 
-            $user = $this->userService->load($recieperId);
+            $user = $this->userService->byId($recieperId);
+            if ($user === null) {
+                throw new MinimalismException(status: HttpCode::NotFound, message: 'User with such an id does not exists');
+            }
+
             return $this->createProduct(
                 recieperId: $recieperId,
                 recieperStripeAccountId: $recieperStripeAccountId,
@@ -547,7 +560,10 @@ class Stripe extends AbstractService implements StripeServiceInterface
         string $description
     ): StripeProduct
     {
-        $user = $this->userService->load($recieperId);
+        $user = $this->userService->byId($recieperId);
+        if ($user === null) {
+            throw new MinimalismException(status: HttpCode::NotFound, message: 'User with such an id does not exists');
+        }
 
         $product = [
             'name' => $name,
@@ -558,11 +574,11 @@ class Stripe extends AbstractService implements StripeServiceInterface
             ],
         ];
 
-        if ($avatar = $user->getAvatar()) {
+        if ($avatar = $user->getAttribute(attributeName: 'avatar')) {
             $product['images'] = [$avatar];
         }
 
-        if ($url = $user->getUrl()) {
+        if ($url = $user->getAttribute(attributeName: 'url')) {
             $product['url'] = $url;
         }
 
@@ -635,7 +651,11 @@ class Stripe extends AbstractService implements StripeServiceInterface
         // TODO check if a customer has a payment method
         $noPaymentMethod = true;
         if ($noPaymentMethod) {
-            $user = $this->userService->load($payerId);
+            $user = $this->userService->byId($payerId);
+            if ($user === null) {
+                throw new MinimalismException(status: HttpCode::NotFound, message: 'User with such an id does not exists');
+            }
+
             $customer = $this->client->customers->create(
                 [
                     'email' => $user->getEmail(),
@@ -769,10 +789,16 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
             // A recurring payment intent created by Stripe
             $payerId = $stripePaymentIntent->metadata->offsetGet('payerId');
-            $payer = $this->userService->load($payerId);
+            $payer = $this->userService->byId($payerId);
+            if ($payer === null) {
+                throw new MinimalismException(status: HttpCode::NotFound, message: 'Payer with such an id does not exists');
+            }
 
             $recieperId = $stripePaymentIntent->metadata->offsetGet('recieperId');
-            $reciper = $this->userService->load($recieperId);
+            $recieper = $this->userService->byId($recieperId);
+            if ($recieper === null) {
+                throw new MinimalismException(status: HttpCode::NotFound, message: 'Recieper with such an id does not exists');
+            }
 
             $stripeAccountIO = $this->objectFactory->create(className: StripeAccountIO::class);
             $recieperLocalAccount = $stripeAccountIO->byUserId($recieperId);
@@ -783,7 +809,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
             $paymentIntent->setPayerEmail($payer->getEmail());
             $paymentIntent->setRecieperId($recieperId);
             $paymentIntent->setRecieperAccountId($recieperLocalAccount->getStripeAccountId());
-            $paymentIntent->setRecieperEmail($reciper->getEmail());
+            $paymentIntent->setRecieperEmail($recieper->getEmail());
             $paymentIntent->setAmount($stripePaymentIntent->amount);
             $paymentIntent->setPhlowFeeAmount($stripePaymentIntent->application_fee_amount);
             $paymentIntent->setCurrency(Currency::from($stripePaymentIntent->currency)->value);

@@ -6,8 +6,8 @@ use CarloNicora\JsonApi\Objects\ResourceObject;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Interfaces\EncrypterInterface;
 use CarloNicora\Minimalism\Services\ResourceBuilder\Abstracts\AbstractResourceBuilder;
 use CarloNicora\Minimalism\Services\ResourceBuilder\Interfaces\ResourceableDataInterface;
-use CarloNicora\Minimalism\Services\Stripe\Data\Dictionary\StripeDictionary;
 use CarloNicora\Minimalism\Services\Stripe\Data\Accounts\DataObjects\StripeAccountLink;
+use CarloNicora\Minimalism\Services\Stripe\Dictionary\StripeDictionary;
 use Exception;
 
 /**

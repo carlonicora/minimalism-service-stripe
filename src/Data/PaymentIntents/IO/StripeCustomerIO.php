@@ -47,29 +47,4 @@ class StripeCustomerIO extends AbstractSqlIO
         return $this->returnSingleValue($result, recordType: 'Stripe customer');
     }
 
-    /**
-     * @param StripeCustomer $dataObject
-     * @return StripeCustomer
-     */
-    public function create(
-        StripeCustomer $dataObject
-    ): StripeCustomer
-    {
-        return $this->data->create(
-            queryFactory: $dataObject
-        );
-    }
-
-    /**
-     * @param StripeCustomer $dataObject
-     * @return void
-     */
-    public function update(
-        StripeCustomer $dataObject
-    ): void
-    {
-        $this->data->update(
-            queryFactory: $dataObject,
-        );
-    }
 }
