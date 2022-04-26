@@ -74,14 +74,14 @@ class Stripe extends AbstractService implements StripeServiceInterface
      * @param string $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_SUBSCRIPTIONS
      */
     public function __construct(
-        private Path               $path,
-        private EncrypterInterface $encrypter,
-        private string             $MINIMALISM_SERVICE_STRIPE_API_KEY,
-        private string             $MINIMALISM_SERVICE_STRIPE_CLIENT_ID,
-        private string             $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_ACCOUNTS,
-        private string             $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_PAYMENTS,
-        private string             $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_INVOICES,
-        private string             $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_SUBSCRIPTIONS
+        private readonly Path               $path,
+        private readonly EncrypterInterface $encrypter,
+        private readonly string             $MINIMALISM_SERVICE_STRIPE_API_KEY,
+        private readonly string             $MINIMALISM_SERVICE_STRIPE_CLIENT_ID,
+        private readonly string             $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_ACCOUNTS,
+        private readonly string             $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_PAYMENTS,
+        private readonly string             $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_INVOICES,
+        private readonly string             $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_SUBSCRIPTIONS
     )
     {
     }
@@ -253,7 +253,8 @@ class Stripe extends AbstractService implements StripeServiceInterface
                 $paymentMethods [] = $method->value;
             }
 
-            $payer = $this->getOrCreatePlatformCustomer($payerId);
+            $recieperStripeAccountId = $recieperLocalAccount['stripeAccountId'];
+            $stripeCustomerId = $this->getCustomerId($payerId, $recieperStripeAccountId);
 
             $stripePaymentIntent = $this->client->paymentIntents->create(
                 [
@@ -262,15 +263,13 @@ class Stripe extends AbstractService implements StripeServiceInterface
                     'currency' => $amount->currency()->value,
                     'payment_method_types' => $paymentMethods,
                     'receipt_email' => $payerEmail,
-                    'customer' => $payer['stripeCustomerId'],
+                    'customer' => $stripeCustomerId,
                     'metadata' => [
                         'payerId' => $payerId,
                         'receiverId' => $recieperId
                     ],
-                    'transfer_data' => [
-                        'destination' => $recieperLocalAccount['stripeAccountId'],
-                    ],
                 ],
+                ['stripe_account' => $recieperStripeAccountId]
             );
 
             $user = $this->userLoader->load($recieperId);
@@ -426,11 +425,11 @@ class Stripe extends AbstractService implements StripeServiceInterface
                 frequency: $frequency
             );
 
-            $customerId = $this->getCustomerId($payerId, $recieperStripeAccountId);
+            $stripeCustomerId = $this->getCustomerId($payerId, $recieperStripeAccountId);
 
             $stripeSubscription = $this->client->subscriptions->create(
                 [
-                    'customer' => $customerId,
+                    'customer' => $stripeCustomerId,
                     'items' => [
                         ['price' => $price->id]
                     ],
