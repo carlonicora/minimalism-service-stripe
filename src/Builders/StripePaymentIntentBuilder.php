@@ -92,6 +92,9 @@ class StripePaymentIntentBuilder extends AbstractResourceBuilder
         $this->response->attributes->add(name: 'status', value: $data['status']);
         $this->response->attributes->add(name: 'createdAt', value: $data['createdAt']);
         $this->response->attributes->add(name: 'updatedAt', value: $data['updatedAt']);
+
+        // recieper stripe account id should be set later in the code
+        $this->response->attributes->add(name: 'recieperStripeAccountId', value: null);
     }
 
     /**

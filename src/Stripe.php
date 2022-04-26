@@ -295,6 +295,11 @@ class Stripe extends AbstractService implements StripeServiceInterface
             $localPaymentIntentResource = $paymentIntentResourceReader->byStripePaymentIntentId($stripePaymentIntent->id);
             $localPaymentIntentResource->attributes->update(name: 'clientSecret', value: $stripePaymentIntent->client_secret);
 
+            $localPaymentIntentResource->attributes->update(
+                name: 'recieperStripeAccountId',
+                value: $recieperStripeAccountId
+            );
+
             $result->addResource($localPaymentIntentResource);
         } catch (ApiErrorException $e) {
             $error = 'Stripe has failed to proccess your request. Please, try again later.';
