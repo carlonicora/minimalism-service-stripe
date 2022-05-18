@@ -16,9 +16,9 @@ class Amount
      * @param Currency $currency
      */
     public function __construct(
-        private int      $integer,
-        private int      $cents = 0,
-        private Currency $currency = Currency::EUR,
+        private readonly int      $integer,
+        private readonly int      $cents = 0,
+        private readonly Currency $currency = Currency::EUR,
     )
     {
     }

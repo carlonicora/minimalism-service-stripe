@@ -77,14 +77,14 @@ class Stripe extends AbstractService implements StripeServiceInterface
      * @param string $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_SUBSCRIPTIONS
      */
     public function __construct(
-        private EncrypterInterface   $encrypter,
-        private UserLoaderInterface  $userService,
-        private string               $MINIMALISM_SERVICE_STRIPE_API_KEY,
-        private string               $MINIMALISM_SERVICE_STRIPE_CLIENT_ID,
-        private string               $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_ACCOUNTS,
-        private string               $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_PAYMENTS,
-        private string               $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_INVOICES,
-        private string               $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_SUBSCRIPTIONS
+        private readonly EncrypterInterface  $encrypter,
+        private readonly UserLoaderInterface $userService,
+        private readonly string              $MINIMALISM_SERVICE_STRIPE_API_KEY,
+        private readonly string              $MINIMALISM_SERVICE_STRIPE_CLIENT_ID,
+        private readonly string              $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_ACCOUNTS,
+        private readonly string              $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_PAYMENTS,
+        private readonly string              $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_INVOICES,
+        private readonly string              $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_SUBSCRIPTIONS
     )
     {
     }
@@ -92,9 +92,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
     /**
      * @throws Exception
      */
-    public function initialise(
-
-    ): void
+    public function initialise(): void
     {
         $this->logger = $this->objectFactory->create(className: StripeLogger::class);
 
@@ -204,7 +202,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $linkDO->setCreatedAt($link->created);
         $linkDO->setExpiresAt($link->expires_at);
 
-        $builder = new StripeAccountLinkBuilder($this->encrypter);
+        $builder  = new StripeAccountLinkBuilder($this->encrypter);
         $resource = $builder->buildResource($linkDO);
 
         $result->addResource($resource);
@@ -236,9 +234,9 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $recieperLocalAccount = $accountDataReader->byUserId($recieperId);
 
         if (
-            $recieperLocalAccount['status'] !== AccountStatus::Comlete->value &&
-            $recieperLocalAccount['status'] !== AccountStatus::Pending->value &&
-            $recieperLocalAccount['status'] !== AccountStatus::RestrictedSoon->value
+            $recieperLocalAccount['status'] !== AccountStatus::Complete->value
+            && $recieperLocalAccount['status'] !== AccountStatus::Pending->value
+            && $recieperLocalAccount['status'] !== AccountStatus::RestrictedSoon->value
         ) {
             throw new RuntimeException(message: 'Account status of an artist does not allow payments', code: 403);
         }
@@ -389,9 +387,9 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $accountsDataReader   = $this->objectFactory->create(className: StripeAccountIO::class);
         $recieperLocalAccount = $accountsDataReader->byUserId($recieperId);
         if (
-            $recieperLocalAccount->getStatus() !== AccountStatus::Comlete->value &&
-            $recieperLocalAccount->getStatus() !== AccountStatus::Pending->value &&
-            $recieperLocalAccount->getStatus() !== AccountStatus::RestrictedSoon->value
+            $recieperLocalAccount->getStatus() !== AccountStatus::Complete->value
+            && $recieperLocalAccount->getStatus() !== AccountStatus::Pending->value
+            && $recieperLocalAccount->getStatus() !== AccountStatus::RestrictedSoon->value
         ) {
             throw new RuntimeException(message: 'Account status of an artist does not allow subscriptions', code: 403);
         }
@@ -789,18 +787,18 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
             // A recurring payment intent created by Stripe
             $payerId = $stripePaymentIntent->metadata->offsetGet('payerId');
-            $payer = $this->userService->byId($payerId);
+            $payer   = $this->userService->byId($payerId);
             if ($payer === null) {
                 throw new MinimalismException(status: HttpCode::NotFound, message: 'Payer with such an id does not exists');
             }
 
             $recieperId = $stripePaymentIntent->metadata->offsetGet('recieperId');
-            $recieper = $this->userService->byId($recieperId);
+            $recieper   = $this->userService->byId($recieperId);
             if ($recieper === null) {
                 throw new MinimalismException(status: HttpCode::NotFound, message: 'Recieper with such an id does not exists');
             }
 
-            $stripeAccountIO = $this->objectFactory->create(className: StripeAccountIO::class);
+            $stripeAccountIO      = $this->objectFactory->create(className: StripeAccountIO::class);
             $recieperLocalAccount = $stripeAccountIO->byUserId($recieperId);
 
             $paymentIntent = new StripePaymentIntent();
@@ -843,12 +841,12 @@ class Stripe extends AbstractService implements StripeServiceInterface
             event: $stripeEvent
         );
 
-        $subscriptionIO = $this->objectFactory->create(className: StripeSubscriptionIO::class);
+        $subscriptionIO    = $this->objectFactory->create(className: StripeSubscriptionIO::class);
         $localSubscription = $subscriptionIO->byStripeSubscriptionId($stripeSubscription->id);
 
-        if ($localSubscription->getStatus() !== $stripeSubscription->status ||
-            $localSubscription->getStripeLastInvoiceId() !== $stripeSubscription->latest_invoice ||
-            $localSubscription->getCurrentPeriodEnd() !== $stripeSubscription->current_period_end
+        if ($localSubscription->getStatus() !== $stripeSubscription->status
+            || $localSubscription->getStripeLastInvoiceId() !== $stripeSubscription->latest_invoice
+            || $localSubscription->getCurrentPeriodEnd() !== $stripeSubscription->current_period_end
         ) {
             $localSubscription->setStatus($stripeSubscription->status);
             $localSubscription->setStripeLastInvoiceId($stripeSubscription->latest_invoice);
@@ -874,7 +872,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
             event: $stripeEvent
         );
 
-        $accountIO = $this->objectFactory->create(className: StripeAccountIO::class);
+        $accountIO    = $this->objectFactory->create(className: StripeAccountIO::class);
         $localAccount = $accountIO->byStripeAccountId($stripeAccount->id);
         $userId       = $localAccount->getId();
         $realStatus   = AccountStatus::calculate($stripeAccount);
@@ -888,7 +886,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
             $accountIO->update($localAccount);
 
             if ($stripeAccount->payouts_enabled
-                && ($realStatus === AccountStatus::Comlete || $realStatus === AccountStatus::Enabled)
+                && ($realStatus === AccountStatus::Complete || $realStatus === AccountStatus::Enabled)
             ) {
                 /** @noinspection UnusedFunctionResultInspection */
                 $this->getOrCreateProduct(
@@ -916,7 +914,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
      */
     protected function processEvent(
         string $objectClassName,
-        Event $event
+        Event  $event
     ): StripeObject
     {
         // TODO create a separate class for stripe events processing
@@ -951,7 +949,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
                 'canceled_at' => $object->canceled_at,
                 'ended_at' => $object->ended_at
             ],
-            Invoice::class => [
+            Invoice::class       => [
                 'customer' => $object->customer,
                 'customerEmail' => $object->customer_email,
                 'status' => $object->status,
@@ -1018,7 +1016,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
             event: $stripeEvent
         );
 
-        $invoiceIO = $this->objectFactory->create(className: StripeInvoiceIO::class);
+        $invoiceIO    = $this->objectFactory->create(className: StripeInvoiceIO::class);
         $localInvoice = $invoiceIO->byStripeInvoiceId($stripeInvoice->id);
 
         if ($localInvoice->getInvoiceStatus() !== $stripeInvoice->status) {

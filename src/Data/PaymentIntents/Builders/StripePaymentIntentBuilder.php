@@ -76,9 +76,10 @@ class StripePaymentIntentBuilder extends AbstractResourceBuilder
      * @param EncrypterInterface $encrypter
      */
     public function __construct(
-        protected EncrypterInterface $encrypter,
+        protected readonly EncrypterInterface $encrypter,
     )
     {
+        parent::__construct($this->encrypter);
     }
 
     /**

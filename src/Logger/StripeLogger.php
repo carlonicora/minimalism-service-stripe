@@ -10,7 +10,7 @@ class StripeLogger implements LoggerInterface, SimpleObjectInterface
      * @param MinimalismLoggerInterface $logger
      */
     public function __construct(
-        private MinimalismLoggerInterface $logger
+        private readonly MinimalismLoggerInterface $logger
     )
     {
     }

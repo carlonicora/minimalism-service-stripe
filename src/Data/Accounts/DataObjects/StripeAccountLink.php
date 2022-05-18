@@ -61,4 +61,11 @@ class StripeAccountLink implements ResourceableDataInterface
         $this->expiresAt = $expiresAt;
     }
 
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return 0;
+    }
 }

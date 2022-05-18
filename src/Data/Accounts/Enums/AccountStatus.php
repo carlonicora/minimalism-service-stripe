@@ -11,7 +11,7 @@ enum AccountStatus: string
     case RestrictedSoon = 'restricted_soon';
     case Pending = 'pending';
     case Enabled = 'enabled';
-    case Comlete = 'complete';
+    case Complete = 'complete';
     case Rejected = 'rejected';
 
     /**
@@ -49,7 +49,7 @@ enum AccountStatus: string
             $noRequirements = empty($pastDue) && empty($curentlyDue) && empty($eventuallyDue) && $currentDeadline === null;
 
             if ($noRequirements && $noFutureRequirements) {
-                return self::Comlete;
+                return self::Complete;
             }
 
             if ($currentDeadline === null

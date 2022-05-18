@@ -14,20 +14,19 @@ class StripePaymentIntentIO extends AbstractSqlIO
 
     /**
      * @param int $id
-     * @return array
+     * @return StripePaymentIntent
      * @throws MinimalismException
      */
     public function byId(
         int $id
-    ): array
+    ): StripePaymentIntent
     {
-        $result = $this->data->read(
+        return $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripePaymentIntentsTable::class)
                 ->selectAll()
-                ->addParameter(field: StripePaymentIntentsTable::paymentIntentId, value: $id)
+                ->addParameter(field: StripePaymentIntentsTable::paymentIntentId, value: $id),
+            responseType: StripePaymentIntent::class
         );
-
-        return $this->returnSingleValue($result, recordType: 'Stripe payment intent');
     }
 
     /**
