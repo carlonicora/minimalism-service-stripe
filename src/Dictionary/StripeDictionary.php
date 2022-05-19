@@ -15,10 +15,10 @@ enum StripeDictionary: string
     public function getEndpoint(): string
     {
         return match ($this) {
-            self::StripeAccounts       => 'accounts',
-            self::SrtipeAccountsLinks  => 'accounts/links',
-            self::StripePaymentIntents => 'paymentIntents',
-            self::StripeSubscriptions  => 'subscriptions',
+            self::StripeAccounts       => 'stripe/accounts',
+            self::SrtipeAccountsLinks  => 'stripe/accounts/links',
+            self::StripePaymentIntents => 'stripe/paymentIntents',
+            self::StripeSubscriptions  => 'stripe/subscriptions',
         };
     }
 }
