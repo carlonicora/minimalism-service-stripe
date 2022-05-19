@@ -13,10 +13,10 @@ enum StripeCustomersTable
     #[SqlField(fieldType: FieldType::Integer, fieldOption: FieldOption::AutoIncrement)]
     case userId;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case stripeCustomerId;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case email;
 
     #[SqlField(fieldOption: FieldOption::TimeCreate)]

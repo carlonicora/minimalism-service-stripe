@@ -10,7 +10,6 @@ use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use CarloNicora\Minimalism\Services\Stripe\Data\Subscriptions\Factories\StripeSubscriptionsResourceFactory;
 use CarloNicora\Minimalism\Services\Stripe\Data\Subscriptions\IO\StripeSubscriptionIO;
 use Exception;
-use RuntimeException;
 
 class Subscriptions extends AbstractModel
 {
@@ -60,14 +59,14 @@ class Subscriptions extends AbstractModel
     {
         $userService->load();
         if ($userService->isVisitor()) {
-            throw new RuntimeException(message: 'Access denied for visitors', code: 403);
+            throw new MinimalismException(status: HttpCode::Forbidden, message: 'Access denied for visitors');
         }
 
         $subscriptionIO = $this->objectFactory->create(className: StripeSubscriptionIO::class);
         $subscriptionDO = $subscriptionIO->byStripeSubscriptionId($stripeSubscription->getValue());
 
         if ($userService->getId() !== $subscriptionDO->getPayerId()) {
-            throw new RuntimeException(message: 'Stripe subscription does not belong to the current user', code: 403);
+            throw new MinimalismException(status: HttpCode::Forbidden, message: 'Stripe subscription does not belong to the current user');
         }
 
         $subscriptionResourceFactory = $this->objectFactory->create(className: StripeSubscriptionsResourceFactory::class);

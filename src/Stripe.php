@@ -36,7 +36,6 @@ use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
 use CarloNicora\Minimalism\Services\Stripe\Money\Enums\Currency;
 use Exception;
 use JsonException;
-use RuntimeException;
 use Stripe\Account;
 use Stripe\BaseStripeClient;
 use Stripe\Event;
@@ -152,7 +151,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
             }
 
             if ($accountIO->byUserEmail($email)) {
-                throw new RuntimeException(message: 'A Stripe account with such an email is already connected', code: 422);
+                throw new MinimalismException(status: HttpCode::UnprocessableEntity, message: 'A Stripe account with such an email is already connected');
             }
 
             $newAccount = $this->client->accounts->create([
@@ -238,7 +237,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
             && $recieperLocalAccount['status'] !== AccountStatus::Pending->value
             && $recieperLocalAccount['status'] !== AccountStatus::RestrictedSoon->value
         ) {
-            throw new RuntimeException(message: 'Account status of an artist does not allow payments', code: 403);
+            throw new MinimalismException(status: HttpCode::Forbidden, message: 'Account status of an artist does not allow payments');
         }
 
         try {
@@ -391,7 +390,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
             && $recieperLocalAccount->getStatus() !== AccountStatus::Pending->value
             && $recieperLocalAccount->getStatus() !== AccountStatus::RestrictedSoon->value
         ) {
-            throw new RuntimeException(message: 'Account status of an artist does not allow subscriptions', code: 403);
+            throw new MinimalismException(status: HttpCode::Forbidden, message: 'Account status of an artist does not allow subscriptions');
         }
 
         $payer = $this->userService->byId($payerId);
@@ -407,7 +406,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
                 payerId: $payerId
             );
 
-            throw new RuntimeException(message: 'It is forbidden to create second subscriptions. Please, cancel an existing subscription.', code: 403);
+            throw new MinimalismException(status: HttpCode::Forbidden, message: 'It is forbidden to create second subscriptions. Please, cancel an existing subscription.');
         } catch (MinimalismException $e) {
             if ($e->getStatus() !== HttpCode::NotFound) {
                 throw $e;
@@ -921,12 +920,12 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $eventIO = $this->objectFactory->create(className: StripeEventIO::class);
 
         if (! empty($eventIO->byId($event->id))) {
-            throw new RuntimeException(message: 'A dublicate webhook was ignored', code: 200);
+            throw new MinimalismException(status: HttpCode::Ok, message: 'A dublicate webhook was ignored');
         }
 
         $object = $event->data->object ?? null;
         if (! $object) {
-            throw new RuntimeException(message: 'Malformed Stripe event doesn\'t contain a related object', code: 500);
+            throw new MinimalismException(status: HttpCode::InternalServerError, message: 'Malformed Stripe event doesn\'t contain a related object');
         }
 
         $details = match ($objectClassName) {

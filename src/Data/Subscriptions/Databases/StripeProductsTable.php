@@ -13,16 +13,16 @@ enum StripeProductsTable
     #[SqlField(fieldType: FieldType::Integer, fieldOption: FieldOption::AutoIncrement)]
     case productId;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case stripeProductId;
 
     #[SqlField(fieldType: FieldType::Integer)]
     case recieperId;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case name;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case description;
 
     #[SqlField(fieldOption: FieldOption::TimeCreate)]

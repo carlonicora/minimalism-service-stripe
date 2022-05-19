@@ -3,6 +3,7 @@
 namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks;
 
 use CarloNicora\Minimalism\Enums\HttpCode;
+use CarloNicora\Minimalism\Exceptions\MinimalismException;
 use CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks\Abstracts\AbstractWebhook;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use JsonException;
@@ -34,6 +35,7 @@ class Accounts extends AbstractWebhook
      * @return HttpCode
      * @throws JsonException
      * @throws ApiErrorException
+     * @throws MinimalismException
      */
     public function post(
         Stripe $stripe

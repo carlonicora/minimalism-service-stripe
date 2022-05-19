@@ -22,7 +22,6 @@ class StripeProductIO extends AbstractSqlIO
     {
         return $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripeProductsTable::class)
-                ->selectAll()
                 ->addParameter(field: StripeProductsTable::recieperId, value: $recieperId),
             responseType: StripeProduct::class
         );

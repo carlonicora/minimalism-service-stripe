@@ -13,13 +13,13 @@ enum StripeEventsTable
     #[SqlField(fieldType: FieldType::Integer, fieldOption: FieldOption::AutoIncrement)]
     case eventId;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case type;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case relatedObjectId;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case details;
 
     #[SqlField(fieldOption: FieldOption::TimeCreate)]

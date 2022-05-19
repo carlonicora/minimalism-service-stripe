@@ -13,16 +13,16 @@ enum StripeSubscriptionsTable
     #[SqlField(fieldType: FieldType::Integer, fieldOption: FieldOption::AutoIncrement)]
     case subscriptionId;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case stripeSubscriptionId;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case stripeLastInvoiceId;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case stripeLastPaymentIntentId;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case stripePriceId;
 
     #[SqlField(fieldType: FieldType::Integer)]
@@ -31,16 +31,16 @@ enum StripeSubscriptionsTable
     #[SqlField(fieldType: FieldType::Integer)]
     case payerId;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case payerEmail;
 
     #[SqlField(fieldType: FieldType::Integer)]
     case recieperId;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case recieperEmail;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case frequency;
 
     #[SqlField(fieldType: FieldType::Integer)]
@@ -49,13 +49,13 @@ enum StripeSubscriptionsTable
     #[SqlField(fieldType: FieldType::Integer)]
     case phlowFeePercent;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case currency;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case status;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case currentPeriodEnd;
 
     #[SqlField(fieldOption: FieldOption::TimeCreate)]

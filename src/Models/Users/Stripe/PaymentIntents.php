@@ -4,13 +4,13 @@ namespace CarloNicora\Minimalism\Services\Stripe\Models\Users\Stripe;
 
 use CarloNicora\Minimalism\Abstracts\AbstractModel;
 use CarloNicora\Minimalism\Enums\HttpCode;
+use CarloNicora\Minimalism\Exceptions\MinimalismException;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserServiceInterface;
 use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
 use CarloNicora\Minimalism\Services\Stripe\Money\Enums\Currency;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use Exception;
-use RuntimeException;
 
 class PaymentIntents extends AbstractModel
 {
@@ -82,6 +82,7 @@ class PaymentIntents extends AbstractModel
      * @param UserServiceInterface $currentUser
      * @param array $payload
      * @return array
+     * @throws MinimalismException
      */
     private static function processPayload(
         UserServiceInterface $currentUser,
@@ -90,13 +91,13 @@ class PaymentIntents extends AbstractModel
     {
         $currentUser->load();
         if ($currentUser->isVisitor()) {
-            throw new RuntimeException(message: 'Access not allowed to guests', code: 403);
+            throw new MinimalismException(status: HttpCode::Forbidden, message: 'Access not allowed to guests');
         }
 
         if (empty($payload['recieper']) || ! isset($payload['recieper']['amount']) || ! isset($payload['recieper']['cents']) || empty($payload['recieper']['currency']) ||
             empty($payload['phlowFee']) || ! isset($payload['phlowFee']['amount']) || ! isset($payload['phlowFee']['cents']) || empty($payload['phlowFee']['currency'])
         ) {
-            throw new RuntimeException(message: 'Incorrect payload', code: 412);
+            throw new MinimalismException(status: HttpCode::PreconditionFailed, message: 'Incorrect payload');
         }
 
         $amount = new Amount(

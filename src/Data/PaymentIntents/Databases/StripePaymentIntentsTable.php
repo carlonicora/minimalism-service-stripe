@@ -14,37 +14,37 @@ enum StripePaymentIntentsTable
     #[SqlField(fieldType: FieldType::Integer, fieldOption: FieldOption::AutoIncrement)]
     case paymentIntentId;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case stripePaymentIntentId;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case stripeInvoiceId;
 
     #[SqlField(fieldType: FieldType::Integer)]
     case payerId;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case payerEmail;
 
     #[SqlField(fieldType: FieldType::Integer)]
     case recieperId;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case recieperAccountId;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case recieperEmail;
 
     #[SqlField(fieldType: FieldType::Integer)]
     case amount;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case currency;
 
     #[SqlField(fieldType: FieldType::Integer)]
     case phlowFeeAmount;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case status;
 
     #[SqlField(fieldOption: FieldOption::TimeCreate)]

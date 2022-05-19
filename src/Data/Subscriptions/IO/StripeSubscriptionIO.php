@@ -23,7 +23,6 @@ class StripeSubscriptionIO extends AbstractSqlIO
     {
         $result = $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripeSubscriptionsTable::class)
-                ->selectAll()
                 ->addParameter(field: StripeSubscriptionsTable::subscriptionId, value: $id)
         );
 
@@ -43,7 +42,6 @@ class StripeSubscriptionIO extends AbstractSqlIO
     {
         return $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripeSubscriptionsTable::class)
-                ->selectAll()
                 ->addParameter(field: StripeSubscriptionsTable::recieperId, value: $recieperId)
                 ->addParameter(field: StripeSubscriptionsTable::payerId, value: $payerId),
             responseType: StripeSubscription::class
@@ -61,7 +59,6 @@ class StripeSubscriptionIO extends AbstractSqlIO
     {
         return $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripeSubscriptionsTable::class)
-                ->selectAll()
                 ->addParameter(field: StripeSubscriptionsTable::stripeSubscriptionId, value: $stripeSubscriptionId),
             responseType: StripeSubscription::class
         );
@@ -69,18 +66,22 @@ class StripeSubscriptionIO extends AbstractSqlIO
 
     /**
      * @param int $payerId
-     * @return array
+     * @return int[]
      * @throws MinimalismException
      */
-    public function byPayerId(
+    public function recieperIdsByPayerId(
         int $payerId
     ): array
     {
-        return $this->data->read(
+        $result = $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripeSubscriptionsTable::class)
-                ->selectAll()
                 ->addParameter(field: StripeSubscriptionsTable::payerId, value: $payerId)
         );
+
+        $recieperId = SqlQueryFactory::create(tableClass: StripeSubscriptionsTable::class)->getTable()
+            ->getField(field: StripeSubscriptionsTable::recieperId)->getName();
+
+        return array_column(array: $result, column_key: $recieperId);
     }
 
 }

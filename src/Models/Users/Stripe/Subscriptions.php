@@ -4,6 +4,7 @@ namespace CarloNicora\Minimalism\Services\Stripe\Models\Users\Stripe;
 
 use CarloNicora\Minimalism\Abstracts\AbstractModel;
 use CarloNicora\Minimalism\Enums\HttpCode;
+use CarloNicora\Minimalism\Exceptions\MinimalismException;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Parameters\PositionedEncryptedParameter;
 use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserServiceInterface;
 use CarloNicora\Minimalism\Services\Stripe\Data\Subscriptions\Enums\SubscriptionFrequency;
@@ -11,7 +12,6 @@ use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
 use CarloNicora\Minimalism\Services\Stripe\Money\Enums\Currency;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use Exception;
-use RuntimeException;
 use Stripe\Exception\ApiErrorException;
 
 class Subscriptions extends AbstractModel
@@ -32,7 +32,7 @@ class Subscriptions extends AbstractModel
     {
         $currentUser->load();
         if ($currentUser->isVisitor()) {
-            throw new RuntimeException(message: 'Access not allowed to guests', code: 403);
+            throw new MinimalismException(status: HttpCode::Forbidden, message: 'Access not allowed to guests');
         }
 
         $this->document = $stripe->getSubscription(
@@ -106,6 +106,7 @@ class Subscriptions extends AbstractModel
      * @param UserServiceInterface $currentUser
      * @param array $payload
      * @return array
+     * @throws MinimalismException
      */
     private static function processPayload(
         UserServiceInterface $currentUser,
@@ -114,7 +115,7 @@ class Subscriptions extends AbstractModel
     {
         $currentUser->load();
         if ($currentUser->isVisitor()) {
-            throw new RuntimeException(message: 'Access not allowed to guests', code: 403);
+            throw new MinimalismException(status: HttpCode::Forbidden, message: 'Access not allowed to guests');
         }
 
         if (empty($payload['recieper']) || empty($payload['recieper']['amount']) || empty($payload['recieper']['currency'])
@@ -122,7 +123,7 @@ class Subscriptions extends AbstractModel
             || empty($payload['frequency'])
             || null === ($frequency = SubscriptionFrequency::from($payload['frequency']))
         ) {
-            throw new RuntimeException(message: 'Incorrect payload', code: 412);
+            throw new MinimalismException(status: HttpCode::PreconditionFailed, message: 'Incorrect payload');
         }
 
         $amount = new Amount(
@@ -156,6 +157,7 @@ class Subscriptions extends AbstractModel
      * @param PositionedEncryptedParameter $author
      * @return HttpCode
      * @throws ApiErrorException
+     * @throws MinimalismException
      */
     public function delete(
         Stripe                       $stripe,
@@ -166,7 +168,7 @@ class Subscriptions extends AbstractModel
 
         $currentUser->load();
         if ($currentUser->isVisitor()) {
-            throw new RuntimeException(message: 'Access not allowed to guests', code: 403);
+            throw new MinimalismException(status: HttpCode::Forbidden, message: 'Access not allowed to guests');
         }
 
         $stripe->cancelSubscription(

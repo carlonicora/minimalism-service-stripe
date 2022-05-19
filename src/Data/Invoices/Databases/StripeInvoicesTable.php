@@ -14,10 +14,10 @@ enum StripeInvoicesTable
     #[SqlField(fieldType: FieldType::Integer, fieldOption: FieldOption::AutoIncrement)]
     case invoiceId;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case stripeInvoiceId;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case stripeCustomerId;
 
     #[SqlField(fieldType: FieldType::Integer)]
@@ -26,16 +26,16 @@ enum StripeInvoicesTable
     #[SqlField(fieldType: FieldType::Integer)]
     case payerId;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case payerEmail;
 
     #[SqlField(fieldType: FieldType::Integer)]
     case recieperId;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case recieperEmail;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case frequency;
 
     #[SqlField(fieldType: FieldType::Integer)]
@@ -44,10 +44,10 @@ enum StripeInvoicesTable
     #[SqlField(fieldType: FieldType::Integer)]
     case phlowFeePercent;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case currency;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case status;
 
     #[SqlField(fieldOption: FieldOption::TimeCreate)]

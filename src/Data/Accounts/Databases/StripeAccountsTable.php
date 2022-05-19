@@ -14,13 +14,13 @@ enum StripeAccountsTable
     #[SqlField(fieldType: FieldType::Integer, fieldOption: FieldOption::PrimaryKey)]
     case userId;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case stripeAccountId;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case email;
 
-    #[SqlField(fieldType: FieldType::String)]
+    #[SqlField]
     case status;
 
     #[SqlField(fieldType: FieldType::Integer)]
