@@ -31,6 +31,7 @@ use CarloNicora\Minimalism\Services\Stripe\Logger\StripeLogger;
 use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
 use Exception;
 use JsonException;
+use LogicException;
 use RuntimeException;
 use Stripe\Account;
 use Stripe\BaseStripeClient;
@@ -912,11 +913,23 @@ class Stripe extends AbstractService implements StripeServiceInterface
             throw new RuntimeException(message: 'Malformed Stripe event doesn\'t contain a related object', code: 500);
         }
 
+        $status = null;
+        if ($objectClassName === Account::class) {
+            try {
+                $status = AccountStatus::calculate($object);
+            } catch (LogicException) {
+                // The status is unknown, but we should save details in an event for the future investigation
+            }
+        }
+
         $details = match ($objectClassName) {
             Account::class       => [
-                'status' => AccountStatus::calculate($object)->value,
+                'status' => $status?->value,
                 'chargesEnabled' => $object->charges_enabled,
                 'payoutsEnabled' => $object->payouts_enabled,
+                'requirements' =>  $object->requirements,
+                'capabilities' => $object->capabilities,
+                'future_requirements' => $object->future_requirements,
             ],
             PaymentIntent::class => [
                 'last_payment_error' => $object->last_payment_error,
