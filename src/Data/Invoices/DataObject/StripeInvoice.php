@@ -4,6 +4,7 @@ namespace CarloNicora\Minimalism\Services\Stripe\Data\Invoices\DataObject;
 
 use CarloNicora\Minimalism\Interfaces\Sql\Attributes\DbField;
 use CarloNicora\Minimalism\Interfaces\Sql\Attributes\DbTable;
+use CarloNicora\Minimalism\Interfaces\Sql\Enums\DbFieldType;
 use CarloNicora\Minimalism\Interfaces\Sql\Interfaces\SqlDataObjectInterface;
 use CarloNicora\Minimalism\Services\MySQL\Traits\SqlDataObjectTrait;
 use CarloNicora\Minimalism\Services\ResourceBuilder\Interfaces\ResourceableDataInterface;
@@ -42,6 +43,10 @@ class StripeInvoice implements SqlDataObjectInterface, ResourceableDataInterface
     #[DbField]
     private string $recieperEmail;
 
+    /** @var string */
+    #[DbField]
+    private string $frequency;
+
     /** @var int */
     #[DbField]
     private int $amount;
@@ -56,11 +61,15 @@ class StripeInvoice implements SqlDataObjectInterface, ResourceableDataInterface
 
     /** @var string */
     #[DbField]
-    private string $invoiceStatus;
+    private string $status;
 
-    /** @var string */
-    #[DbField]
-    private string $frequency;
+    /** @var int */
+    #[DbField(fieldType: DbFieldType::IntDateTime)]
+    private int $createdAt;
+
+    /** @var int|null */
+    #[DbField(fieldType: DbFieldType::IntDateTime)]
+    private ?int $updatedAt = null;
 
     /** @var int|null */
     #[DbField]
@@ -229,17 +238,17 @@ class StripeInvoice implements SqlDataObjectInterface, ResourceableDataInterface
     /**
      * @return string
      */
-    public function getInvoiceStatus(): string
+    public function getStatus(): string
     {
-        return $this->invoiceStatus;
+        return $this->status;
     }
 
     /**
-     * @param string $invoiceStatus
+     * @param string $status
      */
-    public function setInvoiceStatus(string $invoiceStatus): void
+    public function setStatus(string $status): void
     {
-        $this->invoiceStatus = $invoiceStatus;
+        $this->status = $status;
     }
 
     /**
@@ -259,6 +268,40 @@ class StripeInvoice implements SqlDataObjectInterface, ResourceableDataInterface
     }
 
     /**
+     * @return int
+     */
+    public function getCreatedAt(): int
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @param int $createdAt
+     */
+    public function setCreatedAt(int $createdAt): void
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getUpdatedAt(): ?int
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * @param int|null $updatedAt
+     */
+    public function setUpdatedAt(
+        int $updatedAt = null
+    ): void
+    {
+        $this->updatedAt = $updatedAt;
+    }
+
+    /**
      * @return int|null
      */
     public function getSubscriptionId(): ?int
@@ -269,7 +312,9 @@ class StripeInvoice implements SqlDataObjectInterface, ResourceableDataInterface
     /**
      * @param int|null $subscriptionId
      */
-    public function setSubscriptionId(?int $subscriptionId): void
+    public function setSubscriptionId(
+        int $subscriptionId = null
+    ): void
     {
         $this->subscriptionId = $subscriptionId;
     }

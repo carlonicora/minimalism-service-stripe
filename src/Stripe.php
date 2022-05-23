@@ -1018,8 +1018,8 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $invoiceIO    = $this->objectFactory->create(className: StripeInvoiceIO::class);
         $localInvoice = $invoiceIO->byStripeInvoiceId($stripeInvoice->id);
 
-        if ($localInvoice->getInvoiceStatus() !== $stripeInvoice->status) {
-            $localInvoice->setInvoiceStatus($stripeInvoice->status);
+        if ($localInvoice->getStatus() !== $stripeInvoice->status) {
+            $localInvoice->setStatus($stripeInvoice->status);
             $invoiceIO->update($localInvoice);
         }
     }

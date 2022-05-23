@@ -63,10 +63,6 @@ class StripeSubscription implements SqlDataObjectInterface, ResourceableDataInte
     #[DbField]
     private int $phlowFeePercent;
 
-    /** @var int */
-    #[DbField]
-    private int $currentPeriodEnd;
-
     /** @var string */
     #[DbField]
     private string $status;
@@ -82,6 +78,11 @@ class StripeSubscription implements SqlDataObjectInterface, ResourceableDataInte
     /** @var int */
     #[DbField(fieldType: DbFieldType::IntDateTime)]
     private int $createdAt;
+
+    /** @var int */
+    #[DbField]
+    private int $currentPeriodEnd;
+
 
     /** @var int */
     #[DbField(fieldType: DbFieldType::IntDateTime)]
@@ -278,21 +279,6 @@ class StripeSubscription implements SqlDataObjectInterface, ResourceableDataInte
     {
         $this->phlowFeePercent = $phlowFeePercent;
     }
-    /**
-     * @return int
-     */
-    public function getCurrentPeriodEnd(): int
-    {
-        return $this->currentPeriodEnd;
-    }
-
-    /**
-     * @param int $currentPeriodEnd
-     */
-    public function setCurrentPeriodEnd(int $currentPeriodEnd): void
-    {
-        $this->currentPeriodEnd = $currentPeriodEnd;
-    }
 
     /**
      * @return string
@@ -358,18 +344,41 @@ class StripeSubscription implements SqlDataObjectInterface, ResourceableDataInte
     {
         $this->createdAt = $createdAt;
     }
+
     /**
-     * @return int
+     * @return int|null
      */
-    public function getUpdatedAt(): int
+    public function getCurrentPeriodEnd(): ?int
+    {
+        return $this->currentPeriodEnd;
+    }
+
+    /**
+     * @param int|null $currentPeriodEnd
+     * @return void
+     */
+    public function setCurrentPeriodEnd(
+        int $currentPeriodEnd = null
+    ): void
+    {
+        $this->currentPeriodEnd = $currentPeriodEnd;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getUpdatedAt(): ?int
     {
         return $this->updatedAt;
     }
 
     /**
-     * @param int $updatedAt
+     * @param int|null $updatedAt
+     * @return void
      */
-    public function setUpdatedAt(int $updatedAt): void
+    public function setUpdatedAt(
+        int $updatedAt = null
+    ): void
     {
         $this->updatedAt = $updatedAt;
     }

@@ -21,11 +21,6 @@ class StripePaymentIntent implements SqlDataObjectInterface, ResourceableDataInt
     /** @var string */
     #[DbField(field: StripePaymentIntentsTable::stripePaymentIntentId)]
     private string $stripePaymentIntentId;
-
-    /** @var string */
-    #[DbField(field: StripePaymentIntentsTable::stripeInvoiceId)]
-    private string $stripeInvoiceId;
-
     /** @var int */
     #[DbField(field: StripePaymentIntentsTable::payerId)]
     private int $payerId;
@@ -57,10 +52,6 @@ class StripePaymentIntent implements SqlDataObjectInterface, ResourceableDataInt
     /** @var int */
     #[DbField(field: StripePaymentIntentsTable::phlowFeeAmount)]
     private int $phlowFeeAmount;
-
-    /** @var string */
-    private string $clientSecret;
-
     /** @var string */
     #[DbField(field: StripePaymentIntentsTable::status)]
     private string $status;
@@ -69,10 +60,16 @@ class StripePaymentIntent implements SqlDataObjectInterface, ResourceableDataInt
     #[DbField(fieldType: DbFieldType::IntDateTime)]
     private int $createdAt;
 
-    /** @var int */
+    /** @var int|null */
     #[DbField(fieldType: DbFieldType::IntDateTime)]
-    private int $updatedAt;
+    private ?int $updatedAt = null;
 
+    /** @var string|null */
+    #[DbField(field: StripePaymentIntentsTable::stripeInvoiceId)]
+    private ?string $stripeInvoiceId = null;
+
+    /** @var string */
+    private string $clientSecret;
 
     /**
      * @return int
@@ -104,24 +101,6 @@ class StripePaymentIntent implements SqlDataObjectInterface, ResourceableDataInt
     public function setStripePaymentIntentId(string $stripePaymentIntentId): void
     {
         $this->stripePaymentIntentId = $stripePaymentIntentId;
-    }
-
-    /**
-     * @return string
-     */
-    public function getStripeInvoiceId(): string
-    {
-        return $this->stripeInvoiceId;
-    }
-
-    /**
-     * @param string|null $stripeInvoiceId
-     */
-    public function setStripeInvoiceId(
-        string $stripeInvoiceId = null
-    ): void
-    {
-        $this->stripeInvoiceId = $stripeInvoiceId;
     }
 
     /**
@@ -285,19 +264,39 @@ class StripePaymentIntent implements SqlDataObjectInterface, ResourceableDataInt
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getUpdatedAt(): int
+    public function getUpdatedAt(): ?int
     {
         return $this->updatedAt;
     }
 
     /**
-     * @param int $updatedAt
+     * @param int|null $updatedAt
      */
-    public function setUpdatedAt(int $updatedAt): void
+    public function setUpdatedAt(
+        int $updatedAt = null
+    ): void
     {
         $this->updatedAt = $updatedAt;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getStripeInvoiceId(): ?string
+    {
+        return $this->stripeInvoiceId;
+    }
+
+    /**
+     * @param string|null $stripeInvoiceId
+     */
+    public function setStripeInvoiceId(
+        string $stripeInvoiceId = null
+    ): void
+    {
+        $this->stripeInvoiceId = $stripeInvoiceId;
     }
 
     /**

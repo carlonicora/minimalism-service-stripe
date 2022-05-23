@@ -31,17 +31,17 @@ class StripeProduct implements SqlDataObjectInterface, ResourceableDataInterface
     #[DbField]
     private string $name;
 
-    /** @var string */
-    #[DbField]
-    private string $description;
-
     /** @var int */
     #[DbField(fieldType: DbFieldType::IntDateTime)]
     private int $createdAt;
 
-    /** @var int */
+    /** @var string|null */
+    #[DbField]
+    private ?string $description = null;
+
+    /** @var int|null */
     #[DbField(fieldType: DbFieldType::IntDateTime)]
-    private int $updatedAt;
+    private ?int $updatedAt = null;
 
     /**
      * @return int
@@ -108,22 +108,6 @@ class StripeProduct implements SqlDataObjectInterface, ResourceableDataInterface
     }
 
     /**
-     * @return string
-     */
-    public function getDescription(): string
-    {
-        return $this->description;
-    }
-
-    /**
-     * @param string $description
-     */
-    public function setDescription(string $description): void
-    {
-        $this->description = $description;
-    }
-
-    /**
      * @return int
      */
     public function getCreatedAt(): int
@@ -140,17 +124,39 @@ class StripeProduct implements SqlDataObjectInterface, ResourceableDataInterface
     }
 
     /**
-     * @return int
+     * @return string|null
      */
-    public function getUpdatedAt(): int
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string|null $description
+     * @return void
+     */
+    public function setDescription(
+        ?string $description = null
+    ): void
+    {
+        $this->description = $description;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getUpdatedAt(): ?int
     {
         return $this->updatedAt;
     }
 
     /**
-     * @param int $updatedAt
+     * @param int|null $updatedAt
+     * @return void
      */
-    public function setUpdatedAt(int $updatedAt): void
+    public function setUpdatedAt(
+        int $updatedAt = null
+    ): void
     {
         $this->updatedAt = $updatedAt;
     }

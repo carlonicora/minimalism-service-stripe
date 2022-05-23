@@ -19,19 +19,19 @@ class StripeEvent implements SqlDataObjectInterface, ResourceableDataInterface
 
     /** @var string */
     #[DbField]
+
     private string $type;
-
-    /** @var string */
-    #[DbField]
-    private string $relatedObjectId;
-
-    /** @var string */
-    #[DbField]
-    private string $details;
-
     /** @var int */
     #[DbField(fieldType: DbFieldType::IntDateTime)]
     private int $createdAt;
+
+    /** @var string|null */
+    #[DbField]
+    private ?string $relatedObjectId = null;
+
+    /** @var string|null */
+    #[DbField]
+    private ?string $details = null;
 
     /**
      * @return int
@@ -66,38 +66,6 @@ class StripeEvent implements SqlDataObjectInterface, ResourceableDataInterface
     }
 
     /**
-     * @return string
-     */
-    public function getRelatedObjectId(): string
-    {
-        return $this->relatedObjectId;
-    }
-
-    /**
-     * @param string $relatedObjectId
-     */
-    public function setRelatedObjectId(string $relatedObjectId): void
-    {
-        $this->relatedObjectId = $relatedObjectId;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDetails(): string
-    {
-        return $this->details;
-    }
-
-    /**
-     * @param string $details
-     */
-    public function setDetails(string $details): void
-    {
-        $this->details = $details;
-    }
-
-    /**
      * @return int
      */
     public function getCreatedAt(): int
@@ -111,6 +79,44 @@ class StripeEvent implements SqlDataObjectInterface, ResourceableDataInterface
     public function setCreatedAt(int $createdAt): void
     {
         $this->createdAt = $createdAt;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getRelatedObjectId(): ?string
+    {
+        return $this->relatedObjectId;
+    }
+
+    /**
+     * @param string|null $relatedObjectId
+     * @return void
+     */
+    public function setRelatedObjectId(
+        string $relatedObjectId = null
+    ): void
+    {
+        $this->relatedObjectId = $relatedObjectId;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDetails(): ?string
+    {
+        return $this->details;
+    }
+
+    /**
+     * @param string|null $details
+     * @return void
+     */
+    public function setDetails(
+        string $details = null
+    ): void
+    {
+        $this->details = $details;
     }
 
 }

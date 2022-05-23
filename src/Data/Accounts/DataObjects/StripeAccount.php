@@ -27,10 +27,6 @@ class StripeAccount implements SqlDataObjectInterface, ResourceableDataInterface
     #[DbField]
     private string $email;
 
-    /** @var string */
-    #[DbField]
-    private string $status;
-
     /** @var bool */
     #[DbField]
     private bool $payoutsEnabled;
@@ -39,9 +35,13 @@ class StripeAccount implements SqlDataObjectInterface, ResourceableDataInterface
     #[DbField(fieldType: DbFieldType::IntDateTime)]
     private int $createdAt;
 
-    /** @var int */
+    /** @var string|null */
+    #[DbField]
+    private ?string $status = null;
+
+    /** @var int|null */
     #[DbField(fieldType: DbFieldType::IntDateTime)]
-    private int $updatedAt;
+    private ?int $updatedAt = null;
 
     /**
      * @return int
@@ -92,22 +92,6 @@ class StripeAccount implements SqlDataObjectInterface, ResourceableDataInterface
     }
 
     /**
-     * @return string
-     */
-    public function getStatus(): string
-    {
-        return $this->status;
-    }
-
-    /**
-     * @param string $status
-     */
-    public function setStatus(string $status): void
-    {
-        $this->status = $status;
-    }
-
-    /**
      * @return bool
      */
     public function isPayoutsEnabled(): bool
@@ -140,17 +124,38 @@ class StripeAccount implements SqlDataObjectInterface, ResourceableDataInterface
     }
 
     /**
-     * @return int
+     * @return string|null
      */
-    public function getUpdatedAt(): int
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param string|null $status
+     */
+    public function setStatus(
+        string $status = null
+    ): void
+    {
+        $this->status = $status;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getUpdatedAt(): ?int
     {
         return $this->updatedAt;
     }
 
     /**
-     * @param int $updatedAt
+     * @param int|null $updatedAt
+     * @return void
      */
-    public function setUpdatedAt(int $updatedAt): void
+    public function setUpdatedAt(
+        int $updatedAt = null
+    ): void
     {
         $this->updatedAt = $updatedAt;
     }
