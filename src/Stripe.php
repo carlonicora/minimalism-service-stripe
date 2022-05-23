@@ -239,12 +239,9 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
         $accountDataReader    = $this->objectFactory->create(className: StripeAccountIO::class);
         $recieperLocalAccount = $accountDataReader->byUserId($recieperId);
+        $localStatus          = AccountStatus::from($recieperLocalAccount['status']);
 
-        if (
-            $recieperLocalAccount['status'] !== AccountStatus::Complete->value &&
-            $recieperLocalAccount['status'] !== AccountStatus::Pending->value &&
-            $recieperLocalAccount['status'] !== AccountStatus::RestrictedSoon->value
-        ) {
+        if ($localStatus->arePaymentsAllowed()) {
             throw new RuntimeException(message: 'Account status of an artist does not allow payments', code: 403);
         }
 
@@ -390,11 +387,9 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
         $accountsDataReader   = $this->objectFactory->create(className: StripeAccountIO::class);
         $recieperLocalAccount = $accountsDataReader->byUserId($recieperId);
-        if (
-            $recieperLocalAccount['status'] !== AccountStatus::Complete->value &&
-            $recieperLocalAccount['status'] !== AccountStatus::Pending->value &&
-            $recieperLocalAccount['status'] !== AccountStatus::RestrictedSoon->value
-        ) {
+        $localStatus          = AccountStatus::from($recieperLocalAccount['status']);
+
+        if ($localStatus->arePaymentsAllowed()) {
             throw new RuntimeException(message: 'Account status of an artist does not allow subscriptions', code: 403);
         }
 

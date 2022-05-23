@@ -82,4 +82,21 @@ enum AccountStatus: string
 
         throw new LogicException(message: 'Connected account status not implemented', code: 500);
     }
+
+    /**
+     * @return bool
+     */
+    public function arePaymentsAllowed(): bool
+    {
+        return match($this) {
+            self::Restricted,
+            self::Rejected,
+            self::Enabled => false,
+            self::RestrictedSoon,
+            self::Pending,
+            self::Complete => true,
+
+        };
+    }
+
 }
