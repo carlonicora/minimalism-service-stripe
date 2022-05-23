@@ -88,14 +88,13 @@ enum AccountStatus: string
      */
     public function arePaymentsAllowed(): bool
     {
-        return match($this) {
+        return match ($this) {
             self::Restricted,
             self::Rejected,
-            self::Enabled => false,
+            self::Enabled  => false,
             self::RestrictedSoon,
             self::Pending,
             self::Complete => true,
-
         };
     }
 
