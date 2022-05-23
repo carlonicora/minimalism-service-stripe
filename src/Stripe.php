@@ -241,7 +241,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $recieperLocalAccount = $accountDataReader->byUserId($recieperId);
 
         if (
-            $recieperLocalAccount['status'] !== AccountStatus::Comlete->value &&
+            $recieperLocalAccount['status'] !== AccountStatus::Complete->value &&
             $recieperLocalAccount['status'] !== AccountStatus::Pending->value &&
             $recieperLocalAccount['status'] !== AccountStatus::RestrictedSoon->value
         ) {
@@ -391,7 +391,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $accountsDataReader   = $this->objectFactory->create(className: StripeAccountIO::class);
         $recieperLocalAccount = $accountsDataReader->byUserId($recieperId);
         if (
-            $recieperLocalAccount['status'] !== AccountStatus::Comlete->value &&
+            $recieperLocalAccount['status'] !== AccountStatus::Complete->value &&
             $recieperLocalAccount['status'] !== AccountStatus::Pending->value &&
             $recieperLocalAccount['status'] !== AccountStatus::RestrictedSoon->value
         ) {
@@ -870,7 +870,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
             );
 
             if ($stripeAccount->payouts_enabled
-                && ($realStatus === AccountStatus::Comlete || $realStatus === AccountStatus::Enabled)
+                && ($realStatus === AccountStatus::Complete || $realStatus === AccountStatus::Enabled)
             ) {
                 /** @noinspection UnusedFunctionResultInspection */
                 $this->getOrCreateProduct(

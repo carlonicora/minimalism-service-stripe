@@ -11,7 +11,7 @@ enum AccountStatus: string
     case RestrictedSoon = 'restricted_soon';
     case Pending = 'pending';
     case Enabled = 'enabled';
-    case Comlete = 'complete';
+    case Complete = 'complete';
     case Rejected = 'rejected';
 
     /**
@@ -49,7 +49,7 @@ enum AccountStatus: string
             $noRequirements = empty($pastDue) && empty($curentlyDue) && empty($eventuallyDue) && $currentDeadline === null;
 
             if ($noRequirements && $noFutureRequirements) {
-                return self::Comlete;
+                return self::Complete;
             }
 
             if ($currentDeadline === null
@@ -65,6 +65,16 @@ enum AccountStatus: string
                 && empty($pastDue)
             ) {
                 return self::RestrictedSoon;
+            }
+
+            if ($currentDeadline !== null
+                && empty($pastDue)
+                && empty($curentlyDue)
+            )
+            {
+                // No sense, but we had a real live example of a webhook with a deadline set without any addytional information.
+                // In the Stripe dashboard it has the 'Complete' status, so we consider it as an undocumnted complete status case
+                return self::Complete;
             }
 
             throw new LogicException(message: 'Connected account status with enabled card payments not implemented', code: 500);
