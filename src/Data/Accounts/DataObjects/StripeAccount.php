@@ -31,13 +31,13 @@ class StripeAccount implements SqlDataObjectInterface, ResourceableDataInterface
     #[DbField]
     private bool $payoutsEnabled;
 
+    /** @var string */
+    #[DbField]
+    private string $status;
+
     /** @var int */
     #[DbField(fieldType: DbFieldType::IntDateTime)]
     private int $createdAt;
-
-    /** @var string|null */
-    #[DbField]
-    private ?string $status = null;
 
     /** @var int|null */
     #[DbField(fieldType: DbFieldType::IntDateTime)]
@@ -108,6 +108,23 @@ class StripeAccount implements SqlDataObjectInterface, ResourceableDataInterface
     }
 
     /**
+     * @return string
+     */
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param string $status
+     * @return void
+     */
+    public function setStatus(string $status): void
+    {
+        $this->status = $status;
+    }
+
+    /**
      * @return int
      */
     public function getCreatedAt(): int
@@ -121,24 +138,6 @@ class StripeAccount implements SqlDataObjectInterface, ResourceableDataInterface
     public function setCreatedAt(int $createdAt): void
     {
         $this->createdAt = $createdAt;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getStatus(): ?string
-    {
-        return $this->status;
-    }
-
-    /**
-     * @param string|null $status
-     */
-    public function setStatus(
-        string $status = null
-    ): void
-    {
-        $this->status = $status;
     }
 
     /**

@@ -68,8 +68,8 @@ class StripePaymentIntent implements SqlDataObjectInterface, ResourceableDataInt
     #[DbField(field: StripePaymentIntentsTable::stripeInvoiceId)]
     private ?string $stripeInvoiceId = null;
 
-    /** @var string */
-    private string $clientSecret;
+    /** @var string|null */
+    private ?string $clientSecret = null;
 
     /**
      * @return int
@@ -300,18 +300,22 @@ class StripePaymentIntent implements SqlDataObjectInterface, ResourceableDataInt
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getClientSecret(): string
+    public function getClientSecret(): ?string
     {
         return $this->clientSecret;
     }
 
     /**
-     * @param string $clientSecret
+     * @param string|null $clientSecret
+     * @return void
      */
-    public function setClientSecret(string $clientSecret): void
+    public function setClientSecret(
+        string $clientSecret = null
+    ): void
     {
         $this->clientSecret = $clientSecret;
     }
+
 }

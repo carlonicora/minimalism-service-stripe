@@ -79,14 +79,13 @@ class StripeSubscription implements SqlDataObjectInterface, ResourceableDataInte
     #[DbField(fieldType: DbFieldType::IntDateTime)]
     private int $createdAt;
 
-    /** @var int */
+    /** @var int|null */
     #[DbField]
-    private int $currentPeriodEnd;
+    private ?int $currentPeriodEnd = null;
 
-
-    /** @var int */
+    /** @var int|null */
     #[DbField(fieldType: DbFieldType::IntDateTime)]
-    private int $updatedAt;
+    private ?int $updatedAt = null;
 
     /**
      * @return int
