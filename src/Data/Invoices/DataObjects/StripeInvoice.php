@@ -1,6 +1,6 @@
 <?php
 
-namespace CarloNicora\Minimalism\Services\Stripe\Data\Invoices\DataObject;
+namespace CarloNicora\Minimalism\Services\Stripe\Data\Invoices\DataObjects;
 
 use CarloNicora\Minimalism\Interfaces\Sql\Attributes\DbField;
 use CarloNicora\Minimalism\Interfaces\Sql\Attributes\DbTable;

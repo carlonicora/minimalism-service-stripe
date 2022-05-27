@@ -6,7 +6,7 @@ use CarloNicora\Minimalism\Exceptions\MinimalismException;
 use CarloNicora\Minimalism\Interfaces\Sql\Abstracts\AbstractSqlIO;
 use CarloNicora\Minimalism\Services\MySQL\Factories\SqlQueryFactory;
 use CarloNicora\Minimalism\Services\Stripe\Data\Invoices\Databases\StripeInvoicesTable;
-use CarloNicora\Minimalism\Services\Stripe\Data\Invoices\DataObject\StripeInvoice;
+use CarloNicora\Minimalism\Services\Stripe\Data\Invoices\DataObjects\StripeInvoice;
 
 class StripeInvoiceIO extends AbstractSqlIO
 {
