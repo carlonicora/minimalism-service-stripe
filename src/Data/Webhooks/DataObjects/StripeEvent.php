@@ -3,12 +3,14 @@
 namespace CarloNicora\Minimalism\Services\Stripe\Data\Webhooks\DataObjects;
 
 use CarloNicora\Minimalism\Interfaces\Sql\Attributes\DbField;
+use CarloNicora\Minimalism\Interfaces\Sql\Attributes\DbTable;
 use CarloNicora\Minimalism\Interfaces\Sql\Enums\DbFieldType;
 use CarloNicora\Minimalism\Interfaces\Sql\Interfaces\SqlDataObjectInterface;
 use CarloNicora\Minimalism\Services\MySQL\Traits\SqlDataObjectTrait;
 use CarloNicora\Minimalism\Services\ResourceBuilder\Interfaces\ResourceableDataInterface;
 use CarloNicora\Minimalism\Services\Stripe\Data\Webhooks\Databases\StripeEventsTable;
 
+#[DbTable(tableClass: StripeEventsTable::class)]
 class StripeEvent implements SqlDataObjectInterface, ResourceableDataInterface
 {
     use SqlDataObjectTrait;
