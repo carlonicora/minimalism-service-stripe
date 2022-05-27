@@ -37,11 +37,11 @@ class StripeProduct implements SqlDataObjectInterface, ResourceableDataInterface
 
     /** @var string|null */
     #[DbField]
-    private ?string $description = null;
+    private string|null $description = null;
 
     /** @var int|null */
     #[DbField(fieldType: DbFieldType::IntDateTime)]
-    private ?int $updatedAt = null;
+    private int|null $updatedAt = null;
 
     /**
      * @return int
@@ -126,7 +126,7 @@ class StripeProduct implements SqlDataObjectInterface, ResourceableDataInterface
     /**
      * @return string|null
      */
-    public function getDescription(): ?string
+    public function getDescription(): string|null
     {
         return $this->description;
     }
@@ -136,7 +136,7 @@ class StripeProduct implements SqlDataObjectInterface, ResourceableDataInterface
      * @return void
      */
     public function setDescription(
-        ?string $description = null
+        string|null $description = null
     ): void
     {
         $this->description = $description;
@@ -145,7 +145,7 @@ class StripeProduct implements SqlDataObjectInterface, ResourceableDataInterface
     /**
      * @return int|null
      */
-    public function getUpdatedAt(): ?int
+    public function getUpdatedAt(): int|null
     {
         return $this->updatedAt;
     }

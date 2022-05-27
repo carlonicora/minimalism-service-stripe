@@ -69,11 +69,11 @@ class StripeInvoice implements SqlDataObjectInterface, ResourceableDataInterface
 
     /** @var int|null */
     #[DbField(fieldType: DbFieldType::IntDateTime)]
-    private ?int $updatedAt = null;
+    private int|null $updatedAt = null;
 
     /** @var int|null */
     #[DbField]
-    private ?int $subscriptionId = null;
+    private int|null $subscriptionId = null;
 
     /**
      * @return int
@@ -286,7 +286,7 @@ class StripeInvoice implements SqlDataObjectInterface, ResourceableDataInterface
     /**
      * @return int|null
      */
-    public function getUpdatedAt(): ?int
+    public function getUpdatedAt(): int|null
     {
         return $this->updatedAt;
     }
@@ -304,7 +304,7 @@ class StripeInvoice implements SqlDataObjectInterface, ResourceableDataInterface
     /**
      * @return int|null
      */
-    public function getSubscriptionId(): ?int
+    public function getSubscriptionId(): int|null
     {
         return $this->subscriptionId;
     }

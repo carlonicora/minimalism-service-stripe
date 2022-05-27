@@ -81,11 +81,11 @@ class StripeSubscription implements SqlDataObjectInterface, ResourceableDataInte
 
     /** @var int|null */
     #[DbField]
-    private ?int $currentPeriodEnd = null;
+    private int|null $currentPeriodEnd = null;
 
     /** @var int|null */
     #[DbField(fieldType: DbFieldType::IntDateTime)]
-    private ?int $updatedAt = null;
+    private int|null $updatedAt = null;
 
     /**
      * @return int
@@ -347,7 +347,7 @@ class StripeSubscription implements SqlDataObjectInterface, ResourceableDataInte
     /**
      * @return int|null
      */
-    public function getCurrentPeriodEnd(): ?int
+    public function getCurrentPeriodEnd(): int|null
     {
         return $this->currentPeriodEnd;
     }
@@ -366,7 +366,7 @@ class StripeSubscription implements SqlDataObjectInterface, ResourceableDataInte
     /**
      * @return int|null
      */
-    public function getUpdatedAt(): ?int
+    public function getUpdatedAt(): int|null
     {
         return $this->updatedAt;
     }
