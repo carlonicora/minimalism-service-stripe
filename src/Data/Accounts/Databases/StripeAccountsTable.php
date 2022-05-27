@@ -11,7 +11,7 @@ use CarloNicora\Minimalism\Services\MySQL\Enums\FieldType;
 enum StripeAccountsTable
 {
 
-    #[SqlField(fieldType: FieldType::Integer)]
+    #[SqlField(fieldType: FieldType::Integer, fieldOption: FieldOption::PrimaryKey)]
     case userId;
 
     #[SqlField]

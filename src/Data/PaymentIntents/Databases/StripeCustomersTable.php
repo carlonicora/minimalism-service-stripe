@@ -10,7 +10,7 @@ use CarloNicora\Minimalism\Services\MySQL\Enums\FieldType;
 #[SqlTable(name: 'stripeCustomers', databaseIdentifier: 'Finance')]
 enum StripeCustomersTable
 {
-    #[SqlField(fieldType: FieldType::Integer)]
+    #[SqlField(fieldType: FieldType::Integer, fieldOption: FieldOption::PrimaryKey)]
     case userId;
 
     #[SqlField]
