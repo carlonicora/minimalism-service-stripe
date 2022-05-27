@@ -8,7 +8,6 @@ use CarloNicora\Minimalism\Abstracts\AbstractService;
 use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Exceptions\MinimalismException;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Interfaces\EncrypterInterface;
-use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserLoaderInterface;
 use CarloNicora\Minimalism\Services\Stripe\Data\Accounts\Builders\StripeAccountLinkBuilder;
 use CarloNicora\Minimalism\Services\Stripe\Data\Accounts\DataObjects\StripeAccount;
 use CarloNicora\Minimalism\Services\Stripe\Data\Accounts\DataObjects\StripeAccountLink;
@@ -34,6 +33,7 @@ use CarloNicora\Minimalism\Services\Stripe\Interfaces\StripeServiceInterface;
 use CarloNicora\Minimalism\Services\Stripe\Logger\StripeLogger;
 use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
 use CarloNicora\Minimalism\Services\Stripe\Money\Enums\Currency;
+use CarloNicora\Minimalism\Services\Users\Users;
 use Exception;
 use JsonException;
 use Stripe\Account;
@@ -67,7 +67,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
     /**
      * @param EncrypterInterface $encrypter
-     * @param UserLoaderInterface $userService
+     * @param Users $userService
      * @param string $MINIMALISM_SERVICE_STRIPE_API_KEY
      * @param string $MINIMALISM_SERVICE_STRIPE_CLIENT_ID
      * @param string $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_ACCOUNTS
@@ -77,7 +77,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
      */
     public function __construct(
         private readonly EncrypterInterface  $encrypter,
-        private readonly UserLoaderInterface $userService,
+        private readonly Users $userService,
         private readonly string              $MINIMALISM_SERVICE_STRIPE_API_KEY,
         private readonly string              $MINIMALISM_SERVICE_STRIPE_CLIENT_ID,
         private readonly string              $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_ACCOUNTS,
