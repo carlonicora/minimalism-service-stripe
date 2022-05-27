@@ -6,6 +6,7 @@ use CarloNicora\Minimalism\Exceptions\MinimalismException;
 use CarloNicora\Minimalism\Interfaces\Cache\Interfaces\CacheBuilderInterface;
 use CarloNicora\Minimalism\Interfaces\Sql\Abstracts\AbstractSqlIO;
 use CarloNicora\Minimalism\Interfaces\Sql\Interfaces\SqlDataObjectInterface;
+use CarloNicora\Minimalism\Interfaces\Sql\Interfaces\SqlQueryFactoryInterface;
 use CarloNicora\Minimalism\Services\Cacher\Factories\CacheBuilderFactory;
 use CarloNicora\Minimalism\Services\MySQL\Factories\SqlQueryFactory;
 use CarloNicora\Minimalism\Services\Stripe\Data\Accounts\Databases\StripeAccountsTable;
@@ -70,12 +71,12 @@ class StripeAccountIO extends AbstractSqlIO
     }
 
     /**
-     * @param StripeAccount|SqlDataObjectInterface $dataObject
+     * @param StripeAccount|SqlDataObjectInterface|SqlQueryFactoryInterface|array $dataObject
      * @param CacheBuilderInterface|null $cache
      * @return SqlDataObjectInterface
      */
     public function create(
-        StripeAccount|SqlDataObjectInterface $dataObject,
+        StripeAccount|SqlDataObjectInterface|SqlQueryFactoryInterface|array $dataObject,
         ?CacheBuilderInterface $cache = null
     ): SqlDataObjectInterface
     {
@@ -89,12 +90,13 @@ class StripeAccountIO extends AbstractSqlIO
     }
 
     /**
-     * @param StripeAccount|SqlDataObjectInterface $dataObject
+     * @param StripeAccount|SqlDataObjectInterface|SqlQueryFactoryInterface|array $dataObject
      * @param CacheBuilderInterface|null $cache
+     * @return void
      */
     public function update(
-        StripeAccount|SqlDataObjectInterface $dataObject,
-        ?CacheBuilderInterface $cache = null
+        StripeAccount|SqlDataObjectInterface|SqlQueryFactoryInterface|array $dataObject,
+        ?CacheBuilderInterface                                                                                                $cache = null
     ): void
     {
         $this->data->update(
