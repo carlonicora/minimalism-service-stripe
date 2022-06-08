@@ -4,13 +4,13 @@ namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe;
 
 use CarloNicora\Minimalism\Abstracts\AbstractModel;
 use CarloNicora\Minimalism\Enums\HttpCode;
+use CarloNicora\Minimalism\Exceptions\MinimalismException;
 use CarloNicora\Minimalism\Interfaces\DefaultServiceInterface;
 use CarloNicora\Minimalism\Interfaces\LoggerInterface;
 use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserServiceInterface;
 use CarloNicora\Minimalism\Services\Stripe\Interfaces\StripeServiceInterface;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use Exception;
-use RuntimeException;
 use Stripe\Exception\ApiErrorException;
 
 class Accounts extends AbstractModel
@@ -51,7 +51,7 @@ class Accounts extends AbstractModel
     {
         $currentUser->load();
         if ($currentUser->isVisitor()) {
-            throw new RuntimeException(message: 'Access not allowed to guests', code: 403);
+            throw new MinimalismException(status: HttpCode::Forbidden, message: 'Access not allowed to guests');
         }
 
         try {
@@ -88,6 +88,6 @@ class Accounts extends AbstractModel
         }
 
         $errorCode = current($this->document->errors)?->status;
-        return $errorCode? HttpCode::from($errorCode) : HttpCode::Created;
+        return $errorCode ? HttpCode::from($errorCode) : HttpCode::Created;
     }
 }

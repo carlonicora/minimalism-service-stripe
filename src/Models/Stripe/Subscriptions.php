@@ -4,13 +4,12 @@ namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe;
 
 use CarloNicora\Minimalism\Abstracts\AbstractModel;
 use CarloNicora\Minimalism\Enums\HttpCode;
+use CarloNicora\Minimalism\Exceptions\MinimalismException;
 use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserServiceInterface;
 use CarloNicora\Minimalism\Parameters\PositionedParameter;
-use CarloNicora\Minimalism\Services\DataMapper\Exceptions\RecordNotFoundException;
-use CarloNicora\Minimalism\Services\Stripe\Factories\Resources\StripeSubscriptionsResourceFactory;
-use CarloNicora\Minimalism\Services\Stripe\IO\StripeSubscriptionIO;
+use CarloNicora\Minimalism\Services\Stripe\Data\Subscriptions\Factories\StripeSubscriptionsResourceFactory;
+use CarloNicora\Minimalism\Services\Stripe\Data\Subscriptions\IO\StripeSubscriptionIO;
 use Exception;
-use RuntimeException;
 
 class Subscriptions extends AbstractModel
 {
@@ -50,29 +49,29 @@ class Subscriptions extends AbstractModel
      * @param UserServiceInterface $userService
      * @param PositionedParameter $stripeSubscription
      * @return HttpCode
-     * @throws RecordNotFoundException
+     * @throws MinimalismException
      * @throws Exception
      */
     public function get(
         UserServiceInterface $userService,
-        PositionedParameter $stripeSubscription
+        PositionedParameter  $stripeSubscription
     ): HttpCode
     {
         $userService->load();
         if ($userService->isVisitor()) {
-            throw new RuntimeException(message: 'Access denied for visitors', code: 403);
+            throw new MinimalismException(status: HttpCode::Forbidden, message: 'Access denied for visitors');
         }
 
         $subscriptionIO = $this->objectFactory->create(className: StripeSubscriptionIO::class);
-        $subscriptionData = $subscriptionIO->byStripeSubscriptionId($stripeSubscription->getValue());
+        $subscriptionDO = $subscriptionIO->byStripeSubscriptionId($stripeSubscription->getValue());
 
-        if ($userService->getId() !== $subscriptionData['payerId']) {
-            throw new RuntimeException(message: 'Stripe subscription does not belong to the current user', code: 403);
+        if ($userService->getId() !== $subscriptionDO->getPayerId()) {
+            throw new MinimalismException(status: HttpCode::Forbidden, message: 'Stripe subscription does not belong to the current user');
         }
 
         $subscriptionResourceFactory = $this->objectFactory->create(className: StripeSubscriptionsResourceFactory::class);
         $this->document->addResource(
-            $subscriptionResourceFactory->byStripeSubscriptionId($stripeSubscription->getValue())
+            $subscriptionResourceFactory->byData($subscriptionDO)
         );
 
         return HttpCode::Ok;

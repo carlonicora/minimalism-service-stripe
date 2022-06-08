@@ -4,12 +4,12 @@ namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe;
 
 use CarloNicora\Minimalism\Abstracts\AbstractModel;
 use CarloNicora\Minimalism\Enums\HttpCode;
+use CarloNicora\Minimalism\Exceptions\MinimalismException;
 use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserServiceInterface;
 use CarloNicora\Minimalism\Parameters\PositionedParameter;
-use CarloNicora\Minimalism\Services\Stripe\Factories\Resources\StripePaymentIntentsResourceFactory;
-use CarloNicora\Minimalism\Services\Stripe\IO\StripePaymentIntentIO;
+use CarloNicora\Minimalism\Services\Stripe\Data\PaymentIntents\Factories\StripePaymentIntentsResourceFactory;
+use CarloNicora\Minimalism\Services\Stripe\Data\PaymentIntents\IO\StripePaymentIntentIO;
 use Exception;
-use RuntimeException;
 
 class PaymentIntents extends AbstractModel
 {
@@ -47,31 +47,29 @@ class PaymentIntents extends AbstractModel
      * )
      *
      * @param UserServiceInterface $userService
-     * @param StripePaymentIntentIO $paymentIntentIO
-     * @param StripePaymentIntentsResourceFactory $intentsResourceFactory
      * @param PositionedParameter $intent
      * @return HttpCode
      * @throws Exception
      */
     public function get(
-        UserServiceInterface                $userService,
-        StripePaymentIntentIO               $paymentIntentIO,
-        StripePaymentIntentsResourceFactory $intentsResourceFactory,
-        PositionedParameter                 $intent
+        UserServiceInterface $userService,
+        PositionedParameter  $intent
     ): HttpCode
     {
         $userService->load();
         if ($userService->isVisitor()) {
-            throw new RuntimeException(message: 'Access denied for visitors', code: 403);
+            throw new MinimalismException(status: HttpCode::Forbidden, message: 'Access denied for visitors');
         }
 
-        $paymentIntentData = $paymentIntentIO->byStripePaymentIntentId($intent->getValue());
-        if ($userService->getId() !== $paymentIntentData['payerId']) {
-            throw new RuntimeException(message: 'Payment intent does not belong to the current user', code: 403);
+        $paymentIntentIO = $this->objectFactory->create(className: StripePaymentIntentIO::class);
+        $paymentIntent   = $paymentIntentIO->byStripePaymentIntentId($intent->getValue());
+        if ($userService->getId() !== $paymentIntent->getPayerId()) {
+            throw new MinimalismException(status: HttpCode::Forbidden, message: 'Payment intent does not belong to the current user');
         }
 
+        $intentsResourceFactory = $this->objectFactory->create(className: StripePaymentIntentsResourceFactory::class);
         $this->document->addResource(
-            $intentsResourceFactory->byStripePaymentIntentId($intent->getValue())
+            $intentsResourceFactory->byData($paymentIntent)
         );
 
         return HttpCode::Ok;
