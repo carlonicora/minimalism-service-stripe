@@ -4,7 +4,7 @@ namespace CarloNicora\Minimalism\Services\Stripe\Data\Invoices\IO;
 
 use CarloNicora\Minimalism\Exceptions\MinimalismException;
 use CarloNicora\Minimalism\Interfaces\Sql\Abstracts\AbstractSqlIO;
-use CarloNicora\Minimalism\Services\MySQL\Factories\SqlQueryFactory;
+use CarloNicora\Minimalism\Interfaces\Sql\Factories\SqlQueryFactory;
 use CarloNicora\Minimalism\Services\Stripe\Data\Invoices\Databases\StripeInvoicesTable;
 use CarloNicora\Minimalism\Services\Stripe\Data\Invoices\DataObjects\StripeInvoice;
 

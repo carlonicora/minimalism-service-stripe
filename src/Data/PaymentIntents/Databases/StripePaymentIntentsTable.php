@@ -2,55 +2,55 @@
 
 namespace CarloNicora\Minimalism\Services\Stripe\Data\PaymentIntents\Databases;
 
-use CarloNicora\Minimalism\Services\MySQL\Data\SqlField;
-use CarloNicora\Minimalism\Services\MySQL\Data\SqlTable;
-use CarloNicora\Minimalism\Services\MySQL\Enums\FieldOption;
-use CarloNicora\Minimalism\Services\MySQL\Enums\FieldType;
+use CarloNicora\Minimalism\Interfaces\Sql\Attributes\SqlFieldAttribute;
+use CarloNicora\Minimalism\Interfaces\Sql\Attributes\SqlTableAttribute;
+use CarloNicora\Minimalism\Interfaces\Sql\Enums\SqlFieldOption;
+use CarloNicora\Minimalism\Interfaces\Sql\Enums\SqlFieldType;
 
-#[SqlTable(name: 'stripePaymentIntents', databaseIdentifier: 'Finance')]
+#[SqlTableAttribute(name: 'stripePaymentIntents', databaseIdentifier: 'Finance')]
 enum StripePaymentIntentsTable
 {
 
-    #[SqlField(fieldType: FieldType::Integer, fieldOption: FieldOption::AutoIncrement)]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::Integer, fieldOption: SqlFieldOption::AutoIncrement)]
     case paymentIntentId;
 
-    #[SqlField]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::String)]
     case stripePaymentIntentId;
 
-    #[SqlField]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::String)]
     case stripeInvoiceId;
 
-    #[SqlField(fieldType: FieldType::Integer)]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::Integer)]
     case payerId;
 
-    #[SqlField]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::String)]
     case payerEmail;
 
-    #[SqlField(fieldType: FieldType::Integer)]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::Integer)]
     case recieperId;
 
-    #[SqlField]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::String)]
     case recieperAccountId;
 
-    #[SqlField]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::String)]
     case recieperEmail;
 
-    #[SqlField(fieldType: FieldType::Integer)]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::Integer)]
     case amount;
 
-    #[SqlField]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::String)]
     case currency;
 
-    #[SqlField(fieldType: FieldType::Integer)]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::Integer)]
     case phlowFeeAmount;
 
-    #[SqlField]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::String)]
     case status;
 
-    #[SqlField(fieldOption: FieldOption::TimeCreate)]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::String, fieldOption: SqlFieldOption::TimeCreate)]
     case createdAt;
 
-    #[SqlField(fieldOption: FieldOption::TimeUpdate)]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::String, fieldOption: SqlFieldOption::TimeUpdate)]
     case updatedAt;
 
 }

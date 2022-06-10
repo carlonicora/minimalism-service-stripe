@@ -2,33 +2,33 @@
 
 namespace CarloNicora\Minimalism\Services\Stripe\Data\Subscriptions\Databases;
 
-use CarloNicora\Minimalism\Services\MySQL\Data\SqlField;
-use CarloNicora\Minimalism\Services\MySQL\Data\SqlTable;
-use CarloNicora\Minimalism\Services\MySQL\Enums\FieldOption;
-use CarloNicora\Minimalism\Services\MySQL\Enums\FieldType;
+use CarloNicora\Minimalism\Interfaces\Sql\Attributes\SqlFieldAttribute;
+use CarloNicora\Minimalism\Interfaces\Sql\Attributes\SqlTableAttribute;
+use CarloNicora\Minimalism\Interfaces\Sql\Enums\SqlFieldOption;
+use CarloNicora\Minimalism\Interfaces\Sql\Enums\SqlFieldType;
 
-#[SqlTable(name: 'stripeProducts', databaseIdentifier: 'Finance')]
+#[SqlTableAttribute(name: 'stripeProducts', databaseIdentifier: 'Finance')]
 enum StripeProductsTable
 {
-    #[SqlField(fieldType: FieldType::Integer, fieldOption: FieldOption::AutoIncrement)]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::Integer, fieldOption: SqlFieldOption::AutoIncrement)]
     case productId;
 
-    #[SqlField]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::String)]
     case stripeProductId;
 
-    #[SqlField(fieldType: FieldType::Integer)]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::Integer)]
     case recieperId;
 
-    #[SqlField]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::String)]
     case name;
 
-    #[SqlField]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::String)]
     case description;
 
-    #[SqlField(fieldOption: FieldOption::TimeCreate)]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::String, fieldOption: SqlFieldOption::TimeCreate)]
     case createdAt;
 
-    #[SqlField(fieldOption: FieldOption::TimeUpdate)]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::String, fieldOption: SqlFieldOption::TimeUpdate)]
     case updatedAt;
 
 }

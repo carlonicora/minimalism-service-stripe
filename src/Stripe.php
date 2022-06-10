@@ -202,8 +202,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $linkDO->setCreatedAt($link->created);
         $linkDO->setExpiresAt($link->expires_at);
 
-        $builder  = new StripeAccountLinkBuilder($this->encrypter);
-        $resource = $builder->buildResource($linkDO);
+        $resource = (new StripeAccountLinkBuilder($this->encrypter))->buildResource($linkDO);
 
         $result->addResource($resource);
 

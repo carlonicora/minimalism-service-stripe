@@ -56,8 +56,7 @@ class Links extends AbstractModel
             throw new MinimalismException(status: HttpCode::Forbidden, message: 'Access not allowed to guests');
         }
 
-        $accountIO = $this->objectFactory->create(className: StripeAccountIO::class);
-        $account   = $accountIO->byUserId($currentUser->getId());
+        $account   = $this->objectFactory->create(className: StripeAccountIO::class)->byUserId($currentUser->getId());
 
         try {
             $this->document = $stripe->createAccountOnboardingLink(
