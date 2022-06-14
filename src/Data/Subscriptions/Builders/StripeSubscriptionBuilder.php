@@ -12,6 +12,7 @@ use CarloNicora\Minimalism\Services\Stripe\Dictionary\StripeDictionary;
 use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
 use CarloNicora\Minimalism\Services\Users\Data\Dictionary\UsersDictionary;
 use Exception;
+use OpenApi\Annotations as OA;
 
 /**
  * @OA\Schema(

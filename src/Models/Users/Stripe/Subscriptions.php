@@ -12,6 +12,7 @@ use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
 use CarloNicora\Minimalism\Services\Stripe\Money\Enums\Currency;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use Exception;
+use OpenApi\Annotations as OA;
 use Stripe\Exception\ApiErrorException;
 
 class Subscriptions extends AbstractModel

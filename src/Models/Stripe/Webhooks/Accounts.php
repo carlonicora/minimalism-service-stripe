@@ -7,6 +7,7 @@ use CarloNicora\Minimalism\Exceptions\MinimalismException;
 use CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks\Abstracts\AbstractWebhook;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use JsonException;
+use OpenApi\Annotations as OA;
 use Stripe\Account;
 use Stripe\Event;
 use Stripe\Exception\ApiErrorException;
