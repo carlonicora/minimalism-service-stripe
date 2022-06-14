@@ -718,7 +718,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
         try {
             $account = $accountsDataReader->byUserId($userId);
         } catch (MinimalismException $e) {
-            if ($e->getHttpCode() === HttpCode::NotFound) {
+            if ($e->getStatus() === HttpCode::NotFound) {
                 return [null, null];
             }
 
