@@ -12,6 +12,7 @@ use CarloNicora\Minimalism\Services\Stripe\Data\Accounts\IO\StripeAccountIO;
 use CarloNicora\Minimalism\Services\Stripe\Interfaces\StripeServiceInterface;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use Exception;
+use OpenApi\Annotations as OA;
 use Stripe\Exception\ApiErrorException;
 
 class Links extends AbstractModel

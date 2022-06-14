@@ -10,6 +10,7 @@ use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use CarloNicora\Minimalism\Services\Stripe\Data\Subscriptions\Factories\StripeSubscriptionsResourceFactory;
 use CarloNicora\Minimalism\Services\Stripe\Data\Subscriptions\IO\StripeSubscriptionIO;
 use Exception;
+use OpenApi\Annotations as OA;
 
 class Subscriptions extends AbstractModel
 {

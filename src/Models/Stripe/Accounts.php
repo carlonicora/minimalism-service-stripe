@@ -11,6 +11,7 @@ use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserServiceInterface;
 use CarloNicora\Minimalism\Services\Stripe\Interfaces\StripeServiceInterface;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use Exception;
+use OpenApi\Annotations as OA;
 use Stripe\Exception\ApiErrorException;
 
 class Accounts extends AbstractModel

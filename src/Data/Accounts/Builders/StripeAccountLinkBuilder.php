@@ -9,6 +9,7 @@ use CarloNicora\Minimalism\Services\ResourceBuilder\Interfaces\ResourceableDataI
 use CarloNicora\Minimalism\Services\Stripe\Data\Accounts\DataObjects\StripeAccountLink;
 use CarloNicora\Minimalism\Services\Stripe\Dictionary\StripeDictionary;
 use Exception;
+use OpenApi\Annotations as OA;
 
 /**
  * @OA\Schema(

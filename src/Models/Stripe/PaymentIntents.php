@@ -10,6 +10,7 @@ use CarloNicora\Minimalism\Parameters\PositionedParameter;
 use CarloNicora\Minimalism\Services\Stripe\Data\PaymentIntents\Factories\StripePaymentIntentsResourceFactory;
 use CarloNicora\Minimalism\Services\Stripe\Data\PaymentIntents\IO\StripePaymentIntentIO;
 use Exception;
+use OpenApi\Annotations as OA;
 
 class PaymentIntents extends AbstractModel
 {

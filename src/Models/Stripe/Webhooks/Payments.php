@@ -7,6 +7,7 @@ use CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Webhooks\Abstracts\Abst
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use Exception;
 use JsonException;
+use OpenApi\Annotations as OA;
 use Stripe\Event;
 use Stripe\PaymentIntent;
 
