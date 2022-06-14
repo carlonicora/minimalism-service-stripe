@@ -24,6 +24,7 @@ class StripeAccountIO extends AbstractSqlIO
         int $userId
     ): StripeAccount
     {
+        AbstractCacheBuilderFactory::setCacheInterface($this->cache);
         return $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripeAccountsTable::class)
                 ->selectAll()
@@ -80,6 +81,7 @@ class StripeAccountIO extends AbstractSqlIO
         ?CacheBuilderInterface $cache = null
     ): SqlDataObjectInterface
     {
+        AbstractCacheBuilderFactory::setCacheInterface($this->cache);
         return $this->data->create(
             queryFactory: $dataObject,
             cacheBuilder: AbstractCacheBuilderFactory::create(
@@ -99,6 +101,7 @@ class StripeAccountIO extends AbstractSqlIO
         ?CacheBuilderInterface                                                                                                $cache = null
     ): void
     {
+        AbstractCacheBuilderFactory::setCacheInterface($this->cache);
         $this->data->update(
             queryFactory: $dataObject,
             cacheBuilder: AbstractCacheBuilderFactory::create(
