@@ -715,7 +715,16 @@ class Stripe extends AbstractService implements StripeServiceInterface
     public function getAccountStatuses(int $userId): array
     {
         $accountsDataReader = $this->objectFactory->create(className: StripeAccountIO::class);
-        $account            = $accountsDataReader->byUserId($userId);
+        try {
+            $account = $accountsDataReader->byUserId($userId);
+        } catch (MinimalismException $e) {
+            if ($e->getHttpCode() === HttpCode::NotFound) {
+                return [null, null];
+            }
+
+            throw $e;
+        }
+
         return [$account->getStatus(), $account->isPayoutsEnabled()];
     }
 
