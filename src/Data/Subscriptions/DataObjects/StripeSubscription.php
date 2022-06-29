@@ -16,7 +16,7 @@ class StripeSubscription implements SqlDataObjectInterface, ResourceableDataInte
     use SqlDataObjectTrait;
 
     /** @var int */
-    #[DbField(field: StripeSubscriptionsTable::stripeSubscriptionId)]
+    #[DbField(field: StripeSubscriptionsTable::subscriptionId)]
     private int $id;
 
     /** @var string */

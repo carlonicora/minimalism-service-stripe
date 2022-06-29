@@ -3,12 +3,13 @@
 namespace CarloNicora\Minimalism\Services\Stripe\Data\Subscriptions\Factories;
 
 use CarloNicora\JsonApi\Objects\ResourceObject;
+use CarloNicora\Minimalism\Interfaces\SimpleObjectInterface;
 use CarloNicora\Minimalism\Services\ResourceBuilder\ResourceBuilder;
-use CarloNicora\Minimalism\Services\Stripe\Data\Accounts\Builders\StripeAccountBuilder;
+use CarloNicora\Minimalism\Services\Stripe\Data\Subscriptions\Builders\StripeSubscriptionBuilder;
 use CarloNicora\Minimalism\Services\Stripe\Data\Subscriptions\DataObjects\StripeSubscription;
 use Exception;
 
-class StripeSubscriptionsResourceFactory
+class StripeSubscriptionsResourceFactory implements SimpleObjectInterface
 {
     /**
      * @param ResourceBuilder $builder
@@ -30,7 +31,7 @@ class StripeSubscriptionsResourceFactory
     ): ResourceObject
     {
         return $this->builder->buildResource(
-            builderClass: StripeAccountBuilder::class,
+            builderClass: StripeSubscriptionBuilder::class,
             data: $dataObject,
         );
     }

@@ -80,7 +80,6 @@ class StripePaymentIntentBuilder extends AbstractResourceBuilder
         protected readonly EncrypterInterface $encrypter,
     )
     {
-        parent::__construct($this->encrypter);
     }
 
     /**

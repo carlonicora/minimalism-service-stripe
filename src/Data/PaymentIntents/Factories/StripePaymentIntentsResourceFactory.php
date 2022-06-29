@@ -3,12 +3,13 @@
 namespace CarloNicora\Minimalism\Services\Stripe\Data\PaymentIntents\Factories;
 
 use CarloNicora\JsonApi\Objects\ResourceObject;
+use CarloNicora\Minimalism\Interfaces\SimpleObjectInterface;
 use CarloNicora\Minimalism\Services\ResourceBuilder\ResourceBuilder;
 use CarloNicora\Minimalism\Services\Stripe\Data\PaymentIntents\Builders\StripePaymentIntentBuilder;
 use CarloNicora\Minimalism\Services\Stripe\Data\PaymentIntents\DataObjects\StripePaymentIntent;
 use Exception;
 
-class StripePaymentIntentsResourceFactory
+class StripePaymentIntentsResourceFactory implements SimpleObjectInterface
 {
 
     /**

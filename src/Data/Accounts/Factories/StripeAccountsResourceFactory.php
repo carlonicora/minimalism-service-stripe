@@ -3,12 +3,13 @@
 namespace CarloNicora\Minimalism\Services\Stripe\Data\Accounts\Factories;
 
 use CarloNicora\JsonApi\Objects\ResourceObject;
+use CarloNicora\Minimalism\Interfaces\SimpleObjectInterface;
 use CarloNicora\Minimalism\Services\ResourceBuilder\ResourceBuilder;
 use CarloNicora\Minimalism\Services\Stripe\Data\Accounts\Builders\StripeAccountBuilder;
 use CarloNicora\Minimalism\Services\Stripe\Data\Accounts\DataObjects\StripeAccount;
 use Exception;
 
-class StripeAccountsResourceFactory
+class StripeAccountsResourceFactory implements SimpleObjectInterface
 {
     /**
      * @param ResourceBuilder $builder
