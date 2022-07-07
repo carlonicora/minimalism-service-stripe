@@ -283,10 +283,13 @@ class Stripe extends AbstractService implements StripeServiceInterface
             $newLocalPaymentIntent->setCurrency($amount->currency()->value);
             $newLocalPaymentIntent->setStatus(PaymentIntentStatus::from($stripePaymentIntent->status)->value);
             $newLocalPaymentIntent->setStripeInvoiceId($stripePaymentIntent->invoice?->id);
-            $newLocalPaymentIntent->setClientSecret($stripePaymentIntent->client_secret);
 
             $paymentIntentIO = $this->objectFactory->create(className: StripePaymentIntentIO::class);
+            /** @var StripePaymentIntent $createdLocalPaymentIntent */
             $createdLocalPaymentIntent = $paymentIntentIO->create($newLocalPaymentIntent);
+
+            // We can't set client secret before saving to DB. Create method will set it to null
+            $createdLocalPaymentIntent->setClientSecret($stripePaymentIntent->client_secret);
 
             $paymentIntentResourceReader = $this->objectFactory->create(className: StripePaymentIntentsResourceFactory::class);
 
@@ -461,6 +464,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
             $localSubscription->setStatus($stripeSubscription->status);
             $localSubscription->setCurrency($amount->currency()->value);
             $localSubscription->setFrequency($frequency->value);
+            $localSubscription->setCurrentPeriodEnd($stripeSubscription->current_period_end);
 
             $createdLocalSubscription = $subscriptionIO->create($localSubscription);
 

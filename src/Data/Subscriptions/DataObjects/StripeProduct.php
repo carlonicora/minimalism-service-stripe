@@ -16,7 +16,7 @@ class StripeProduct implements SqlDataObjectInterface, ResourceableDataInterface
     use SqlDataObjectTrait;
 
     /** @var int */
-    #[DbField(field: StripeProductsTable::stripeProductId)]
+    #[DbField(field: StripeProductsTable::productId)]
     private int $id;
 
     /** @var string */
