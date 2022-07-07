@@ -61,7 +61,7 @@ class Links extends AbstractModel
 
         try {
             $this->document = $stripe->createAccountOnboardingLink(
-                accountId: $account['stripeAccountId'],
+                accountId: $account->getStripeAccountId(),
                 refreshUrl: $defaultService->getApplicationUrl() . StripeServiceInterface::REFRESH_URL,
                 returnUrl: $defaultService->getApplicationUrl() . StripeServiceInterface::RETURN_URL,
             );
@@ -73,7 +73,7 @@ class Links extends AbstractModel
                 message: 'API has failed to connect a user account to Stripe',
                 domain: 'Stripe',
                 context: [
-                    'account' => $account['stripeAccountId'],
+                    'account' => $account->getStripeAccountId(),
                     'exception' => [
                         'message' => $fatalException->getMessage(),
                         'file' => $fatalException->getFile(),

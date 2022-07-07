@@ -133,7 +133,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
         try {
             $existingConnectedAccount = $accountIO->byUserId($userId);
-            $account                  = $this->client->accounts->retrieve($existingConnectedAccount['stripeAccountId']);
+            $account                  = $this->client->accounts->retrieve($existingConnectedAccount->getStripeAccountId());
             $status                   = AccountStatus::calculate($account);
             if ($existingConnectedAccount->getStatus() !== $status->value
                 || $existingConnectedAccount->isPayoutsEnabled() !== $account->payouts_enabled
@@ -233,9 +233,9 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $recieperLocalAccount = $accountDataReader->byUserId($recieperId);
 
         if (
-            $recieperLocalAccount['status'] !== AccountStatus::Complete->value
-            && $recieperLocalAccount['status'] !== AccountStatus::Pending->value
-            && $recieperLocalAccount['status'] !== AccountStatus::RestrictedSoon->value
+            $recieperLocalAccount->getStatus() !== AccountStatus::Complete->value
+            && $recieperLocalAccount->getStatus() !== AccountStatus::Pending->value
+            && $recieperLocalAccount->getStatus() !== AccountStatus::RestrictedSoon->value
         ) {
             throw new MinimalismException(status: HttpCode::Forbidden, message: 'Account status of an artist does not allow payments');
         }
@@ -261,7 +261,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
                         'receiverId' => $recieperId
                     ],
                     'transfer_data' => [
-                        'destination' => $recieperLocalAccount['stripeAccountId'],
+                        'destination' => $recieperLocalAccount->getStripeAccountId(),
                     ],
                 ],
             );
@@ -276,7 +276,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
             $newLocalPaymentIntent->setPayerId($payerId);
             $newLocalPaymentIntent->setPayerEmail($payerEmail);
             $newLocalPaymentIntent->setRecieperId($recieperId);
-            $newLocalPaymentIntent->setRecieperAccountId($recieperLocalAccount['stripeAccountId']);
+            $newLocalPaymentIntent->setRecieperAccountId($recieperLocalAccount->getStripeAccountId());
             $newLocalPaymentIntent->setRecieperEmail($user->getEmail());
             $newLocalPaymentIntent->setAmount($amount->inCents());
             $newLocalPaymentIntent->setPhlowFeeAmount($phlowFee->inCents());
@@ -447,7 +447,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
             $localSubscription->setPayerId($payerId);
             $localSubscription->setPayerEmail($payer->getEmail());
             $localSubscription->setRecieperId($recieperId);
-            $localSubscription->setRecieperEmail($recieperLocalAccount['email']);
+            $localSubscription->setRecieperEmail($recieperLocalAccount->getEmail());
             $localSubscription->setStripeSubscriptionId($stripeSubscription->id);
             $localSubscription->setStripeLastInvoiceId($stripeSubscription->latest_invoice->id);
             $localSubscription->setStripeLastPaymentIntentId($stripeSubscription->latest_invoice->payment_intent->id);
@@ -696,12 +696,12 @@ class Stripe extends AbstractService implements StripeServiceInterface
             payerId: $payerId
         );
 
-        $recieper = $this->objectFactory->create(StripeAccountIO::class)->byUserId($recieperId);
+        $recieper = $this->objectFactory->create(className: StripeAccountIO::class)->byUserId($recieperId);
 
         /** @noinspection UnusedFunctionResultInspection */
         $this->client->subscriptions->cancel(
-            id: $subscription['stripeSubscriptionId'],
-            opts: ['stripe_account' => $recieper['stripeAccountId']]
+            id: $subscription->getStripeSubscriptionId(),
+            opts: ['stripe_account' => $recieper->getStripeAccountId()]
         );
 
         $subscriptionIO->delete($subscription);
@@ -784,7 +784,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
             $localPayment = $paymentIntentIO->byStripePaymentIntentId($stripePaymentIntent->id);
 
             // Check for updates on invoice, which exists in the database (one time payment created by us, or recurring payment created earlier)
-            if ($localPayment['status'] !== $stripePaymentIntent->status) {
+            if ($localPayment->getStatus() !== $stripePaymentIntent->status) {
                 $localPayment->setStatus(PaymentIntentStatus::from($stripePaymentIntent->status)->value);
                 $paymentIntentIO->update($localPayment);
             }
