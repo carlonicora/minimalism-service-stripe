@@ -101,6 +101,8 @@ class StripePaymentIntentBuilder extends AbstractResourceBuilder
             id: $encryptedId,
         );
 
+        // Attributes
+
         $response->attributes->add(name: 'stripePaymentIntentId', value: $data->getStripePaymentIntentId());
         $response->attributes->add(name: 'clientSecret', value: $data->getClientSecret());
         $response->attributes->add(
@@ -114,20 +116,23 @@ class StripePaymentIntentBuilder extends AbstractResourceBuilder
         $response->attributes->add(name: 'status', value: $data->getStatus());
         $response->attributes->add(name: 'createdAt', value: $data->getCreatedAt());
         $response->attributes->add(name: 'updatedAt', value: $data->getUpdatedAt());
+        $response->attributes->add(name: 'recieperStripeAccountId', value: $data->getRecieperAccountId());
+
+        // Links
 
         $response->links->add(new Link(
             name: 'self',
             href: 'stripe/' . StripeDictionary::StripePaymentIntents->getEndpoint() . '/' . $data->getStripePaymentIntentId()
         ));
 
-        $response->relationship(relationshipKey: 'payer')
-            ->links->add(new Link(
-                name:'related',
-                href: UsersDictionary::User->getEndpoint() . $this->encrypter->encryptId($data->getPayerId())
-            ));
+        // Relationships
 
-        $response->relationship(relationshipKey: 'recieper')
-        ->links->add(new Link(
+        $response->relationship(relationshipKey: 'payer')->links->add(new Link(
+            name:'related',
+            href: UsersDictionary::User->getEndpoint() . $this->encrypter->encryptId($data->getPayerId())
+        ));
+
+        $response->relationship(relationshipKey: 'recieper')->links->add(new Link(
             name:'related',
             href: UsersDictionary::User->getEndpoint() . $this->encrypter->encryptId($data->getRecieperId())
         ));

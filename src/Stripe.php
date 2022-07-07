@@ -283,16 +283,16 @@ class Stripe extends AbstractService implements StripeServiceInterface
             $newLocalPaymentIntent->setCurrency($amount->currency()->value);
             $newLocalPaymentIntent->setStatus(PaymentIntentStatus::from($stripePaymentIntent->status)->value);
             $newLocalPaymentIntent->setStripeInvoiceId($stripePaymentIntent->invoice?->id);
+            $newLocalPaymentIntent->setClientSecret($stripePaymentIntent->client_secret);
 
             $paymentIntentIO = $this->objectFactory->create(className: StripePaymentIntentIO::class);
             $createdLocalPaymentIntent = $paymentIntentIO->create($newLocalPaymentIntent);
 
             $paymentIntentResourceReader = $this->objectFactory->create(className: StripePaymentIntentsResourceFactory::class);
 
-            $localPaymentIntentResource = $paymentIntentResourceReader->byData($createdLocalPaymentIntent);
-            $localPaymentIntentResource->attributes->update(name: 'clientSecret', value: $stripePaymentIntent->client_secret);
-
-            $result->addResource($localPaymentIntentResource);
+            $result->addResource(
+                $paymentIntentResourceReader->byData($createdLocalPaymentIntent)
+            );
         } catch (ApiErrorException $e) {
             $error = 'Stripe has failed to proccess your request. Please, try again later.';
         } catch (Exception $e) {
@@ -462,8 +462,10 @@ class Stripe extends AbstractService implements StripeServiceInterface
             $localSubscription->setCurrency($amount->currency()->value);
             $localSubscription->setFrequency($frequency->value);
 
+            $createdLocalSubscription = $subscriptionIO->create($localSubscription);
+
             $subscriptionResourceFactory = $this->objectFactory->create(className: StripeSubscriptionsResourceFactory::class);
-            $localSubscriptionResource   = $subscriptionResourceFactory->byData($localSubscription);
+            $localSubscriptionResource   = $subscriptionResourceFactory->byData($createdLocalSubscription);
             $localSubscriptionResource->attributes->update(
                 name: 'clientSecret',
                 value: $stripeSubscription->latest_invoice->payment_intent->client_secret
