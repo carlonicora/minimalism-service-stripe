@@ -284,9 +284,12 @@ class Stripe extends AbstractService implements StripeServiceInterface
             $newLocalPaymentIntent->setStatus(PaymentIntentStatus::from($stripePaymentIntent->status)->value);
             $newLocalPaymentIntent->setStripeInvoiceId($stripePaymentIntent->invoice?->id);
 
+            $paymentIntentIO = $this->objectFactory->create(className: StripePaymentIntentIO::class);
+            $createdLocalPaymentIntent = $paymentIntentIO->create($newLocalPaymentIntent);
+
             $paymentIntentResourceReader = $this->objectFactory->create(className: StripePaymentIntentsResourceFactory::class);
 
-            $localPaymentIntentResource = $paymentIntentResourceReader->byData($newLocalPaymentIntent);
+            $localPaymentIntentResource = $paymentIntentResourceReader->byData($createdLocalPaymentIntent);
             $localPaymentIntentResource->attributes->update(name: 'clientSecret', value: $stripePaymentIntent->client_secret);
 
             $result->addResource($localPaymentIntentResource);
