@@ -246,7 +246,10 @@ class Stripe extends AbstractService implements StripeServiceInterface
                 $paymentMethods [] = $method->value;
             }
 
-            $payerCustomerId = $this->getOrCreatePlatformCustomerId($payerId);
+            $payerCustomerId = $this->getCustomerId(
+                payerId: $payerId,
+                recieperStripeAccountId: $recieperLocalAccount->getStripeAccountId()
+            );
 
             $stripePaymentIntent = $this->client->paymentIntents->create(
                 [
@@ -259,9 +262,9 @@ class Stripe extends AbstractService implements StripeServiceInterface
                     'metadata' => [
                         'payerId' => $payerId,
                         'receiverId' => $recieperId
-                    ],
-                    ['stripe_account' => $recieperLocalAccount->getStripeAccountId()]
+                    ]
                 ],
+                ['stripe_account' => $recieperLocalAccount->getStripeAccountId()]
             );
 
             $user = $this->userService->byId($recieperId);
