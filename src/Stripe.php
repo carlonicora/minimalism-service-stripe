@@ -260,9 +260,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
                         'payerId' => $payerId,
                         'receiverId' => $recieperId
                     ],
-                    'transfer_data' => [
-                        'destination' => $recieperLocalAccount->getStripeAccountId(),
-                    ],
+                    ['stripe_account' => $recieperLocalAccount->getStripeAccountId()]
                 ],
             );
 
