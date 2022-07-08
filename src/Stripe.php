@@ -150,8 +150,13 @@ class Stripe extends AbstractService implements StripeServiceInterface
                 throw $e;
             }
 
-            if ($accountIO->byUserEmail($email)) {
+            try {
+                $accountIO->byUserEmail($email);
                 throw new MinimalismException(status: HttpCode::UnprocessableEntity, message: 'A Stripe account with such an email is already connected');
+            } catch (MinimalismException $e) {
+                if ($e->getStatus() !== HttpCode::NotFound) {
+                    throw $e;
+                }
             }
 
             $newAccount = $this->client->accounts->create([
