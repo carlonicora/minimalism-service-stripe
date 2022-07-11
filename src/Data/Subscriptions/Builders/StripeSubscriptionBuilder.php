@@ -5,6 +5,7 @@ namespace CarloNicora\Minimalism\Services\Stripe\Data\Subscriptions\Builders;
 use CarloNicora\JsonApi\Objects\Link;
 use CarloNicora\JsonApi\Objects\ResourceObject;
 use CarloNicora\Minimalism\Interfaces\Encrypter\Interfaces\EncrypterInterface;
+use CarloNicora\Minimalism\Services\Path;
 use CarloNicora\Minimalism\Services\ResourceBuilder\Abstracts\AbstractResourceBuilder;
 use CarloNicora\Minimalism\Services\ResourceBuilder\Interfaces\ResourceableDataInterface;
 use CarloNicora\Minimalism\Services\Stripe\Data\Subscriptions\DataObjects\StripeSubscription;
@@ -73,9 +74,11 @@ class StripeSubscriptionBuilder extends AbstractResourceBuilder
 
     /**
      * @param EncrypterInterface $encrypter
+     * @param Path $path
      */
     public function __construct(
         protected readonly EncrypterInterface $encrypter,
+        protected readonly Path $path
     )
     {
     }
@@ -114,21 +117,21 @@ class StripeSubscriptionBuilder extends AbstractResourceBuilder
 
         $response->links->add(new Link(
             name: 'self',
-            href: 'stripe/' . StripeDictionary::StripeSubscriptions->getEndpoint() . '/' . $encryptedId
+            href: $this->path->getUrl() . StripeDictionary::StripeSubscriptions->getEndpoint() . '/' . $encryptedId
         ));
 
         $response->relationship(relationshipKey: 'payer')
             ->links->add(new Link(
                 name:'related',
-                href: UsersDictionary::User->getEndpoint()
-                    . $this->encrypter->encryptId($data->getPayerId())
+                href: $this->path->getUrl() . UsersDictionary::User->getEndpoint()
+                    . '/' . $this->encrypter->encryptId($data->getPayerId())
             ));
 
         $response->relationship(relationshipKey: 'recieper')
             ->links->add(new Link(
                 name:'related',
-                href: UsersDictionary::User->getEndpoint()
-                    . $this->encrypter->encryptId($data->getRecieperId())
+                href: $this->path->getUrl() . UsersDictionary::User->getEndpoint()
+                    . '/' . $this->encrypter->encryptId($data->getRecieperId())
             ));
 
         return $response;
