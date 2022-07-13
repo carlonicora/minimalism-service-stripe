@@ -10,7 +10,7 @@ use CarloNicora\Minimalism\Interfaces\Sql\Enums\SqlFieldType;
 #[SqlTableAttribute(name: 'stripeEvents', databaseIdentifier: 'Finance')]
 enum StripeEventsTable
 {
-    #[SqlFieldAttribute(fieldType: SqlFieldType::Integer, fieldOption: SqlFieldOption::AutoIncrement)]
+    #[SqlFieldAttribute(fieldType: SqlFieldType::String, fieldOption: SqlFieldOption::PrimaryKey)]
     case eventId;
 
     #[SqlFieldAttribute(fieldType: SqlFieldType::String)]
