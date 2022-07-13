@@ -15,9 +15,9 @@ class StripeEvent implements SqlDataObjectInterface, ResourceableDataInterface
 {
     use SqlDataObjectTrait;
 
-    /** @var int */
-    #[DbField(field: StripeEventsTable::eventId)]
-    private int $id;
+    /** @var string */
+    #[DbField]
+    private string $eventId;
 
     /** @var string */
     #[DbField]
@@ -36,19 +36,20 @@ class StripeEvent implements SqlDataObjectInterface, ResourceableDataInterface
     private string|null $details = null;
 
     /**
-     * @return int
+     * @return string
      */
-    public function getId(): int
+    public function getEventId(): string
     {
-        return $this->id;
+        return $this->eventId;
     }
 
     /**
-     * @param int $id
+     * @param string $eventId
+     * @return void
      */
-    public function setId(int $id): void
+    public function setEventId(string $eventId): void
     {
-        $this->id = $id;
+        $this->eventId = $eventId;
     }
 
     /**
@@ -121,4 +122,13 @@ class StripeEvent implements SqlDataObjectInterface, ResourceableDataInterface
         $this->details = $details;
     }
 
+    /**
+     * @deprecated id is a string for stripe events
+     * @see self::getId
+     * @return int
+     */
+    public function getId(): int
+    {
+        return 0;
+    }
 }
