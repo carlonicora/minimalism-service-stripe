@@ -943,8 +943,14 @@ class Stripe extends AbstractService implements StripeServiceInterface
         // TODO create a separate class for stripe events processing
         $eventIO = $this->objectFactory->create(className: StripeEventIO::class);
 
-        if (! empty($eventIO->byId($event->id))) {
+        try {
+            $eventIO->byId($event->id);
             throw new MinimalismException(status: HttpCode::Ok, message: 'A dublicate webhook was ignored');
+        } catch (MinimalismException $e) {
+            if ($e->getStatus() !== HttpCode::NotFound) {
+                throw $e;
+            }
+            // A new event should be proccessed, not ignored
         }
 
         $object = $event->data->object ?? null;
