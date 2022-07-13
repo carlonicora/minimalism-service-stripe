@@ -75,7 +75,7 @@ class StripeAccountIO extends AbstractSqlIO
     public function create(
         StripeAccount|SqlDataObjectInterface|SqlQueryFactoryInterface|array $dataObject,
         ?CacheBuilderInterface $cache = null
-    ): SqlDataObjectInterface
+    ): SqlDataObjectInterface|array
     {
         return $this->data->create(
             queryFactory: $dataObject,
