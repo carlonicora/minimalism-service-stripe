@@ -29,11 +29,11 @@ class StripeEvent implements SqlDataObjectInterface, ResourceableDataInterface
 
     /** @var string|null */
     #[DbField]
-    private string|null $relatedObjectId = null;
+    private ?string $relatedObjectId = null;
 
     /** @var string|null */
     #[DbField]
-    private string|null $details = null;
+    private ?string $details = null;
 
     /**
      * @return string
@@ -87,7 +87,7 @@ class StripeEvent implements SqlDataObjectInterface, ResourceableDataInterface
     /**
      * @return string|null
      */
-    public function getRelatedObjectId(): string|null
+    public function getRelatedObjectId(): ?string
     {
         return $this->relatedObjectId;
     }
@@ -106,7 +106,7 @@ class StripeEvent implements SqlDataObjectInterface, ResourceableDataInterface
     /**
      * @return string|null
      */
-    public function getDetails(): string|null
+    public function getDetails(): ?string
     {
         return $this->details;
     }

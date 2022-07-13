@@ -1007,7 +1007,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $localEvent = new StripeEvent();
         $localEvent->setEventId($event->id);
         $localEvent->setType($event->type);
-        $localEvent->setCreatedAt(date(format: 'Y-m-d H:i:s', timestamp: $event->created));
+        $localEvent->setCreatedAt($event->created);
         $localEvent->setRelatedObjectId($object->id);
         $localEvent->setDetails($details ? json_encode($details, flags: JSON_THROW_ON_ERROR) : null);
 
