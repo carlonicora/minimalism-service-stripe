@@ -13,12 +13,12 @@ class StripeEventIO  extends AbstractSqlIO
 
     /**
      * @param string $id
-     * @return array
+     * @return StripeEvent
      * @throws MinimalismException
      */
     public function byId(
         string $id
-    ): array
+    ): StripeEvent
     {
         return $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripeEventsTable::class)
