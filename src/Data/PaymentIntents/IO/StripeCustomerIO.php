@@ -22,7 +22,6 @@ class StripeCustomerIO extends AbstractSqlIO
     {
         return $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripeCustomersTable::class)
-                ->selectAll()
                 ->addParameter(field: StripeCustomersTable::userId, value: $userId),
             responseType: StripeCustomer::class
         );
@@ -40,7 +39,6 @@ class StripeCustomerIO extends AbstractSqlIO
 
         $result = $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripeCustomersTable::class)
-                ->selectAll()
                 ->addParameter(field: StripeCustomersTable::stripeCustomerId, value: $stripeCustomerId)
         );
 

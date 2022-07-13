@@ -26,7 +26,6 @@ class StripeAccountIO extends AbstractSqlIO
     {
         return $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripeAccountsTable::class)
-                ->selectAll()
                 ->addParameter(field: StripeAccountsTable::userId, value: $userId),
             cacheBuilder: AbstractCacheBuilderFactory::create(
                 cacheName: 'stripeAccount',
@@ -47,7 +46,6 @@ class StripeAccountIO extends AbstractSqlIO
     {
         return $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripeAccountsTable::class)
-                ->selectAll()
                 ->addParameter(field: StripeAccountsTable::email, value: $email),
             responseType: StripeAccount::class
         );
@@ -64,7 +62,6 @@ class StripeAccountIO extends AbstractSqlIO
     {
         return $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripeAccountsTable::class)
-                ->selectAll()
                 ->addParameter(field: StripeAccountsTable::stripeAccountId, value: $stripeAccountId),
             responseType: StripeAccount::class
         );

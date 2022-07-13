@@ -22,7 +22,6 @@ class StripeInvoiceIO extends AbstractSqlIO
     {
         return $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripeInvoicesTable::class)
-                ->selectAll()
                 ->addParameter(field: StripeInvoicesTable::stripeInvoiceId, value: $stripeInvoiceId),
             responseType: StripeInvoice::class
         );
@@ -41,7 +40,6 @@ class StripeInvoiceIO extends AbstractSqlIO
     {
         return $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripeInvoicesTable::class)
-                ->selectAll()
                 ->addParameter(field: StripeInvoicesTable::recieperId, value: $recieperId)
                 ->addParameter(field: StripeInvoicesTable::payerId, value: $payerId)
         );
