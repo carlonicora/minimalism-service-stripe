@@ -106,8 +106,18 @@ class StripeAccountIO extends AbstractSqlIO
 
         $this->cache->invalidate(
             AbstractCacheBuilderFactory::create(
-                cacheName: 'stripeAccount',
+                cacheName: 'userId',
                 identifier: $dataObject->getId()
+            )
+        );
+
+        $this->cache->invalidate(
+            AbstractCacheBuilderFactory::create(
+                cacheName: 'userId',
+                identifier: $dataObject->getId()
+            )?->addContext(
+                name: 'private',
+                identifier: 1
             )
         );
     }
