@@ -999,7 +999,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
                 'onBehalfOf' => $object->on_behalf_of,
                 'paid' => $object->paid,
                 'paidOutOfBand' => $object->paid_out_of_band,
-                'thresholdReason' => $object->threshold_reason,
+                'thresholdReason' => $object->threshold_reason ?? null,
             ],
             default              => null
         };
