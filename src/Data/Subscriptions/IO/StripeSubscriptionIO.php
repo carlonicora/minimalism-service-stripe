@@ -4,7 +4,9 @@ namespace CarloNicora\Minimalism\Services\Stripe\Data\Subscriptions\IO;
 
 use CarloNicora\Minimalism\Exceptions\MinimalismException;
 use CarloNicora\Minimalism\Interfaces\Sql\Abstracts\AbstractSqlIO;
+use CarloNicora\Minimalism\Interfaces\Sql\Factories\SqlFieldFactory;
 use CarloNicora\Minimalism\Interfaces\Sql\Factories\SqlQueryFactory;
+use CarloNicora\Minimalism\Interfaces\Sql\Factories\SqlTableFactory;
 use CarloNicora\Minimalism\Services\Stripe\Data\Subscriptions\Databases\StripeSubscriptionsTable;
 use CarloNicora\Minimalism\Services\Stripe\Data\Subscriptions\DataObjects\StripeSubscription;
 
@@ -45,6 +47,36 @@ class StripeSubscriptionIO extends AbstractSqlIO
                 ->addParameter(field: StripeSubscriptionsTable::recieperId, value: $recieperId)
                 ->addParameter(field: StripeSubscriptionsTable::payerId, value: $payerId),
             responseType: StripeSubscription::class
+        );
+    }
+
+    /**
+     * @param int $userId
+     * @return StripeSubscription[]
+     * @throws MinimalismException
+     */
+    public function byRecieperOrPayerId(
+        int $userId,
+    ): array
+    {
+        $subscriptions = SqlTableFactory::create(tableClass: StripeSubscription::class)->getFullName();
+
+        $recieperId = SqlFieldFactory::create(field: StripeSubscriptionsTable::recieperId)->getFullName();
+        $payerId    = SqlFieldFactory::create(field: StripeSubscriptionsTable::payerId)->getFullName();
+
+        $sql = ' SELECT * '
+            . ' FROM ' . $subscriptions
+            . ' WHERE ' . $recieperId . '=? OR ' . $payerId . '=?';
+
+        $queryFactory = SqlQueryFactory::create(tableClass: StripeSubscriptionsTable::class);
+        $queryFactory->addParameter(field: StripeSubscriptionsTable::recieperId, value: $userId)
+            ->addParameter(field: StripeSubscriptionsTable::payerId, value: $userId);
+        $queryFactory->setSql($sql);
+
+        return $this->data->read(
+            queryFactory: $queryFactory,
+            responseType: StripeSubscription::class,
+            requireObjectsList: true
         );
     }
 

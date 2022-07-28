@@ -744,6 +744,36 @@ class Stripe extends AbstractService implements StripeServiceInterface
     }
 
     /**
+     * @param int $userId
+     * @return void
+     * @throws MinimalismException
+     * @throws Exception
+     */
+    public function deleteStripeDataForUser(
+        int $userId
+    ): void
+    {
+        $subscriptionIO = $this->objectFactory->create(className: StripeSubscriptionIO::class);
+        $subscriptions = $subscriptionIO->byRecieperOrPayerId($userId);
+        foreach ($subscriptions as $subscription) {
+            $this->cancelSubscription(
+                recieperId: $subscription->getRecieperId(),
+                payerId: $subscription->getPayerId()
+            );
+        }
+
+        $accountIO = $this->objectFactory->create(className: StripeAccountIO::class);
+        try {
+            $stripeAccount = $accountIO->byUserId($userId);
+            $this->client->accounts->delete($stripeAccount->getStripeAccountId());
+        } catch (MinimalismException $e) {
+            if ($e->getStatus() !== HttpCode::NotFound) {
+                throw $e;
+            }
+        }
+    }
+
+    /**
      * @param int $reciperId
      * @param int $payerId
      * @return Document
@@ -1072,4 +1102,5 @@ class Stripe extends AbstractService implements StripeServiceInterface
     {
         return $this->MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_SUBSCRIPTIONS;
     }
+
 }
