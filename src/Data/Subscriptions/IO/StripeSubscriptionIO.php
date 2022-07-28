@@ -59,7 +59,7 @@ class StripeSubscriptionIO extends AbstractSqlIO
         int $userId,
     ): array
     {
-        $subscriptions = SqlTableFactory::create(tableClass: StripeSubscription::class)->getFullName();
+        $subscriptions = SqlTableFactory::create(tableClass: StripeSubscriptionsTable::class)->getFullName();
 
         $recieperId = SqlFieldFactory::create(field: StripeSubscriptionsTable::recieperId)->getFullName();
         $payerId    = SqlFieldFactory::create(field: StripeSubscriptionsTable::payerId)->getFullName();
