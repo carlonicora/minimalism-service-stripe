@@ -73,8 +73,17 @@ enum AccountStatus: string
             )
             {
                 // No sense, but we had a real live example of a webhook with a deadline set without any addytional information.
-                // In the Stripe dashboard it has the 'Complete' status, so we consider it as an undocumnted complete status case
+                // In the Stripe dashboard it has the 'Complete' status, so we consider it as an undocumented complete status case
                 return self::Complete;
+            }
+
+            if ($currentDeadline === null
+                && ! empty($curentlyDue)
+                && empty($pastDue)
+            ) {
+                // We had a real live example of a webhook with a current due without a current deadline
+                // In the Stripe dashboard it has the 'Enabled' status, so we consider it as an undocumented enabled status case
+                return self::Enabled;
             }
 
             throw new LogicException(message: 'Connected account status with enabled card payments not implemented', code: 500);
