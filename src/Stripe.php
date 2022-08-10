@@ -761,16 +761,6 @@ class Stripe extends AbstractService implements StripeServiceInterface
                 payerId: $subscription->getPayerId()
             );
         }
-
-        $accountIO = $this->objectFactory->create(className: StripeAccountIO::class);
-        try {
-            $stripeAccount = $accountIO->byUserId($userId);
-            $this->client->accounts->delete($stripeAccount->getStripeAccountId());
-        } catch (MinimalismException $e) {
-            if ($e->getStatus() !== HttpCode::NotFound) {
-                throw $e;
-            }
-        }
     }
 
     /**
