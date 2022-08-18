@@ -638,8 +638,8 @@ class Stripe extends AbstractService implements StripeServiceInterface
                     'usage_type' => 'licensed'
                 ],
                 'metadata' => [
-                    'from_user_id' => $payerId,
-                    'to_user_id' => $recieperId
+                    'payerId' => $payerId,
+                    'recieperId' => $recieperId
                 ],
             ],
             ['stripe_account' => $recieperStripeAccountId]
