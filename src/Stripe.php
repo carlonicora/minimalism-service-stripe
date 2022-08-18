@@ -452,7 +452,12 @@ class Stripe extends AbstractService implements StripeServiceInterface
                     'expand' => ['latest_invoice.payment_intent'],
                     'application_fee_percent' => $phlowFeePercent,
                     'payment_behavior' => 'default_incomplete',
-                ], ['stripe_account' => $recieperStripeAccountId]
+                    'metadata' => [
+                        'payerId' => $payerId,
+                        'recieperId' => $recieperId
+                    ],
+                ],
+                ['stripe_account' => $recieperStripeAccountId]
             );
 
             $localSubscription = new StripeSubscription();
