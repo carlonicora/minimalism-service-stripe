@@ -50,7 +50,7 @@ class Subscriptions extends AbstractWebhook
             webhookSecret: $stripe->getSubscriptionsWebhookSecret()
         );
 
-        $stripe->processSubscriptionWebhook($stripeEvent);
+        $this->document = $stripe->processSubscriptionWebhook($stripeEvent);
 
         return HttpCode::Created;
     }

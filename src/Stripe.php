@@ -876,13 +876,14 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
     /**
      * @param Event $stripeEvent
-     * @return void
+     * @return Document
      * @throws JsonException
+     * @throws MinimalismException
      * @throws Exception
      */
     public function processSubscriptionWebhook(
         Event $stripeEvent
-    ): void
+    ): Document
     {
         $stripeSubscription = $this->processEvent(
             objectClassName: Subscription::class,
@@ -902,6 +903,11 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
             $subscriptionIO->update($localSubscription);
         }
+
+        return $this->getSubscription(
+            reciperId: $localSubscription->getRecieperId(),
+            payerId: $localSubscription->getPayerId()
+        );
     }
 
     /**
