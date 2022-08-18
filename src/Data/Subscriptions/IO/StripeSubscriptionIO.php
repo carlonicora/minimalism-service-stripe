@@ -16,19 +16,18 @@ class StripeSubscriptionIO extends AbstractSqlIO
 
     /**
      * @param int $id
-     * @return array
+     * @return StripeSubscription
      * @throws MinimalismException
      */
     public function byId(
         int $id
-    ): array
+    ): StripeSubscription
     {
-        $result = $this->data->read(
+        return $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripeSubscriptionsTable::class)
-                ->addParameter(field: StripeSubscriptionsTable::subscriptionId, value: $id)
+                ->addParameter(field: StripeSubscriptionsTable::subscriptionId, value: $id),
+            responseType: StripeSubscription::class
         );
-
-        return $this->returnSingleValue($result, recordType: 'Stripe subscription');
     }
 
     /**
