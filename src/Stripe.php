@@ -834,14 +834,27 @@ class Stripe extends AbstractService implements StripeServiceInterface
             }
 
             // A recurring payment intent created by Stripe
-            $payerId = $stripePaymentIntent->metadata->offsetGet('payerId');
-            $payer   = $this->userService->byId($payerId);
+
+            $payerId    = $stripePaymentIntent->metadata->offsetGet('payerId');
+            $recieperId = $stripePaymentIntent->metadata->offsetGet('recieperId');
+
+            if ($payerId === null && $recieperId === null && $stripePaymentIntent->invoice !== null) {
+                $stripeInvoice = $this->client->invoices->retrieve($stripePaymentIntent->invoice, ['expand' => ['subscription']]);
+
+                $payerId    = $stripeInvoice->subscription?->metadata->offsetGet('payerId');
+                $recieperId = $stripeInvoice->subscription?->metadata->offsetGet('recieperId');
+            }
+
+            if ($payerId === null && $recieperId === null) {
+                throw new MinimalismException(status: HttpCode::UnprocessableEntity, message: 'Unable to find user ids in metadata');
+            }
+
+            $payer = $this->userService->byId($payerId);
             if ($payer === null) {
                 throw new MinimalismException(status: HttpCode::NotFound, message: 'Payer with such an id does not exists');
             }
 
-            $recieperId = $stripePaymentIntent->metadata->offsetGet('recieperId');
-            $recieper   = $this->userService->byId($recieperId);
+            $recieper = $this->userService->byId($recieperId);
             if ($recieper === null) {
                 throw new MinimalismException(status: HttpCode::NotFound, message: 'Recieper with such an id does not exists');
             }
@@ -860,7 +873,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
             $paymentIntent->setPhlowFeeAmount($stripePaymentIntent->application_fee_amount);
             $paymentIntent->setCurrency(Currency::from($stripePaymentIntent->currency)->value);
             $paymentIntent->setStatus(PaymentIntentStatus::from($stripePaymentIntent->status)->value);
-            $paymentIntent->setStripeInvoiceId($stripePaymentIntent->invoice?->id);
+            $paymentIntent->setStripeInvoiceId($stripePaymentIntent->invoice);
 
             $localPayment = $paymentIntentIO->create($paymentIntent);
         }
