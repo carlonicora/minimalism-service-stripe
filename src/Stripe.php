@@ -474,7 +474,6 @@ class Stripe extends AbstractService implements StripeServiceInterface
             $localSubscription->setProductId($product->getId());
             $localSubscription->setAmount($amount->inCents());
             $localSubscription->setPhlowFeePercent($phlowFeePercent);
-            $localSubscription->setStatus($stripeSubscription->status);
             $localSubscription->setCurrency($amount->currency()->value);
             $localSubscription->setFrequency($frequency->value);
             $localSubscription->setCurrentPeriodEnd($stripeSubscription->current_period_end);
