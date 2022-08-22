@@ -883,6 +883,8 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $result = new Document();
         $result->addResource($paymentResource);
 
+        $this->markEventProcessed($stripeEvent->id);
+
         return $result;
     }
 
@@ -915,6 +917,8 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
             $subscriptionIO->update($localSubscription);
         }
+
+        $this->markEventProcessed($stripeEvent->id);
 
         return $this->getSubscription(
             reciperId: $localSubscription->getRecieperId(),
@@ -967,6 +971,9 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
         $result = new Document();
         $result->addResource($accountResource);
+
+        $this->markEventProcessed($stripeEvent->id);
+
         return $result;
     }
 
@@ -987,13 +994,16 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $eventIO = $this->objectFactory->create(className: StripeEventIO::class);
 
         try {
-            $eventIO->byId($event->id);
-            throw new MinimalismException(status: HttpCode::Ok, message: 'A dublicate webhook was ignored');
+            $localEvent = $eventIO->byId($event->id);
+            if ($localEvent->isProcessed()) {
+                throw new MinimalismException(status: HttpCode::Ok, message: 'A dublicate webhook was ignored');
+            }
         } catch (MinimalismException $e) {
             if ($e->getStatus() !== HttpCode::NotFound) {
                 throw $e;
             }
-            // A new event should be proccessed, not ignored
+
+            $localEvent = new StripeEvent();
         }
 
         $object = $event->data->object ?? null;
@@ -1045,7 +1055,6 @@ class Stripe extends AbstractService implements StripeServiceInterface
             default              => null
         };
 
-        $localEvent = new StripeEvent();
         $localEvent->setEventId($event->id);
         $localEvent->setType($event->type);
         $localEvent->setCreatedAt($event->created);
@@ -1056,6 +1065,19 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $eventIO->create($localEvent);
 
         return $object;
+    }
+
+    /**
+     * @param string $stripeEventId
+     * @return void
+     * @throws Exception
+     */
+    protected function markEventProcessed(
+        string $stripeEventId
+    ): void
+    {
+        $eventIO = $this->objectFactory->create(className: StripeEventIO::class);
+        $eventIO->markEventProcessed($stripeEventId);
     }
 
     /**
@@ -1129,6 +1151,8 @@ class Stripe extends AbstractService implements StripeServiceInterface
             $localInvoice->setStatus($stripeInvoice->status);
             $invoiceIO->update($localInvoice);
         }
+
+        $this->markEventProcessed($stripeEvent->id);
     }
 
     /**

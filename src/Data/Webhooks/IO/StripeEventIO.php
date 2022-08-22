@@ -4,11 +4,12 @@ namespace CarloNicora\Minimalism\Services\Stripe\Data\Webhooks\IO;
 
 use CarloNicora\Minimalism\Exceptions\MinimalismException;
 use CarloNicora\Minimalism\Interfaces\Sql\Abstracts\AbstractSqlIO;
+use CarloNicora\Minimalism\Interfaces\Sql\Factories\SqlFieldFactory;
 use CarloNicora\Minimalism\Interfaces\Sql\Factories\SqlQueryFactory;
 use CarloNicora\Minimalism\Services\Stripe\Data\Webhooks\Databases\StripeEventsTable;
 use CarloNicora\Minimalism\Services\Stripe\Data\Webhooks\DataObjects\StripeEvent;
 
-class StripeEventIO  extends AbstractSqlIO
+class StripeEventIO extends AbstractSqlIO
 {
 
     /**
@@ -25,6 +26,21 @@ class StripeEventIO  extends AbstractSqlIO
                 ->addParameter(field: StripeEventsTable::eventId, value: $id),
             responseType: StripeEvent::class
         );
+    }
+
+    /**
+     * @param string $stripeEventId
+     * @return void
+     * @throws MinimalismException
+     */
+    public function markEventProcessed(
+        string $stripeEventId
+    ): void
+    {
+        $existingEvent = $this->byId($stripeEventId);
+        $existingEvent->setIsProcessed(isProcessed: true);
+
+        $this->data->update($existingEvent);
     }
 
 }

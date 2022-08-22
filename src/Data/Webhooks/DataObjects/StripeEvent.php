@@ -35,6 +35,10 @@ class StripeEvent implements SqlDataObjectInterface, ResourceableDataInterface
     #[DbField]
     private ?string $details = null;
 
+    /** @var int */
+    #[DbField]
+    private int $isProcessed = 0;
+
     /**
      * @return string
      */
@@ -120,6 +124,24 @@ class StripeEvent implements SqlDataObjectInterface, ResourceableDataInterface
     ): void
     {
         $this->details = $details;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isProcessed(): bool
+    {
+        return (bool)$this->isProcessed;
+    }
+
+    /**
+     * @param bool $isProcessed
+     */
+    public function setIsProcessed(
+        bool $isProcessed
+    ): void
+    {
+        $this->isProcessed = (int)$isProcessed;
     }
 
     /**

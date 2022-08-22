@@ -22,6 +22,9 @@ enum StripeEventsTable
     #[SqlFieldAttribute(fieldType: SqlFieldType::String)]
     case details;
 
+    #[SqlFieldAttribute(fieldType: SqlFieldType::Integer)]
+    case isProcessed;
+
     #[SqlFieldAttribute(fieldType: SqlFieldType::String, fieldOption: SqlFieldOption::TimeCreate)]
     case createdAt;
 
