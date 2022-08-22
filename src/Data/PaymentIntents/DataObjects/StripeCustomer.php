@@ -33,7 +33,7 @@ class StripeCustomer implements SqlDataObjectInterface, ResourceableDataInterfac
 
     /** @var int|null */
     #[DbField(fieldType: DbFieldType::IntDateTime)]
-    private int|null $updatedAt = null;
+    private ?int $updatedAt = null;
 
     /**
      * @return int
@@ -102,7 +102,7 @@ class StripeCustomer implements SqlDataObjectInterface, ResourceableDataInterfac
     /**
      * @return int|null
      */
-    public function getUpdatedAt(): int|null
+    public function getUpdatedAt(): ?int
     {
         return $this->updatedAt;
     }
