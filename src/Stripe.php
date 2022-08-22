@@ -724,8 +724,6 @@ class Stripe extends AbstractService implements StripeServiceInterface
             id: $subscription->getStripeSubscriptionId(),
             opts: ['stripe_account' => $recieper->getStripeAccountId()]
         );
-
-        $subscriptionIO->delete($subscription);
     }
 
     /**
@@ -770,13 +768,13 @@ class Stripe extends AbstractService implements StripeServiceInterface
     }
 
     /**
-     * @param int $reciperId
+     * @param int $recieperId
      * @param int $payerId
      * @return Document
      * @throws Exception
      */
     public function getSubscription(
-        int $reciperId,
+        int $recieperId,
         int $payerId
     ): Document
     {
@@ -786,7 +784,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $subscriptionFactory = $this->objectFactory->create(className: StripeSubscriptionsResourceFactory::class);
         try {
             $subscription = $subscriptionIO->byRecieperAndPayerIds(
-                recieperId: $reciperId,
+                recieperId: $recieperId,
                 payerId: $payerId
             );
 
@@ -920,7 +918,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $this->markEventProcessed($stripeEvent->id);
 
         return $this->getSubscription(
-            reciperId: $localSubscription->getRecieperId(),
+            recieperId: $localSubscription->getRecieperId(),
             payerId: $localSubscription->getPayerId()
         );
     }

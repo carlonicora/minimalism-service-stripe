@@ -37,7 +37,7 @@ class Subscriptions extends AbstractModel
         }
 
         $this->document = $stripe->getSubscription(
-            reciperId: $recieper->getValue(),
+            recieperId: $recieper->getValue(),
             payerId: $currentUser->getId()
         );
 
