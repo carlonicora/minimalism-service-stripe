@@ -65,10 +65,6 @@ class StripeSubscription implements SqlDataObjectInterface, ResourceableDataInte
 
     /** @var string */
     #[DbField]
-    private string $status;
-
-    /** @var string */
-    #[DbField]
     private string $currency;
 
     /** @var string */
@@ -79,13 +75,17 @@ class StripeSubscription implements SqlDataObjectInterface, ResourceableDataInte
     #[DbField(fieldType: DbFieldType::IntDateTime)]
     private int $createdAt;
 
-    /** @var int|null */
-    #[DbField(fieldType: DbFieldType::IntDateTime)]
-    private int|null $currentPeriodEnd = null;
+    /** @var string|null */
+    #[DbField]
+    private ?string $status = null;
 
     /** @var int|null */
     #[DbField(fieldType: DbFieldType::IntDateTime)]
-    private int|null $updatedAt = null;
+    private ?int $currentPeriodEnd = null;
+
+    /** @var int|null */
+    #[DbField(fieldType: DbFieldType::IntDateTime)]
+    private ?int $updatedAt = null;
 
     /**
      * @return int
@@ -295,23 +295,6 @@ class StripeSubscription implements SqlDataObjectInterface, ResourceableDataInte
         $this->currency = $currency;
     }
 
-
-    /**
-     * @return string
-     */
-    public function getStatus(): string
-    {
-        return $this->status;
-    }
-
-    /**
-     * @param string $status
-     */
-    public function setStatus(string $status): void
-    {
-        $this->status = $status;
-    }
-
     /**
      * @return string
      */
@@ -347,7 +330,7 @@ class StripeSubscription implements SqlDataObjectInterface, ResourceableDataInte
     /**
      * @return int|null
      */
-    public function getCurrentPeriodEnd(): int|null
+    public function getCurrentPeriodEnd(): ?int
     {
         return $this->currentPeriodEnd;
     }
@@ -364,9 +347,27 @@ class StripeSubscription implements SqlDataObjectInterface, ResourceableDataInte
     }
 
     /**
+     * @return string|null
+     */
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param string|null $status
+     */
+    public function setStatus(
+        ?string $status = null
+    ): void
+    {
+        $this->status = $status;
+    }
+
+    /**
      * @return int|null
      */
-    public function getUpdatedAt(): int|null
+    public function getUpdatedAt(): ?int
     {
         return $this->updatedAt;
     }
