@@ -1152,6 +1152,8 @@ class Stripe extends AbstractService implements StripeServiceInterface
             }
 
             $localInvoice->setRecieperEmail($recieper->getEmail());
+
+            $invoiceIO->create($localInvoice);
         }
 
         if ($localInvoice->getStatus() !== $stripeInvoice->status) {
