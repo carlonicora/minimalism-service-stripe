@@ -14,6 +14,7 @@ use CarloNicora\Minimalism\Services\Stripe\Data\Accounts\DataObjects\StripeAccou
 use CarloNicora\Minimalism\Services\Stripe\Data\Accounts\Enums\AccountStatus;
 use CarloNicora\Minimalism\Services\Stripe\Data\Accounts\Factories\StripeAccountsResourceFactory;
 use CarloNicora\Minimalism\Services\Stripe\Data\Accounts\IO\StripeAccountIO;
+use CarloNicora\Minimalism\Services\Stripe\Data\Invoices\DataObjects\StripeInvoice;
 use CarloNicora\Minimalism\Services\Stripe\Data\Invoices\IO\StripeInvoiceIO;
 use CarloNicora\Minimalism\Services\Stripe\Data\PaymentIntents\DataObjects\StripeCustomer;
 use CarloNicora\Minimalism\Services\Stripe\Data\PaymentIntents\DataObjects\StripePaymentIntent;
@@ -41,6 +42,7 @@ use Stripe\BaseStripeClient;
 use Stripe\Event;
 use Stripe\Exception\ApiErrorException;
 use Stripe\Invoice;
+use Stripe\InvoiceLineItem;
 use Stripe\PaymentIntent;
 use Stripe\Price;
 use Stripe\StripeClient;
@@ -839,14 +841,11 @@ class Stripe extends AbstractService implements StripeServiceInterface
             $recieperId = $stripePaymentIntent->metadata->offsetGet('recieperId');
 
             if ($payerId === null && $recieperId === null && $stripePaymentIntent->invoice !== null) {
-                $stripeInvoice = $this->client->invoices->retrieve($stripePaymentIntent->invoice, ['expand' => ['subscription']]);
+                $invoiceIO = $this->objectFactory->create(className: StripeInvoiceIO::class);
+                $invoice   = $invoiceIO->byStripeInvoiceId($stripePaymentIntent->invoice);
 
-                $payerId    = $stripeInvoice->subscription?->metadata->offsetGet('payerId');
-                $recieperId = $stripeInvoice->subscription?->metadata->offsetGet('recieperId');
-            }
-
-            if ($payerId === null && $recieperId === null) {
-                throw new MinimalismException(status: HttpCode::UnprocessableEntity, message: 'Unable to find user ids in metadata');
+                $payerId    = $invoice->getPayerId();
+                $recieperId = $invoice->getRecieperId();
             }
 
             $payer = $this->userService->byId($payerId);
@@ -1090,8 +1089,41 @@ class Stripe extends AbstractService implements StripeServiceInterface
             event: $stripeEvent
         );
 
-        $invoiceIO    = $this->objectFactory->create(className: StripeInvoiceIO::class);
-        $localInvoice = $invoiceIO->byStripeInvoiceId($stripeInvoice->id);
+        $invoiceIO = $this->objectFactory->create(className: StripeInvoiceIO::class);
+        try {
+            $localInvoice = $invoiceIO->byStripeInvoiceId($stripeInvoice->id);
+        } catch (MinimalismException $e) {
+            if ($e->getStatus() !== HttpCode::NotFound) {
+                throw $e;
+            }
+            // Invoice created automatically for recurring payment (subscription)
+
+            $subscriptionIO = $this->objectFactory->create(className: StripeSubscriptionIO::class);
+            $subscription   = $subscriptionIO->byStripeSubscriptionId($stripeInvoice->subscription);
+
+            $localInvoice = new StripeInvoice();
+            $localInvoice->setStripeInvoiceId($stripeInvoice->id);
+            $localInvoice->setStripeCustomerId($stripeInvoice->customer);
+            $localInvoice->setSubscriptionId($subscription->getId());
+            $localInvoice->setAmount($stripeInvoice->amount_due);
+            $localInvoice->setCurrency($stripeInvoice->currency);
+            $localInvoice->setPayerEmail($stripeInvoice->customer_email);
+            $localInvoice->setPhlowFeePercent($stripeInvoice->application_fee_amount);
+            $localInvoice->setStatus($stripeInvoice->status);
+
+            /** @var InvoiceLineItem $line */
+            $line = $stripeInvoice->lines[0];
+            $localInvoice->setPayerId($line->metadata->offsetGet('payerId'));
+            $localInvoice->setRecieperId($line->metadata->offsetGet('recieperId'));
+            $localInvoice->setFrequency($line->plan->interval);
+
+            $recieper = $this->userService->byId($line->metadata->offsetGet('recieperId'));
+            if ($recieper === null) {
+                throw new MinimalismException(status: HttpCode::NotFound, message: 'Recieper not found');
+            }
+
+            $localInvoice->setRecieperEmail($recieper->getEmail());
+        }
 
         if ($localInvoice->getStatus() !== $stripeInvoice->status) {
             $localInvoice->setStatus($stripeInvoice->status);

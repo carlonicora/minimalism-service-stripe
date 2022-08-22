@@ -70,7 +70,7 @@ class StripeAccountIO extends AbstractSqlIO
     /**
      * @param StripeAccount|SqlDataObjectInterface|SqlQueryFactoryInterface|array $dataObject
      * @param CacheBuilderInterface|null $cache
-     * @return SqlDataObjectInterface
+     * @return SqlDataObjectInterface|array
      */
     public function create(
         StripeAccount|SqlDataObjectInterface|SqlQueryFactoryInterface|array $dataObject,
