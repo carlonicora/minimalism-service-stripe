@@ -42,7 +42,7 @@ enum StripeInvoicesTable
     case amount;
 
     #[SqlFieldAttribute(fieldType: SqlFieldType::Integer)]
-    case phlowFeePercent;
+    case phlowFeeAmount;
 
     #[SqlFieldAttribute(fieldType: SqlFieldType::String)]
     case currency;

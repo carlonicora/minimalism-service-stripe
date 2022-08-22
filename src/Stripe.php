@@ -1137,7 +1137,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
             $localInvoice->setAmount($stripeInvoice->amount_due);
             $localInvoice->setCurrency($stripeInvoice->currency);
             $localInvoice->setPayerEmail($stripeInvoice->customer_email);
-            $localInvoice->setPhlowFeePercent($stripeInvoice->application_fee_amount);
+            $localInvoice->setPhlowFeeAmount($stripeInvoice->application_fee_amount);
             $localInvoice->setStatus($stripeInvoice->status);
 
             /** @var InvoiceLineItem $line */

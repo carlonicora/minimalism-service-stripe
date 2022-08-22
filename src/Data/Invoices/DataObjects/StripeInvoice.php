@@ -53,7 +53,7 @@ class StripeInvoice implements SqlDataObjectInterface, ResourceableDataInterface
 
     /** @var int */
     #[DbField]
-    private int $phlowFeePercent;
+    private int $phlowFeeAmount;
 
     /** @var string */
     #[DbField]
@@ -206,17 +206,17 @@ class StripeInvoice implements SqlDataObjectInterface, ResourceableDataInterface
     /**
      * @return int
      */
-    public function getPhlowFeePercent(): int
+    public function getPhlowFeeAmount(): int
     {
-        return $this->phlowFeePercent;
+        return $this->phlowFeeAmount;
     }
 
     /**
-     * @param int $phlowFeePercent
+     * @param int $phlowFeeAmount
      */
-    public function setPhlowFeePercent(int $phlowFeePercent): void
+    public function setPhlowFeeAmount(int $phlowFeeAmount): void
     {
-        $this->phlowFeePercent = $phlowFeePercent;
+        $this->phlowFeeAmount = $phlowFeeAmount;
     }
 
     /**
