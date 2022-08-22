@@ -998,12 +998,14 @@ class Stripe extends AbstractService implements StripeServiceInterface
             if ($localEvent->isProcessed()) {
                 throw new MinimalismException(status: HttpCode::Ok, message: 'A dublicate webhook was ignored');
             }
+            $newEvent = false;
         } catch (MinimalismException $e) {
             if ($e->getStatus() !== HttpCode::NotFound) {
                 throw $e;
             }
 
             $localEvent = new StripeEvent();
+            $newEvent = true;
         }
 
         $object = $event->data->object ?? null;
@@ -1061,8 +1063,13 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $localEvent->setRelatedObjectId($object->id);
         $localEvent->setDetails($details ? json_encode($details, flags: JSON_THROW_ON_ERROR) : null);
 
-        /** @noinspection UnusedFunctionResultInspection */
-        $eventIO->create($localEvent);
+        if ($newEvent) {
+            /** @noinspection UnusedFunctionResultInspection */
+            $eventIO->create($localEvent);
+        } else {
+            /** @noinspection UnusedFunctionResultInspection */
+            $eventIO->update($localEvent);
+        }
 
         return $object;
     }
