@@ -1112,7 +1112,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
             $localInvoice->setStatus($stripeInvoice->status);
 
             /** @var InvoiceLineItem $line */
-            $line = $stripeInvoice->lines[0];
+            $line = $stripeInvoice->lines->first();
             $localInvoice->setPayerId($line->metadata->offsetGet('payerId'));
             $localInvoice->setRecieperId($line->metadata->offsetGet('recieperId'));
             $localInvoice->setFrequency($line->plan->interval);
