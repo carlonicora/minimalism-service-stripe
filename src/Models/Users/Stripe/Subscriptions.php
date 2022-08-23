@@ -19,32 +19,6 @@ class Subscriptions extends AbstractModel
 {
 
     /**
-     * @param Stripe $stripe
-     * @param UserServiceInterface $currentUser
-     * @param PositionedEncryptedParameter $recieper
-     * @return HttpCode
-     * @throws Exception
-     */
-    public function get(
-        Stripe                       $stripe,
-        UserServiceInterface         $currentUser,
-        PositionedEncryptedParameter $recieper,
-    ): HttpCode
-    {
-        $currentUser->load();
-        if ($currentUser->isVisitor()) {
-            throw new MinimalismException(status: HttpCode::Forbidden, message: 'Access not allowed to guests');
-        }
-
-        $this->document = $stripe->getSubscription(
-            recieperId: $recieper->getValue(),
-            payerId: $currentUser->getId()
-        );
-
-        return HttpCode::Ok;
-    }
-
-    /**
      * @OA\Post(
      *     path="/users/{user_id}/stripe/subscriptions",
      *     tags={"stripe"},
@@ -77,15 +51,16 @@ class Subscriptions extends AbstractModel
      *
      * @param Stripe $stripe
      * @param UserServiceInterface $currentUser
-     * @param PositionedEncryptedParameter $author
+     * @param PositionedEncryptedParameter $recieperParam
      * @param array $payload
      * @return HttpCode
      * @throws Exception
+     * @throws MinimalismException
      */
     public function post(
         Stripe                       $stripe,
         UserServiceInterface         $currentUser,
-        PositionedEncryptedParameter $author,
+        PositionedEncryptedParameter $recieperParam,
         array                        $payload
     ): HttpCode
     {
@@ -93,7 +68,7 @@ class Subscriptions extends AbstractModel
 
         $this->document = $stripe->subscribe(
             payerId: $currentUser->getId(),
-            recieperId: $author->getValue(),
+            recieperId: $recieperParam->getValue(),
             amount: $amount,
             phlowFeePercent: $phlowFeePercent,
             frequency: $frequency
@@ -155,7 +130,7 @@ class Subscriptions extends AbstractModel
      *
      * @param Stripe $stripe
      * @param UserServiceInterface $currentUser
-     * @param PositionedEncryptedParameter $author
+     * @param PositionedEncryptedParameter $recieperParam
      * @return HttpCode
      * @throws ApiErrorException
      * @throws MinimalismException
@@ -163,7 +138,7 @@ class Subscriptions extends AbstractModel
     public function delete(
         Stripe                       $stripe,
         UserServiceInterface         $currentUser,
-        PositionedEncryptedParameter $author,
+        PositionedEncryptedParameter $recieperParam,
     ): HttpCode
     {
 
@@ -173,10 +148,11 @@ class Subscriptions extends AbstractModel
         }
 
         $stripe->cancelSubscription(
-            recieperId: $author->getValue(),
+            recieperId: $recieperParam->getValue(),
             payerId: $currentUser->getId()
         );
 
         return HttpCode::NoContent;
     }
+
 }

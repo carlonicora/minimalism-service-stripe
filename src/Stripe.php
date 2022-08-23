@@ -768,12 +768,41 @@ class Stripe extends AbstractService implements StripeServiceInterface
     }
 
     /**
+     * @param string $stripeSubscriptionId
+     * @return Document
+     * @throws MinimalismException
+     * @throws Exception
+     */
+    public function getSubscription(
+        string $stripeSubscriptionId
+    ): Document
+    {
+        $document = new Document();
+
+        $subscriptionIO      = $this->objectFactory->create(className: StripeSubscriptionIO::class);
+        $subscriptionFactory = $this->objectFactory->create(className: StripeSubscriptionsResourceFactory::class);
+        try {
+            $subscription = $subscriptionIO->byStripeSubscriptionId(stripeSubscriptionId: $stripeSubscriptionId);
+
+            $document->addResource(
+                $subscriptionFactory->byData($subscription)
+            );
+        } catch (MinimalismException $e) {
+            if ($e->getStatus() !== HttpCode::NotFound) {
+                throw $e;
+            }
+        }
+
+        return $document;
+    }
+
+    /**
      * @param int $recieperId
      * @param int $payerId
      * @return Document
      * @throws Exception
      */
-    public function getSubscription(
+    public function getSubscriptionSidecar(
         int $recieperId,
         int $payerId
     ): Document
@@ -918,8 +947,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $this->markEventProcessed($stripeEvent->id);
 
         return $this->getSubscription(
-            recieperId: $localSubscription->getRecieperId(),
-            payerId: $localSubscription->getPayerId()
+            stripeSubscriptionId: $localSubscription->getStripeSubscriptionId(),
         );
     }
 

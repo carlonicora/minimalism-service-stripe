@@ -8,6 +8,7 @@ enum StripeDictionary: string
     case SrtipeAccountsLinks = 'stripeAccountLink';
     case StripePaymentIntents = 'stripePaymentIntent';
     case StripeSubscriptions = 'stripeSubscription';
+    case StripeSubscriptionSidecar = 'stripeSubscriptionSidecar';
 
     /**
      * @return string
@@ -19,6 +20,8 @@ enum StripeDictionary: string
             self::SrtipeAccountsLinks  => 'stripe/accounts/links',
             self::StripePaymentIntents => 'stripe/paymentIntents',
             self::StripeSubscriptions  => 'stripe/subscriptions',
+            self::StripeSubscriptionSidecar => 'stripe/subscriptions/sidecars'
         };
     }
+
 }

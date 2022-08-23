@@ -7,8 +7,8 @@ use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Exceptions\MinimalismException;
 use CarloNicora\Minimalism\Interfaces\User\Interfaces\UserServiceInterface;
 use CarloNicora\Minimalism\Parameters\PositionedParameter;
-use CarloNicora\Minimalism\Services\Stripe\Data\Subscriptions\Factories\StripeSubscriptionsResourceFactory;
 use CarloNicora\Minimalism\Services\Stripe\Data\Subscriptions\IO\StripeSubscriptionIO;
+use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use Exception;
 use OpenApi\Annotations as OA;
 
@@ -47,6 +47,7 @@ class Subscriptions extends AbstractModel
      *     @OA\Response(response=429, ref="#/components/responses/429")
      * )
      *
+     * @param Stripe $stripe
      * @param UserServiceInterface $userService
      * @param PositionedParameter $stripeSubscription
      * @return HttpCode
@@ -54,6 +55,7 @@ class Subscriptions extends AbstractModel
      * @throws Exception
      */
     public function get(
+        Stripe               $stripe,
         UserServiceInterface $userService,
         PositionedParameter  $stripeSubscription
     ): HttpCode
@@ -70,10 +72,7 @@ class Subscriptions extends AbstractModel
             throw new MinimalismException(status: HttpCode::Forbidden, message: 'Stripe subscription does not belong to the current user');
         }
 
-        $subscriptionResourceFactory = $this->objectFactory->create(className: StripeSubscriptionsResourceFactory::class);
-        $this->document->addResource(
-            $subscriptionResourceFactory->byData($subscriptionDO)
-        );
+        $this->document = $stripe->getSubscription($stripeSubscription->getValue());
 
         return HttpCode::Ok;
     }
