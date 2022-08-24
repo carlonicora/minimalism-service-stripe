@@ -19,6 +19,45 @@ class Subscriptions extends AbstractModel
 {
 
     /**
+     * @param Stripe $stripe
+     * @param UserServiceInterface $currentUser
+     * @param PositionedEncryptedParameter|null $recieperParam
+     * @param bool|null $inactive
+     * @param int|null $offset
+     * @param int|null $length
+     * @return HttpCode
+     * @throws Exception
+     */
+    public function get(
+        Stripe                        $stripe,
+        UserServiceInterface          $currentUser,
+        ?PositionedEncryptedParameter $recieperParam = null,
+        ?bool                         $inactive = false,
+        ?int                          $offset = 0,
+        ?int                          $length = 10
+    ): HttpCode
+    {
+        if ($recieperParam !== null) {
+            $this->document = $stripe-> getRecieperSubscriptions(
+                recieperId: $recieperParam->getValue(),
+                inactive: $inactive,
+                offset: $offset,
+                limit: $length
+            );
+        } else {
+            $this->document = $stripe->getPayerSubscriptions(
+                payerId: $currentUser->getId(),
+                inactive: $inactive,
+                offset: $offset,
+                limit: $length
+            );
+        }
+
+        $errorCode = current($this->document->errors)?->status;
+        return $errorCode ? HttpCode::from($errorCode) : HttpCode::Ok;
+    }
+
+    /**
      * @OA\Post(
      *     path="/users/{user_id}/stripe/subscriptions",
      *     tags={"stripe"},

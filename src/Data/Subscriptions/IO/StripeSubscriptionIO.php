@@ -4,11 +4,14 @@ namespace CarloNicora\Minimalism\Services\Stripe\Data\Subscriptions\IO;
 
 use CarloNicora\Minimalism\Exceptions\MinimalismException;
 use CarloNicora\Minimalism\Interfaces\Sql\Abstracts\AbstractSqlIO;
+use CarloNicora\Minimalism\Interfaces\Sql\Data\SqlOrderByObject;
+use CarloNicora\Minimalism\Interfaces\Sql\Enums\SqlComparison;
 use CarloNicora\Minimalism\Interfaces\Sql\Factories\SqlFieldFactory;
 use CarloNicora\Minimalism\Interfaces\Sql\Factories\SqlQueryFactory;
 use CarloNicora\Minimalism\Interfaces\Sql\Factories\SqlTableFactory;
 use CarloNicora\Minimalism\Services\Stripe\Data\Subscriptions\Databases\StripeSubscriptionsTable;
 use CarloNicora\Minimalism\Services\Stripe\Data\Subscriptions\DataObjects\StripeSubscription;
+use CarloNicora\Minimalism\Services\Stripe\Data\Subscriptions\Enums\SubscriptionStatus;
 
 
 class StripeSubscriptionIO extends AbstractSqlIO
@@ -45,6 +48,68 @@ class StripeSubscriptionIO extends AbstractSqlIO
             queryFactory: SqlQueryFactory::create(tableClass: StripeSubscriptionsTable::class)
                 ->addParameter(field: StripeSubscriptionsTable::recieperId, value: $recieperId)
                 ->addParameter(field: StripeSubscriptionsTable::payerId, value: $payerId),
+            responseType: StripeSubscription::class
+        );
+    }
+
+    /**
+     * @param int $payerId
+     * @param bool $inactive
+     * @param int $offset
+     * @param int $limit
+     * @return array
+     * @throws MinimalismException
+     */
+    public function byPayerId(
+        int  $payerId,
+        bool $inactive,
+        int  $offset,
+        int  $limit
+    ): array
+    {
+        if ($inactive) {
+            $statuses = [SubscriptionStatus::Canceled, SubscriptionStatus::Unpaid];
+        } else {
+            $statuses = [SubscriptionStatus::Trialing, SubscriptionStatus::Active, SubscriptionStatus::PastDue];
+        }
+
+        return $this->data->read(
+            queryFactory: SqlQueryFactory::create(tableClass: StripeSubscriptionsTable::class)
+                ->addParameter(field: StripeSubscriptionsTable::payerId, value: $payerId)
+                ->addParameter(field: StripeSubscriptionsTable::status, value: $statuses, comparison: SqlComparison::In)
+                ->addOrderByFields([new SqlOrderByObject(field: StripeSubscriptionsTable::createdAt, isDesc: true)])
+                ->limit(start: $offset, length: $limit),
+            responseType: StripeSubscription::class
+        );
+    }
+
+    /**
+     * @param int $recieperId
+     * @param bool $inactive
+     * @param int $offset
+     * @param int $limit
+     * @return array
+     * @throws MinimalismException
+     */
+    public function byRecieperId(
+        int  $recieperId,
+        bool $inactive,
+        int  $offset,
+        int  $limit
+    ): array
+    {
+        if ($inactive) {
+            $statuses = [SubscriptionStatus::Canceled, SubscriptionStatus::Unpaid];
+        } else {
+            $statuses = [SubscriptionStatus::Trialing, SubscriptionStatus::Active, SubscriptionStatus::PastDue];
+        }
+
+        return $this->data->read(
+            queryFactory: SqlQueryFactory::create(tableClass: StripeSubscriptionsTable::class)
+                ->addParameter(field: StripeSubscriptionsTable::recieperId, value: $recieperId)
+                ->addParameter(field: StripeSubscriptionsTable::status, value: $statuses, comparison: SqlComparison::In)
+                ->addOrderByFields([new SqlOrderByObject(field: StripeSubscriptionsTable::createdAt, isDesc: true)])
+                ->limit(start: $offset, length: $limit),
             responseType: StripeSubscription::class
         );
     }

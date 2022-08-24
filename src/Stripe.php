@@ -78,14 +78,14 @@ class Stripe extends AbstractService implements StripeServiceInterface
      * @param string $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_SUBSCRIPTIONS
      */
     public function __construct(
-        private readonly EncrypterInterface  $encrypter,
-        private readonly Users $userService,
-        private readonly string              $MINIMALISM_SERVICE_STRIPE_API_KEY,
-        private readonly string              $MINIMALISM_SERVICE_STRIPE_CLIENT_ID,
-        private readonly string              $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_ACCOUNTS,
-        private readonly string              $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_PAYMENTS,
-        private readonly string              $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_INVOICES,
-        private readonly string              $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_SUBSCRIPTIONS
+        private readonly EncrypterInterface $encrypter,
+        private readonly Users              $userService,
+        private readonly string             $MINIMALISM_SERVICE_STRIPE_API_KEY,
+        private readonly string             $MINIMALISM_SERVICE_STRIPE_CLIENT_ID,
+        private readonly string             $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_ACCOUNTS,
+        private readonly string             $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_PAYMENTS,
+        private readonly string             $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_INVOICES,
+        private readonly string             $MINIMALISM_SERVICE_STRIPE_WEBHOOK_SECRET_SUBSCRIPTIONS
     )
     {
     }
@@ -758,7 +758,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
     ): void
     {
         $subscriptionIO = $this->objectFactory->create(className: StripeSubscriptionIO::class);
-        $subscriptions = $subscriptionIO->byRecieperOrPayerId($userId);
+        $subscriptions  = $subscriptionIO->byRecieperOrPayerId($userId);
         foreach ($subscriptions as $subscription) {
             $this->cancelSubscription(
                 recieperId: $subscription->getRecieperId(),
@@ -824,6 +824,78 @@ class Stripe extends AbstractService implements StripeServiceInterface
             if ($e->getStatus() !== HttpCode::NotFound) {
                 throw $e;
             }
+        }
+
+        return $document;
+    }
+
+    /**
+     * @param int $payerId
+     * @param bool $inactive
+     * @param int $offset
+     * @param int $limit
+     * @return Document
+     * @throws Exception
+     */
+    public function getPayerSubscriptions(
+        int  $payerId,
+        bool $inactive,
+        int  $offset,
+        int  $limit
+    ): Document
+    {
+        $document = new Document();
+
+        $stripeSubscriptionIO              = $this->objectFactory->create(className: StripeSubscriptionIO::class);
+        $stripeSubscriptionResourceFactory = $this->objectFactory->create(className: StripeSubscriptionsResourceFactory::class);
+
+        $data = $stripeSubscriptionIO->byPayerId(
+            payerId: $payerId,
+            inactive: $inactive,
+            offset: $offset,
+            limit: $limit
+        );
+
+        foreach ($data as $subscription) {
+            $document->addResource(
+                $stripeSubscriptionResourceFactory->byData($subscription)
+            );
+        }
+
+        return $document;
+    }
+
+    /**
+     * @param int $recieperId
+     * @param bool $inactive
+     * @param int $offset
+     * @param int $limit
+     * @return Document
+     * @throws Exception
+     */
+    public function getRecieperSubscriptions(
+        int  $recieperId,
+        bool $inactive,
+        int  $offset,
+        int  $limit
+    ): Document
+    {
+        $document = new Document();
+
+        $stripeSubscriptionIO              = $this->objectFactory->create(className: StripeSubscriptionIO::class);
+        $stripeSubscriptionResourceFactory = $this->objectFactory->create(className: StripeSubscriptionsResourceFactory::class);
+
+        $data = $stripeSubscriptionIO->byRecieperId(
+            recieperId: $recieperId,
+            inactive: $inactive,
+            offset: $offset,
+            limit: $limit
+        );
+
+        foreach ($data as $subscription) {
+            $document->addResource(
+                $stripeSubscriptionResourceFactory->byData($subscription)
+            );
         }
 
         return $document;
@@ -1030,7 +1102,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
             }
 
             $localEvent = new StripeEvent();
-            $newEvent = true;
+            $newEvent   = true;
         }
 
         $object = $event->data->object ?? null;
