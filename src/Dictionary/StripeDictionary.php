@@ -9,6 +9,8 @@ enum StripeDictionary: string
     case StripePaymentIntents = 'stripePaymentIntent';
     case StripeSubscriptions = 'stripeSubscription';
     case StripeSubscriptionSidecar = 'stripeSubscriptionSidecar';
+    case StripePayerSubscriptions = 'stripePayerSubscriptions';
+    case StripeRecieperSubscriptions = 'stripeRecieperSubscriptions';
 
     /**
      * @return string
@@ -16,11 +18,13 @@ enum StripeDictionary: string
     public function getEndpoint(): string
     {
         return match ($this) {
-            self::StripeAccounts       => 'stripe/accounts',
-            self::SrtipeAccountsLinks  => 'stripe/accounts/links',
-            self::StripePaymentIntents => 'stripe/paymentIntents',
-            self::StripeSubscriptions  => 'stripe/subscriptions',
-            self::StripeSubscriptionSidecar => 'stripe/subscriptions/sidecars'
+            self::StripeAccounts              => 'stripe/accounts',
+            self::SrtipeAccountsLinks         => 'stripe/accounts/links',
+            self::StripePaymentIntents        => 'stripe/paymentIntents',
+            self::StripeSubscriptions         => 'stripe/subscriptions',
+            self::StripeSubscriptionSidecar   => 'stripe/subscriptions/sidecars',
+            self::StripePayerSubscriptions    => 'stripe/payers/subscriptions',
+            self::StripeRecieperSubscriptions => 'stripe/reciepers/subscriptions',
         };
     }
 
