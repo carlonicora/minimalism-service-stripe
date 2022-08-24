@@ -831,17 +831,15 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
     /**
      * @param int $payerId
-     * @param bool $inactive
      * @param int $offset
      * @param int $limit
      * @return Document
      * @throws Exception
      */
     public function getPayerSubscriptions(
-        int  $payerId,
-        bool $inactive,
-        int  $offset,
-        int  $limit
+        int $payerId,
+        int $offset,
+        int $limit
     ): Document
     {
         $document = new Document();
@@ -851,7 +849,6 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
         $data = $stripeSubscriptionIO->byPayerId(
             payerId: $payerId,
-            inactive: $inactive,
             offset: $offset,
             limit: $limit
         );
@@ -867,17 +864,15 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
     /**
      * @param int $recieperId
-     * @param bool $inactive
      * @param int $offset
      * @param int $limit
      * @return Document
      * @throws Exception
      */
     public function getRecieperSubscriptions(
-        int  $recieperId,
-        bool $inactive,
-        int  $offset,
-        int  $limit
+        int $recieperId,
+        int $offset,
+        int $limit
     ): Document
     {
         $document = new Document();
@@ -887,7 +882,6 @@ class Stripe extends AbstractService implements StripeServiceInterface
 
         $data = $stripeSubscriptionIO->byRecieperId(
             recieperId: $recieperId,
-            inactive: $inactive,
             offset: $offset,
             limit: $limit
         );

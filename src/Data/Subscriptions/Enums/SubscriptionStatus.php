@@ -18,4 +18,21 @@ enum SubscriptionStatus: string
     case Canceled = 'canceled';
     // Stripe has exhausted all payments attempts
     case Unpaid = 'unpaid';
+
+    /**
+     * @return self[]
+     */
+    public static function active(): array
+    {
+        return [self::Trialing, self::Active, self::PastDue];
+    }
+
+    /**
+     * @return self[]
+     */
+    public static function inactive(): array
+    {
+        return [self::Canceled, self::Unpaid];
+    }
+
 }

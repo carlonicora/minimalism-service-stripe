@@ -54,33 +54,36 @@ class StripeSubscriptionIO extends AbstractSqlIO
 
     /**
      * @param int $payerId
-     * @param bool $inactive
      * @param int $offset
      * @param int $limit
-     * @return array
+     * @return StripeSubscription[]
      * @throws MinimalismException
      */
     public function byPayerId(
-        int  $payerId,
-        bool $inactive,
-        int  $offset,
-        int  $limit
+        int $payerId,
+        int $offset,
+        int $limit
     ): array
     {
-        if ($inactive) {
-            $statuses = [SubscriptionStatus::Canceled, SubscriptionStatus::Unpaid];
-        } else {
-            $statuses = [SubscriptionStatus::Trialing, SubscriptionStatus::Active, SubscriptionStatus::PastDue];
-        }
-
-        return $this->data->read(
+        $activeSubscriptions = $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripeSubscriptionsTable::class)
                 ->addParameter(field: StripeSubscriptionsTable::payerId, value: $payerId)
-                ->addParameter(field: StripeSubscriptionsTable::status, value: $statuses, comparison: SqlComparison::In)
+                ->addParameter(field: StripeSubscriptionsTable::status, value: SubscriptionStatus::active(), comparison: SqlComparison::In)
                 ->addOrderByFields([new SqlOrderByObject(field: StripeSubscriptionsTable::createdAt, isDesc: true)])
                 ->limit(start: $offset, length: $limit),
             responseType: StripeSubscription::class
         );
+
+        $inactiveSubscriptions = $this->data->read(
+            queryFactory: SqlQueryFactory::create(tableClass: StripeSubscriptionsTable::class)
+                ->addParameter(field: StripeSubscriptionsTable::payerId, value: $payerId)
+                ->addParameter(field: StripeSubscriptionsTable::status, value: SubscriptionStatus::inactive(), comparison: SqlComparison::In)
+                ->addOrderByFields([new SqlOrderByObject(field: StripeSubscriptionsTable::createdAt, isDesc: true)])
+                ->limit(start: $offset, length: $limit),
+            responseType: StripeSubscription::class
+        );
+
+        return array_merge($activeSubscriptions, $inactiveSubscriptions);
     }
 
     /**
@@ -92,26 +95,30 @@ class StripeSubscriptionIO extends AbstractSqlIO
      * @throws MinimalismException
      */
     public function byRecieperId(
-        int  $recieperId,
-        bool $inactive,
-        int  $offset,
-        int  $limit
+        int $recieperId,
+        int $offset,
+        int $limit
     ): array
     {
-        if ($inactive) {
-            $statuses = [SubscriptionStatus::Canceled, SubscriptionStatus::Unpaid];
-        } else {
-            $statuses = [SubscriptionStatus::Trialing, SubscriptionStatus::Active, SubscriptionStatus::PastDue];
-        }
-
-        return $this->data->read(
+        $activeSubscriptions = $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripeSubscriptionsTable::class)
                 ->addParameter(field: StripeSubscriptionsTable::recieperId, value: $recieperId)
-                ->addParameter(field: StripeSubscriptionsTable::status, value: $statuses, comparison: SqlComparison::In)
+                ->addParameter(field: StripeSubscriptionsTable::status, value: SubscriptionStatus::active(), comparison: SqlComparison::In)
                 ->addOrderByFields([new SqlOrderByObject(field: StripeSubscriptionsTable::createdAt, isDesc: true)])
                 ->limit(start: $offset, length: $limit),
             responseType: StripeSubscription::class
         );
+
+        $inactiveSubscriptions = $this->data->read(
+            queryFactory: SqlQueryFactory::create(tableClass: StripeSubscriptionsTable::class)
+                ->addParameter(field: StripeSubscriptionsTable::recieperId, value: $recieperId)
+                ->addParameter(field: StripeSubscriptionsTable::status, value: SubscriptionStatus::active(), comparison: SqlComparison::In)
+                ->addOrderByFields([new SqlOrderByObject(field: StripeSubscriptionsTable::createdAt, isDesc: true)])
+                ->limit(start: $offset, length: $limit),
+            responseType: StripeSubscription::class
+        );
+
+        return array_merge_recursive($activeSubscriptions, $inactiveSubscriptions);
     }
 
     /**
