@@ -11,50 +11,12 @@ use CarloNicora\Minimalism\Services\Stripe\Data\Subscriptions\Enums\Subscription
 use CarloNicora\Minimalism\Services\Stripe\Money\Amount;
 use CarloNicora\Minimalism\Services\Stripe\Money\Enums\Currency;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
-use CarloNicora\Minimalism\Services\Users\Users;
 use Exception;
 use OpenApi\Annotations as OA;
 use Stripe\Exception\ApiErrorException;
 
 class Subscriptions extends AbstractModel
 {
-
-    /**
-     * @param Stripe $stripe
-     * @param Users $userService
-     * @param PositionedEncryptedParameter|null $recieperParam
-     * @param int|null $offset
-     * @param int|null $length
-     * @return HttpCode
-     * @throws Exception
-     */
-    public function get(
-        Stripe                        $stripe,
-        Users                         $userService,
-        ?PositionedEncryptedParameter $recieperParam = null,
-        ?int                          $offset = 0,
-        ?int                          $length = 10
-    ): HttpCode
-    {
-        if ($recieperParam !== null) {
-            $this->document = $stripe-> getRecieperSubscriptions(
-                recieperId: $recieperParam->getValue(),
-                offset: $offset,
-                limit: $length
-            );
-        } else {
-            $userService->load();
-
-            $this->document = $stripe->getPayerSubscriptions(
-                payerId: $userService->getId(),
-                offset: $offset,
-                limit: $length
-            );
-        }
-
-        $errorCode = current($this->document->errors)?->status;
-        return $errorCode ? HttpCode::from($errorCode) : HttpCode::Ok;
-    }
 
     /**
      * @OA\Post(
