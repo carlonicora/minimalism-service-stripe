@@ -68,19 +68,21 @@ class StripeSubscriptionIO extends AbstractSqlIO
         $activeSubscriptions = $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripeSubscriptionsTable::class)
                 ->addParameter(field: StripeSubscriptionsTable::payerId, value: $payerId)
-                ->addParameter(field: StripeSubscriptionsTable::status, value: SubscriptionStatus::active(), comparison: SqlComparison::In)
+                ->addParameter(field: StripeSubscriptionsTable::status, value: self::prepareStatuses(SubscriptionStatus::active()), comparison: SqlComparison::In)
                 ->addOrderByFields([new SqlOrderByObject(field: StripeSubscriptionsTable::createdAt, isDesc: true)])
                 ->limit(start: $offset, length: $limit),
-            responseType: StripeSubscription::class
+            responseType: StripeSubscription::class,
+            requireObjectsList: true
         );
 
         $inactiveSubscriptions = $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripeSubscriptionsTable::class)
                 ->addParameter(field: StripeSubscriptionsTable::payerId, value: $payerId)
-                ->addParameter(field: StripeSubscriptionsTable::status, value: SubscriptionStatus::inactive(), comparison: SqlComparison::In)
+                ->addParameter(field: StripeSubscriptionsTable::status, value: self::prepareStatuses(SubscriptionStatus::inactive()), comparison: SqlComparison::In)
                 ->addOrderByFields([new SqlOrderByObject(field: StripeSubscriptionsTable::createdAt, isDesc: true)])
                 ->limit(start: $offset, length: $limit),
-            responseType: StripeSubscription::class
+            responseType: StripeSubscription::class,
+            requireObjectsList: true
         );
 
         return array_merge($activeSubscriptions, $inactiveSubscriptions);
@@ -88,7 +90,6 @@ class StripeSubscriptionIO extends AbstractSqlIO
 
     /**
      * @param int $recieperId
-     * @param bool $inactive
      * @param int $offset
      * @param int $limit
      * @return array
@@ -103,22 +104,40 @@ class StripeSubscriptionIO extends AbstractSqlIO
         $activeSubscriptions = $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripeSubscriptionsTable::class)
                 ->addParameter(field: StripeSubscriptionsTable::recieperId, value: $recieperId)
-                ->addParameter(field: StripeSubscriptionsTable::status, value: SubscriptionStatus::active(), comparison: SqlComparison::In)
+                ->addParameter(field: StripeSubscriptionsTable::status, value: self::prepareStatuses(SubscriptionStatus::active()), comparison: SqlComparison::In)
                 ->addOrderByFields([new SqlOrderByObject(field: StripeSubscriptionsTable::createdAt, isDesc: true)])
                 ->limit(start: $offset, length: $limit),
-            responseType: StripeSubscription::class
+            responseType: StripeSubscription::class,
+            requireObjectsList: true
         );
 
         $inactiveSubscriptions = $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripeSubscriptionsTable::class)
                 ->addParameter(field: StripeSubscriptionsTable::recieperId, value: $recieperId)
-                ->addParameter(field: StripeSubscriptionsTable::status, value: SubscriptionStatus::active(), comparison: SqlComparison::In)
+                ->addParameter(field: StripeSubscriptionsTable::status, value: self::prepareStatuses(SubscriptionStatus::inactive()), comparison: SqlComparison::In)
                 ->addOrderByFields([new SqlOrderByObject(field: StripeSubscriptionsTable::createdAt, isDesc: true)])
                 ->limit(start: $offset, length: $limit),
-            responseType: StripeSubscription::class
+            responseType: StripeSubscription::class,
+            requireObjectsList: true
         );
 
         return array_merge_recursive($activeSubscriptions, $inactiveSubscriptions);
+    }
+
+    /**
+     * @param array $statuses
+     * @return array
+     */
+    private static function prepareStatuses(
+        array $statuses
+    ): array
+    {
+        $result = [];
+        foreach ($statuses as $status) {
+            $result[] = "'" . $status->value . "'";
+        }
+
+        return $result;
     }
 
     /**
