@@ -4,6 +4,7 @@ namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Payers;
 
 use CarloNicora\Minimalism\Abstracts\AbstractModel;
 use CarloNicora\Minimalism\Enums\HttpCode;
+use CarloNicora\Minimalism\Exceptions\MinimalismException;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use CarloNicora\Minimalism\Services\Users\Users;
 use Exception;
@@ -26,6 +27,9 @@ class Subscriptions extends AbstractModel
     ): HttpCode
     {
         $userService->load();
+        if ($userService->isVisitor()) {
+            throw new MinimalismException(status: HttpCode::Forbidden, message: 'Access not allowed to guests');
+        }
 
         $this->document = $stripe->getPayerSubscriptions(
             payerId: $userService->getId(),

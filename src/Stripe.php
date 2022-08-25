@@ -896,6 +896,72 @@ class Stripe extends AbstractService implements StripeServiceInterface
     }
 
     /**
+     * @param int $payerId
+     * @param int $offset
+     * @param int $limit
+     * @return Document
+     * @throws MinimalismException
+     * @throws Exception
+     */
+    public function getPayerTips(
+        int $payerId,
+        int $offset,
+        int $limit
+    ): Document
+    {
+        $document = new Document();
+
+        $paymentIntentsIO = $this->objectFactory->create(className: StripePaymentIntentIO::class);
+        $paymentIntents = $paymentIntentsIO->byPayerIdSucceeded(
+            payerId: $payerId,
+            offset: $offset,
+            limit: $limit
+        );
+
+        $paymentIntentsResourceFactory = $this->objectFactory->create(className: StripePaymentIntentsResourceFactory::class);
+        foreach ($paymentIntents as $paymentIntent) {
+            $document->addResource(
+                $paymentIntentsResourceFactory->byData($paymentIntent)
+            );
+        }
+
+        return $document;
+    }
+
+    /**
+     * @param int $recieperId
+     * @param int $offset
+     * @param int $limit
+     * @return Document
+     * @throws MinimalismException
+     * @throws Exception
+     */
+    public function getRecieperTips(
+        int $recieperId,
+        int $offset,
+        int $limit
+    ): Document
+    {
+        $document = new Document();
+
+        $paymentIntentsIO = $this->objectFactory->create(className: StripePaymentIntentIO::class);
+        $paymentIntents = $paymentIntentsIO->byRecieperIdSucceeded(
+            recieperId: $recieperId,
+            offset: $offset,
+            limit: $limit
+        );
+
+        $paymentIntentsResourceFactory = $this->objectFactory->create(className: StripePaymentIntentsResourceFactory::class);
+        foreach ($paymentIntents as $paymentIntent) {
+            $document->addResource(
+                $paymentIntentsResourceFactory->byData($paymentIntent)
+            );
+        }
+
+        return $document;
+    }
+
+    /**
      * @param Event $stripeEvent
      * @return Document
      * @throws JsonException

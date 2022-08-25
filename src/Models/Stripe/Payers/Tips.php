@@ -1,23 +1,23 @@
 <?php
 
-namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Reciepers;
+namespace CarloNicora\Minimalism\Services\Stripe\Models\Stripe\Payers;
 
 use CarloNicora\Minimalism\Abstracts\AbstractModel;
 use CarloNicora\Minimalism\Enums\HttpCode;
 use CarloNicora\Minimalism\Exceptions\MinimalismException;
 use CarloNicora\Minimalism\Services\Stripe\Stripe;
 use CarloNicora\Minimalism\Services\Users\Users;
-use Exception;
 
-class Subscriptions extends AbstractModel
+class Tips extends AbstractModel
 {
+
     /**
      * @param Stripe $stripe
      * @param Users $userService
      * @param int|null $offset
      * @param int|null $length
      * @return HttpCode
-     * @throws Exception
+     * @throws MinimalismException
      */
     public function get(
         Stripe $stripe,
@@ -31,14 +31,13 @@ class Subscriptions extends AbstractModel
             throw new MinimalismException(status: HttpCode::Forbidden, message: 'Access not allowed to guests');
         }
 
-        $this->document = $stripe->getRecieperSubscriptions(
-            recieperId: $userService->getId(),
+        $this->document = $stripe->getPayerTips(
+            payerId: $userService->getId(),
             offset: $offset,
             limit: $length
         );
 
-        $errorCode = current($this->document->errors)?->status;
-        return $errorCode ? HttpCode::from($errorCode) : HttpCode::Ok;
+        return HttpCode::Ok;
     }
 
 }
