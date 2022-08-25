@@ -37,7 +37,7 @@ class StripePaymentIntentIO extends AbstractSqlIO
      * @return array
      * @throws MinimalismException
      */
-    public function byRecieperIdSucceeded(
+    public function byRecieperIdSucceededTips(
         int $recieperId,
         int $offset,
         int $limit
@@ -46,10 +46,12 @@ class StripePaymentIntentIO extends AbstractSqlIO
         return $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripePaymentIntentsTable::class)
                 ->addParameter(field: StripePaymentIntentsTable::recieperId, value: $recieperId)
+                ->addParameter(field: StripePaymentIntentsTable::stripeInvoiceId, value: null)
                 ->addParameter(field: StripePaymentIntentsTable::status, value: PaymentIntentStatus::Succeeded)
                 ->addOrderByFields([new SqlOrderByObject(field: StripePaymentIntentsTable::createdAt, isDesc: true)])
                 ->limit(start: $offset, length: $limit),
-            responseType: StripePaymentIntent::class
+            responseType: StripePaymentIntent::class,
+            requireObjectsList: true
         );
     }
 
@@ -60,7 +62,7 @@ class StripePaymentIntentIO extends AbstractSqlIO
      * @return array
      * @throws MinimalismException
      */
-    public function byPayerIdSucceeded(
+    public function byPayerIdSucceededTips(
         int $payerId,
         int $offset,
         int $limit
@@ -69,10 +71,12 @@ class StripePaymentIntentIO extends AbstractSqlIO
         return $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripePaymentIntentsTable::class)
                 ->addParameter(field: StripePaymentIntentsTable::payerId, value: $payerId)
+                ->addParameter(field: StripePaymentIntentsTable::stripeInvoiceId, value: null)
                 ->addParameter(field: StripePaymentIntentsTable::status, value: PaymentIntentStatus::Succeeded)
                 ->addOrderByFields([new SqlOrderByObject(field: StripePaymentIntentsTable::createdAt, isDesc: true)])
                 ->limit(start: $offset, length: $limit),
-            responseType: StripePaymentIntent::class
+            responseType: StripePaymentIntent::class,
+            requireObjectsList: true
         );
     }
 

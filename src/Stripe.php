@@ -912,7 +912,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $document = new Document();
 
         $paymentIntentsIO = $this->objectFactory->create(className: StripePaymentIntentIO::class);
-        $paymentIntents = $paymentIntentsIO->byPayerIdSucceeded(
+        $paymentIntents = $paymentIntentsIO->byPayerIdSucceededTips(
             payerId: $payerId,
             offset: $offset,
             limit: $limit
@@ -945,7 +945,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $document = new Document();
 
         $paymentIntentsIO = $this->objectFactory->create(className: StripePaymentIntentIO::class);
-        $paymentIntents = $paymentIntentsIO->byRecieperIdSucceeded(
+        $paymentIntents = $paymentIntentsIO->byRecieperIdSucceededTips(
             recieperId: $recieperId,
             offset: $offset,
             limit: $limit
