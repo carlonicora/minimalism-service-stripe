@@ -11,6 +11,8 @@ enum StripeDictionary: string
     case StripeSubscriptionSidecar = 'stripeSubscriptionSidecar';
     case StripePayerSubscriptions = 'stripePayerSubscriptions';
     case StripeRecieperSubscriptions = 'stripeRecieperSubscriptions';
+    case StripePayerTips = 'stripePayerTips';
+    case StripeRecieperTips = 'stripeRecieperTips';
 
     /**
      * @return string
@@ -25,6 +27,8 @@ enum StripeDictionary: string
             self::StripeSubscriptionSidecar   => 'stripe/subscriptions/sidecars',
             self::StripePayerSubscriptions    => 'stripe/payers/subscriptions',
             self::StripeRecieperSubscriptions => 'stripe/reciepers/subscriptions',
+            self::StripePayerTips             => 'stripe/payers/tips',
+            self::StripeRecieperTips          => 'stripe/reciepers/tips',
         };
     }
 
