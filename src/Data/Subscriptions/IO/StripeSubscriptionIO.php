@@ -39,7 +39,7 @@ class StripeSubscriptionIO extends AbstractSqlIO
      * @return StripeSubscription
      * @throws MinimalismException
      */
-    public function byRecieperAndPayerIds(
+    public function byRecieperAndPayerIdsActive(
         int $recieperId,
         int $payerId
     ): StripeSubscription
@@ -47,7 +47,8 @@ class StripeSubscriptionIO extends AbstractSqlIO
         return $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripeSubscriptionsTable::class)
                 ->addParameter(field: StripeSubscriptionsTable::recieperId, value: $recieperId)
-                ->addParameter(field: StripeSubscriptionsTable::payerId, value: $payerId),
+                ->addParameter(field: StripeSubscriptionsTable::payerId, value: $payerId)
+                ->addParameter(field: StripeSubscriptionsTable::status, value: self::prepareStatuses(SubscriptionStatus::active()), comparison: SqlComparison::In),
             responseType: StripeSubscription::class
         );
     }
@@ -125,22 +126,6 @@ class StripeSubscriptionIO extends AbstractSqlIO
     }
 
     /**
-     * @param array $statuses
-     * @return array
-     */
-    private static function prepareStatuses(
-        array $statuses
-    ): array
-    {
-        $result = [];
-        foreach ($statuses as $status) {
-            $result[] = "'" . $status->value . "'";
-        }
-
-        return $result;
-    }
-
-    /**
      * @param int $userId
      * @return StripeSubscription[]
      * @throws MinimalismException
@@ -191,19 +176,36 @@ class StripeSubscriptionIO extends AbstractSqlIO
      * @return int[]
      * @throws MinimalismException
      */
-    public function recieperIdsByPayerId(
+    public function recieperIdsByPayerIdActive(
         int $payerId
     ): array
     {
         $result = $this->data->read(
             queryFactory: SqlQueryFactory::create(tableClass: StripeSubscriptionsTable::class)
                 ->addParameter(field: StripeSubscriptionsTable::payerId, value: $payerId)
+                ->addParameter(field: StripeSubscriptionsTable::status, value: self::prepareStatuses(SubscriptionStatus::active()), comparison: SqlComparison::In),
         );
 
         $recieperId = SqlQueryFactory::create(tableClass: StripeSubscriptionsTable::class)->getTable()
             ->getField(field: StripeSubscriptionsTable::recieperId)->getName();
 
         return array_column(array: $result, column_key: $recieperId);
+    }
+
+    /**
+     * @param array $statuses
+     * @return array
+     */
+    private static function prepareStatuses(
+        array $statuses
+    ): array
+    {
+        $result = [];
+        foreach ($statuses as $status) {
+            $result[] = "'" . $status->value . "'";
+        }
+
+        return $result;
     }
 
 }

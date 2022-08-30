@@ -415,7 +415,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $subscriptionIO = $this->objectFactory->create(className: StripeSubscriptionIO::class);
         try {
             /** @noinspection UnusedFunctionResultInspection */
-            $subscriptionIO->byRecieperAndPayerIds(
+            $subscriptionIO->byRecieperAndPayerIdsActive(
                 recieperId: $recieperId,
                 payerId: $payerId
             );
@@ -712,7 +712,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
     ): void
     {
         $subscriptionIO = $this->objectFactory->create(className: StripeSubscriptionIO::class);
-        $subscription   = $subscriptionIO->byRecieperAndPayerIds(
+        $subscription   = $subscriptionIO->byRecieperAndPayerIdsActive(
             recieperId: $recieperId,
             payerId: $payerId
         );
@@ -812,7 +812,7 @@ class Stripe extends AbstractService implements StripeServiceInterface
         $subscriptionIO      = $this->objectFactory->create(className: StripeSubscriptionIO::class);
         $subscriptionFactory = $this->objectFactory->create(className: StripeSubscriptionsResourceFactory::class);
         try {
-            $subscription = $subscriptionIO->byRecieperAndPayerIds(
+            $subscription = $subscriptionIO->byRecieperAndPayerIdsActive(
                 recieperId: $recieperId,
                 payerId: $payerId
             );
